@@ -185,7 +185,7 @@ function carregarStatusTrava() {
                 statusDiv.style.background = "#ffebee";
                 statusDiv.style.color = "#c62828";
             } else {
-                statusDiv.innerHTML = "🔓 PALPITES ABERTOS - Você pode não alterar seus palpites!";
+                statusDiv.innerHTML = "🔓 PALPITES ABERTOS - Você pode alterar seus palpites!";
                 statusDiv.style.background = "#e8f5e9";
                 statusDiv.style.color = "#2e7d32";
             }
@@ -250,7 +250,7 @@ function mudarDia(index) {
 }
 
 // =====================
-// CARREGAR JOGOS (PALPITES)
+// CARREGAR JOGOS (PALPITES) - COM NOVA PONTUAÇÃO
 // =====================
 function carregarJogos() {
     const area = document.getElementById("areaJogos");
@@ -298,10 +298,26 @@ function carregarJogos() {
                 
                 if (palpiteCasa === resultCasa && palpiteFora === resultFora) {
                     statusCor = "palpite-correto";
-                    mensagemStatus = "✅ ACERTOU! +1 ponto";
+                    mensagemStatus = "✅ PLACAR EXATO! +3 pontos 🎯";
                 } else {
-                    statusCor = "palpite-errado";
-                    mensagemStatus = `❌ Errou! Resultado: ${resultado.casa}-${resultado.fora}`;
+                    // Verificar se acertou o vencedor/empate (tendência)
+                    let palpiteTendencia, resultadoTendencia;
+                    
+                    if (palpiteCasa > palpiteFora) palpiteTendencia = "C";
+                    else if (palpiteCasa < palpiteFora) palpiteTendencia = "F";
+                    else palpiteTendencia = "E";
+                    
+                    if (resultCasa > resultFora) resultadoTendencia = "C";
+                    else if (resultCasa < resultFora) resultadoTendencia = "F";
+                    else resultadoTendencia = "E";
+                    
+                    if (palpiteTendencia === resultadoTendencia) {
+                        statusCor = "palpite-tendencia";
+                        mensagemStatus = `🎯 Acertou o vencedor! +1 ponto (Resultado: ${resultado.casa}-${resultado.fora})`;
+                    } else {
+                        statusCor = "palpite-errado";
+                        mensagemStatus = `❌ Errou! Resultado: ${resultado.casa}-${resultado.fora}`;
+                    }
                 }
             }
             
@@ -553,23 +569,55 @@ function destravarPalpites() {
 }
 
 // =====================
-// PONTOS E RANKING
+// CALCULAR PONTOS (NOVA PONTUAÇÃO)
 // =====================
 function calcularPontos(pc, pf, rc, rf) {
     pc = parseInt(pc);
     pf = parseInt(pf);
     rc = parseInt(rc);
     rf = parseInt(rf);
+    
     if (isNaN(pc) || isNaN(pf) || isNaN(rc) || isNaN(rf)) return 0;
-    if (pc === rc && pf === rf) return 1;
+    
+    // Acertou o placar exato? 3 pontos
+    if (pc === rc && pf === rf) {
+        return 3;
+    }
+    
+    // Verificar se acertou o vencedor ou empate (tendência) - 1 ponto
+    let palpiteTendencia, resultadoTendencia;
+    
+    if (pc > pf) {
+        palpiteTendencia = "C";
+    } else if (pc < pf) {
+        palpiteTendencia = "F";
+    } else {
+        palpiteTendencia = "E";
+    }
+    
+    if (rc > rf) {
+        resultadoTendencia = "C";
+    } else if (rc < rf) {
+        resultadoTendencia = "F";
+    } else {
+        resultadoTendencia = "E";
+    }
+    
+    if (palpiteTendencia === resultadoTendencia) {
+        return 1;
+    }
+    
     return 0;
 }
 
+// =====================
+// RANKING
+// =====================
 function mostrarRanking() {
     const tabela = document.getElementById("ranking");
     if (!tabela) return;
     
-    tabela.innerHTML = "<tr><td colspan='3'>Carregando...</td><tr>";
+    tabela.innerHTML = "<tr><td colspan='3'>Carregando...</td></tr>";
     
     database.ref("resultados").once('value', snapshotResultados => {
         const resultados = snapshotResultados.val() || {};

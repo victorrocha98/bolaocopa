@@ -381,6 +381,7 @@ tr:last-child td {
 /* ==========================================================================
    9. CORES PARA PALPITES
    ========================================================================== */
+/* Placar exato (3 pontos) - VERDE */
 .palpite-correto {
     background: #c8e6c9 !important;
     border-left: 5px solid #2e7d32 !important;
@@ -388,16 +389,30 @@ tr:last-child td {
     border-radius: 10px;
 }
 
+.palpite-correto input {
+    background: #a5d6a7 !important;
+    border-color: #2e7d32 !important;
+}
+
+/* Tendência correta (1 ponto) - LARANJA */
+.palpite-tendencia {
+    background: #fff3e0 !important;
+    border-left: 5px solid #ff9800 !important;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+
+.palpite-tendencia input {
+    background: #ffe0b2 !important;
+    border-color: #ff9800 !important;
+}
+
+/* Errou - VERMELHO */
 .palpite-errado {
     background: #ffcdd2 !important;
     border-left: 5px solid #c62828 !important;
     margin-bottom: 10px;
     border-radius: 10px;
-}
-
-.palpite-correto input {
-    background: #a5d6a7 !important;
-    border-color: #2e7d32 !important;
 }
 
 .palpite-errado input {
