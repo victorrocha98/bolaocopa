@@ -1,4 +1,4 @@
-// Configuração do Firebase - SUBSTITUA PELAS SUAS
+// Configuração do Firebase - SUBSTITUA PELAS SUAS CONFIGURAÇÕES
 const firebaseConfig = {
     apiKey: "AIzaSyCPIG44HF5DskCgof8AIr2ItE0VB576fDs",
     authDomain: "bolaocopa-22293.firebaseapp.com",

@@ -162,7 +162,7 @@ const fasesGrupos = [
 ];
 
 // ============================================
-// FASES DO MATA-MATA (VOCÊ PREENCHE QUANDO CHEGAR)
+// FASES DO MATA-MATA
 // ============================================
 
 const dezesseisAvos = {

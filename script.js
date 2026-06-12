@@ -569,7 +569,7 @@ function mostrarRanking() {
     const tabela = document.getElementById("ranking");
     if (!tabela) return;
     
-    tabela.innerHTML = "<tr><td colspan='3'>Carregando...</td></tr>";
+    tabela.innerHTML = "<tr><td colspan='3'>Carregando...</td><tr>";
     
     database.ref("resultados").once('value', snapshotResultados => {
         const resultados = snapshotResultados.val() || {};
