@@ -1,23 +1,23 @@
 // ============================================
-// FASES DE GRUPOS (JÁ EXISTENTES)
+// FASES DE GRUPOS (COM DATAS DA COPA 2026)
 // ============================================
 const fasesGrupos = [
     {
-        nome: "Dia 1",
+        nome: "12/06/2026 - Dia 1",
         jogos: [
             { id: 1, casa: "México", fora: "África do Sul" },
             { id: 2, casa: "Coreia do Sul", fora: "República Tcheca" }
         ]
     },
     {
-        nome: "Dia 2",
+        nome: "13/06/2026 - Dia 2",
         jogos: [
             { id: 3, casa: "Canadá", fora: "Bósnia e Herzegovina" },
             { id: 4, casa: "Estados Unidos", fora: "Paraguai" }
         ]
     },
     {
-        nome: "Dia 3",
+        nome: "14/06/2026 - Dia 3",
         jogos: [
             { id: 5, casa: "Haiti", fora: "Escócia" },
             { id: 6, casa: "Austrália", fora: "Turquia" },
@@ -26,7 +26,7 @@ const fasesGrupos = [
         ]
     },
     {
-        nome: "Dia 4",
+        nome: "15/06/2026 - Dia 4",
         jogos: [
             { id: 9, casa: "Costa do Marfim", fora: "Equador" },
             { id: 10, casa: "Alemanha", fora: "Curaçau" },
@@ -35,7 +35,7 @@ const fasesGrupos = [
         ]
     },
     {
-        nome: "Dia 5",
+        nome: "16/06/2026 - Dia 5",
         jogos: [
             { id: 13, casa: "Arábia Saudita", fora: "Uruguai" },
             { id: 14, casa: "Espanha", fora: "Cabo Verde" },
@@ -44,7 +44,7 @@ const fasesGrupos = [
         ]
     },
     {
-        nome: "Dia 6",
+        nome: "17/06/2026 - Dia 6",
         jogos: [
             { id: 17, casa: "França", fora: "Senegal" },
             { id: 18, casa: "Iraque", fora: "Noruega" },
@@ -53,7 +53,7 @@ const fasesGrupos = [
         ]
     },
     {
-        nome: "Dia 7",
+        nome: "18/06/2026 - Dia 7",
         jogos: [
             { id: 21, casa: "Gana", fora: "Panamá" },
             { id: 22, casa: "Inglaterra", fora: "Croácia" },
@@ -62,7 +62,7 @@ const fasesGrupos = [
         ]
     },
     {
-        nome: "Dia 8",
+        nome: "19/06/2026 - Dia 8",
         jogos: [
             { id: 25, casa: "República Tcheca", fora: "África do Sul" },
             { id: 26, casa: "Suíça", fora: "Bósnia e Herzegovina" },
@@ -71,7 +71,7 @@ const fasesGrupos = [
         ]
     },
     {
-        nome: "Dia 9",
+        nome: "20/06/2026 - Dia 9",
         jogos: [
             { id: 29, casa: "Brasil", fora: "Haiti" },
             { id: 30, casa: "Escócia", fora: "Marrocos" },
@@ -80,7 +80,7 @@ const fasesGrupos = [
         ]
     },
     {
-        nome: "Dia 10",
+        nome: "21/06/2026 - Dia 10",
         jogos: [
             { id: 33, casa: "Alemanha", fora: "Costa do Marfim" },
             { id: 34, casa: "Equador", fora: "Curaçau" },
@@ -89,7 +89,7 @@ const fasesGrupos = [
         ]
     },
     {
-        nome: "Dia 11",
+        nome: "22/06/2026 - Dia 11",
         jogos: [
             { id: 37, casa: "Uruguai", fora: "Cabo Verde" },
             { id: 38, casa: "Espanha", fora: "Arábia Saudita" },
@@ -98,7 +98,7 @@ const fasesGrupos = [
         ]
     },
     {
-        nome: "Dia 12",
+        nome: "23/06/2026 - Dia 12",
         jogos: [
             { id: 41, casa: "Noruega", fora: "Senegal" },
             { id: 42, casa: "França", fora: "Iraque" },
@@ -107,7 +107,7 @@ const fasesGrupos = [
         ]
     },
     {
-        nome: "Dia 13",
+        nome: "24/06/2026 - Dia 13",
         jogos: [
             { id: 45, casa: "Inglaterra", fora: "Gana" },
             { id: 46, casa: "Panamá", fora: "Croácia" },
@@ -116,7 +116,7 @@ const fasesGrupos = [
         ]
     },
     {
-        nome: "Dia 14",
+        nome: "25/06/2026 - Dia 14",
         jogos: [
             { id: 49, casa: "Escócia", fora: "Brasil" },
             { id: 50, casa: "Marrocos", fora: "Haiti" },
@@ -127,7 +127,7 @@ const fasesGrupos = [
         ]
     },
     {
-        nome: "Dia 15",
+        nome: "26/06/2026 - Dia 15",
         jogos: [
             { id: 55, casa: "Curaçau", fora: "Costa do Marfim" },
             { id: 56, casa: "Equador", fora: "Alemanha" },
@@ -138,7 +138,7 @@ const fasesGrupos = [
         ]
     },
     {
-        nome: "Dia 16",
+        nome: "27/06/2026 - Dia 16",
         jogos: [
             { id: 61, casa: "Noruega", fora: "França" },
             { id: 62, casa: "Senegal", fora: "Iraque" },
@@ -149,7 +149,7 @@ const fasesGrupos = [
         ]
     },
     {
-        nome: "Dia 17",
+        nome: "28/06/2026 - Dia 17",
         jogos: [
             { id: 67, casa: "Panamá", fora: "Inglaterra" },
             { id: 68, casa: "Croácia", fora: "Gana" },
@@ -162,80 +162,51 @@ const fasesGrupos = [
 ];
 
 // ============================================
-// FASES DO MATA-MATA (VOCÊ VAI PREENCHENDO AQUI!)
+// FASES DO MATA-MATA (VOCÊ PREENCHE QUANDO CHEGAR)
 // ============================================
 
-// 🏆 16 AVOS DE FINAL (Primeira fase do mata-mata)
 const dezesseisAvos = {
     nome: "🏆 16 Avos de Final",
-    jogos: [
-        // VOCÊ VAI ADICIONAR OS JOGOS AQUI!
-        // Exemplo: { id: 73, casa: "Brasil", fora: "Chile" },
-        // Exemplo: { id: 74, casa: "Argentina", fora: "Uruguai" },
-    ]
+    jogos: []
 };
 
-// 🏆 OITAVAS DE FINAL
 const oitavas = {
     nome: "🏆 Oitavas de Final",
-    jogos: [
-        // VOCÊ VAI ADICIONAR OS JOGOS AQUI!
-        // Exemplo: { id: 75, casa: "Time A", fora: "Time B" },
-        // Exemplo: { id: 76, casa: "Time C", fora: "Time D" },
-    ]
+    jogos: []
 };
 
-// 🏆 QUARTAS DE FINAL
 const quartas = {
     nome: "🏆 Quartas de Final",
-    jogos: [
-        // VOCÊ VAI ADICIONAR OS JOGOS AQUI!
-        // Exemplo: { id: 77, casa: "Vencedor 1", fora: "Vencedor 2" },
-    ]
+    jogos: []
 };
 
-// 🏆 SEMIFINAIS
 const semifinais = {
     nome: "🏆 Semifinais",
-    jogos: [
-        // VOCÊ VAI ADICIONAR OS JOGOS AQUI!
-        // Exemplo: { id: 78, casa: "Vencedor A", fora: "Vencedor B" },
-    ]
+    jogos: []
 };
 
-// 🏆 DISPUTA DE 3º LUGAR
 const terceiroLugar = {
     nome: "🥉 Disputa de 3º Lugar",
-    jogos: [
-        // VOCÊ VAI ADICIONAR O JOGO AQUI!
-        // Exemplo: { id: 79, casa: "Perdedor SF1", fora: "Perdedor SF2" },
-    ]
+    jogos: []
 };
 
-// 🏆 FINAL
 const final = {
     nome: "🏆 FINAL",
-    jogos: [
-        // VOCÊ VAI ADICIONAR O JOGO AQUI!
-        // Exemplo: { id: 80, casa: "Vencedor SF1", fora: "Vencedor SF2" },
-    ]
+    jogos: []
 };
 
 // ============================================
 // JUNTANDO TODAS AS FASES
 // ============================================
 
-// Primeiro as fases de grupos
 let rodadas = [...fasesGrupos];
 
-// Função para adicionar fases do mata-mata (só se tiver jogos)
 function adicionarFaseSeTiverJogos(fase) {
     if (fase.jogos && fase.jogos.length > 0) {
         rodadas.push(fase);
     }
 }
 
-// Adicionar as fases do mata-mata (só aparece se você preencher os jogos)
 adicionarFaseSeTiverJogos(dezesseisAvos);
 adicionarFaseSeTiverJogos(oitavas);
 adicionarFaseSeTiverJogos(quartas);
@@ -243,12 +214,9 @@ adicionarFaseSeTiverJogos(semifinais);
 adicionarFaseSeTiverJogos(terceiroLugar);
 adicionarFaseSeTiverJogos(final);
 
-// Exportar para uso global
 if (typeof window !== 'undefined') {
     window.rodadas = rodadas;
     window.fasesGrupos = fasesGrupos;
 }
 
-// Mostrar no console quantas fases foram carregadas
 console.log(`✅ ${rodadas.length} fases carregadas!`);
-console.log("Fases disponíveis:", rodadas.map(f => f.nome));

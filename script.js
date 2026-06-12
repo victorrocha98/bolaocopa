@@ -48,7 +48,7 @@ function verificarLogin() {
 }
 
 // =====================
-// GERENCIAR USUÁRIOS (Admin)
+// GERENCIAR USUÁRIOS (ADMIN)
 // =====================
 function carregarUsuarios() {
     const usuariosList = document.getElementById("usuariosList");
@@ -164,11 +164,9 @@ function inicializarInterfaceDias() {
     const filtro = document.getElementById("filtroDias");
     if (!filtro) return;
     
-    // Pega as fases do arquivo jogos.js
     const todasFases = window.rodadas || [];
     
     if (todasFases.length === 0) {
-        console.error("Nenhuma fase encontrada!");
         filtro.innerHTML = "<p style='color:white'>Nenhuma fase disponível</p>";
         return;
     }
@@ -198,7 +196,7 @@ function mudarDia(index) {
 }
 
 // =====================
-// CARREGAR JOGOS (Palpites)
+// CARREGAR JOGOS (PALPITES)
 // =====================
 function carregarJogos() {
     const area = document.getElementById("areaJogos");
@@ -211,11 +209,11 @@ function carregarJogos() {
     const blocoRodada = todasFases[diaAtivoIndex];
     
     if (!blocoRodada || !blocoRodada.jogos || blocoRodada.jogos.length === 0) {
-        area.innerHTML = "<div style='text-align:center; padding:40px; background:white; border-radius:15px;'>📭 Nenhum jogo nesta fase ainda.<br>O administrador vai adicionar os jogos em breve!</div>";
+        area.innerHTML = "<div style='text-align:center; padding:40px; background:white; border-radius:15px;'>📭 Nenhum jogo nesta fase ainda.</div>";
         return;
     }
     
-    area.innerHTML = "<div class='loading'>🔄 Carregando jogos...</div>";
+    area.innerHTML = "<div class='loading'>🔄 Carregando...</div>";
     
     Promise.all([
         database.ref(`palpites/${usuario}`).once('value'),
@@ -224,7 +222,7 @@ function carregarJogos() {
         const palpites = palpitesSnap.val() || {};
         const resultados = resultadosSnap.val() || {};
         
-        let html = `<div class="rodada"><h2>📅 ${blocoRodada.nome}</h2>`;
+        let html = `<div class="rodada"><h2>${blocoRodada.nome}</h2>`;
         html += `<p style="color:#666; margin-bottom:15px;">Faça seus palpites para os jogos abaixo:</p>`;
         
         blocoRodada.jogos.forEach(jogo => {
@@ -232,8 +230,12 @@ function carregarJogos() {
             const resultado = resultados[jogo.id];
             const temResultado = resultado && resultado.casa !== "" && resultado.casa !== undefined;
             
+            // Verificar se o usuário já salvou este palpite
+            const palpiteJaSalvo = palpites[jogo.id] && (palpites[jogo.id].casa !== "" && palpites[jogo.id].casa !== undefined && palpites[jogo.id].casa !== null);
+            
             let statusCor = "";
             let mensagemStatus = "";
+            let estiloInput = "";
             
             if (temResultado && palpite.casa !== "" && palpite.casa !== undefined) {
                 const palpiteCasa = parseInt(palpite.casa);
@@ -246,12 +248,16 @@ function carregarJogos() {
                     mensagemStatus = "✅ ACERTOU! +1 ponto";
                 } else {
                     statusCor = "palpite-errado";
-                    mensagemStatus = `❌ Errou! Resultado oficial: ${resultado.casa} - ${resultado.fora}`;
+                    mensagemStatus = `❌ Errou! Resultado: ${resultado.casa}-${resultado.fora}`;
                 }
             }
             
-            let desabilitado = palpitesBloqueados || temResultado;
+            let desabilitado = palpitesBloqueados || temResultado || palpiteJaSalvo;
             let disabledAttr = desabilitado ? 'disabled' : '';
+            
+            if (palpiteJaSalvo && !temResultado) {
+                estiloInput = "style='background:#fff3e0; border-color:#ff9800;'";
+            }
             
             html += `
             <div class="jogo ${statusCor}" id="jogo_${jogo.id}">
@@ -261,11 +267,12 @@ function carregarJogos() {
                     <strong>${jogo.fora}</strong>
                     ${temResultado ? `<div style="font-size:11px; color:#2e7d32; margin-top:5px;">📊 PLACAR OFICIAL: ${resultado.casa} - ${resultado.fora}</div>` : ''}
                     ${mensagemStatus ? `<div style="font-size:12px; margin-top:3px; font-weight:bold;">${mensagemStatus}</div>` : ''}
+                    ${palpiteJaSalvo && !temResultado ? `<div style="font-size:11px; color:#ff9800; margin-top:3px;">🔒 Palpite já salvo - não pode mais alterar</div>` : ''}
                 </div>
                 <div class="placar">
-                    <input type="number" id="casa_${jogo.id}" value="${palpite.casa}" min="0" placeholder="?" ${disabledAttr}>
+                    <input type="number" id="casa_${jogo.id}" value="${palpite.casa}" min="0" placeholder="?" ${disabledAttr} ${estiloInput}>
                     <span>x</span>
-                    <input type="number" id="fora_${jogo.id}" value="${palpite.fora}" min="0" placeholder="?" ${disabledAttr}>
+                    <input type="number" id="fora_${jogo.id}" value="${palpite.fora}" min="0" placeholder="?" ${disabledAttr} ${estiloInput}>
                 </div>
             </div>
             `;
@@ -276,7 +283,14 @@ function carregarJogos() {
         
         const btnSalvar = document.getElementById("btnSalvarPalpites");
         if (btnSalvar) {
-            btnSalvar.style.display = palpitesBloqueados ? "none" : "block";
+            // Verificar se todos os jogos do dia já foram salvos
+            let todosSalvos = true;
+            blocoRodada.jogos.forEach(jogo => {
+                if (!palpites[jogo.id] || palpites[jogo.id].casa === "" || palpites[jogo.id].casa === undefined) {
+                    todosSalvos = false;
+                }
+            });
+            btnSalvar.style.display = (palpitesBloqueados || todosSalvos) ? "none" : "block";
         }
     }).catch(err => {
         console.error("Erro:", err);
@@ -295,28 +309,60 @@ function salvarPalpites() {
     
     const todasFases = window.rodadas || [];
     const blocoRodada = todasFases[diaAtivoIndex];
-    const palpitesAtualizados = {};
     
-    blocoRodada.jogos.forEach(jogo => {
-        const casaInput = document.getElementById(`casa_${jogo.id}`);
-        const foraInput = document.getElementById(`fora_${jogo.id}`);
+    // Verificar se o usuário já tem palpites salvos para este dia
+    database.ref(`palpites/${usuario}`).once('value', snapshot => {
+        const palpitesExistentes = snapshot.val() || {};
+        let jaTemPalpite = false;
         
-        if (casaInput && foraInput && !casaInput.disabled) {
-            palpitesAtualizados[jogo.id] = {
-                casa: casaInput.value || "0",
-                fora: foraInput.value || "0"
-            };
+        blocoRodada.jogos.forEach(jogo => {
+            if (palpitesExistentes[jogo.id] && palpitesExistentes[jogo.id].casa !== "" && palpitesExistentes[jogo.id].casa !== undefined) {
+                jaTemPalpite = true;
+            }
+        });
+        
+        if (jaTemPalpite) {
+            alert("⚠️ Você já salvou seus palpites para este dia! Não é possível alterar após salvar.");
+            carregarJogos();
+            return;
         }
+        
+        const palpitesAtualizados = {};
+        let todosPreenchidos = true;
+        
+        blocoRodada.jogos.forEach(jogo => {
+            const casaInput = document.getElementById(`casa_${jogo.id}`);
+            const foraInput = document.getElementById(`fora_${jogo.id}`);
+            
+            if (casaInput && foraInput && !casaInput.disabled) {
+                if (casaInput.value === "" || foraInput.value === "") {
+                    todosPreenchidos = false;
+                } else {
+                    palpitesAtualizados[jogo.id] = {
+                        casa: casaInput.value || "0",
+                        fora: foraInput.value || "0"
+                    };
+                }
+            }
+        });
+        
+        if (!todosPreenchidos) {
+            alert("⚠️ Preencha TODOS os palpites do dia antes de salvar!");
+            return;
+        }
+        
+        if (Object.keys(palpitesAtualizados).length === 0) {
+            alert("⚠️ Nenhum palpite para salvar!");
+            return;
+        }
+        
+        database.ref(`palpites/${usuario}`).update(palpitesAtualizados)
+            .then(() => {
+                alert(`✅ Palpites do dia salvos com sucesso! Agora eles estão bloqueados.`);
+                carregarJogos();
+            })
+            .catch(err => alert("Erro: " + err));
     });
-    
-    if (Object.keys(palpitesAtualizados).length === 0) {
-        alert("Nenhum palpite para salvar!");
-        return;
-    }
-    
-    database.ref(`palpites/${usuario}`).update(palpitesAtualizados)
-        .then(() => alert(`✅ Palpites salvos com sucesso!`))
-        .catch(err => alert("Erro: " + err));
 }
 
 // =====================
@@ -349,7 +395,7 @@ function montarAdmin() {
         todasFases.forEach((bloco, index) => {
             if (!bloco.jogos || bloco.jogos.length === 0) return;
             
-            let html = `<div class="rodada"><h2>📅 ${bloco.nome}</h2>`;
+            let html = `<div class="rodada"><h2>${bloco.nome}</h2>`;
             
             bloco.jogos.forEach(jogo => {
                 const resultado = resultados[jogo.id] || { casa: "", fora: "" };
@@ -543,42 +589,6 @@ function verificarAcessoAdmin() {
 }
 
 // =====================
-// FUNÇÃO PARA RECARREGAR JOGOS DO MATA-MATA (Admin)
-// =====================
-function carregarJogosMataMata() {
-    const container = document.getElementById("jogosMataMataList");
-    if (!container) return;
-    
-    // Mostrar as fases disponíveis no jogos.js
-    const todasFases = window.rodadas || [];
-    const fasesMata = todasFases.filter(f => f.nome.includes("🏆") || f.nome.includes("🥉"));
-    
-    if (fasesMata.length === 0) {
-        container.innerHTML = "<p>Nenhum jogo do mata-mata cadastrado no jogos.js ainda.</p>";
-        return;
-    }
-    
-    let html = "";
-    fasesMata.forEach(fase => {
-        html += `<h5 style="margin-top: 15px; color: #0d47a1;">${fase.nome}</h5>`;
-        html += `<div style="margin-left: 15px; margin-bottom: 15px;">`;
-        
-        fase.jogos.forEach((jogo, idx) => {
-            html += `
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; background: #f5f5f5; padding: 8px; border-radius: 8px;">
-                <span><strong>${jogo.casa}</strong> x <strong>${jogo.fora}</strong></span>
-                <span style="color:#666; font-size:12px;">(ID: ${jogo.id})</span>
-            </div>
-            `;
-        });
-        
-        html += `</div>`;
-    });
-    
-    container.innerHTML = html;
-}
-
-// =====================
 // INIT
 // =====================
 document.addEventListener("DOMContentLoaded", () => {
@@ -600,7 +610,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (document.getElementById("adminJogos")) {
             montarAdmin();
             carregarUsuarios();
-            carregarJogosMataMata();
         }
         
         if (document.getElementById("ranking")) {
