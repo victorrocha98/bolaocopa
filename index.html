@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 Bolão da Copa - Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="card" id="cardLogin">
+        <h1>🏆 Bolão da Copa</h1>
+        <h2>Entrar no Bolão</h2>
+        
+        <select id="nomeParticipante">
+            <option value="">Selecione seu nome</option>
+            <option>Victor</option>
+            <option>Paulo</option>
+            <option>Levi</option>
+            <option>Isaac</option>
+            <option>Abrão</option>
+            <option>Gabriel</option>
+        </select>
+        
+        <input type="password" id="senha" placeholder="Digite sua senha" style="width: 100%; margin: 10px 0; padding: 10px; box-sizing: border-box;">
+        
+        <button onclick="fazerLogin()">Entrar</button>
+        
+        <p style="margin-top: 15px; font-size: 12px; color: #666;">Senha padrão: 123456</p>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+<script src="config.js"></script>
+<script src="jogos.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>

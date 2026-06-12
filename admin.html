@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 Bolão da Copa - Admin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+    <a href="palpites.html">Palpites</a>
+    <a href="ranking.html">Ranking</a>
+    <a href="admin.html" class="active">Admin</a>
+    <a href="#" onclick="logout()" style="float: right;">🚪 Sair</a>
+</nav>
+
+<div class="container">
+
+    <h1>⚙️ Administração</h1>
+    
+    <div class="card">
+        <h3>🔒 Controle dos Palpites</h3>
+        <button onclick="travarPalpites()" id="btnTravar">🔒 Travar Todos os Palpites</button>
+        <button onclick="destravarPalpites()" id="btnDestravar">🔓 Destravar Palpites</button>
+        <p id="statusTrava" style="margin-top: 10px; font-weight: bold;"></p>
+    </div>
+
+    <div class="card">
+        <h3>👥 Gerenciar Participantes</h3>
+        
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+            <input type="text" id="novoUsuario" placeholder="Nome do novo usuário" style="width: 200px;">
+            <input type="password" id="novaSenha" placeholder="Senha" style="width: 150px;" value="123456">
+            <button onclick="adicionarUsuario()" style="background: #2e7d32;">➕ Adicionar</button>
+        </div>
+        
+        <div id="listaUsuarios">
+            <h4>📋 Usuários Cadastrados:</h4>
+            <div id="usuariosList"></div>
+        </div>
+    </div>
+
+    <!-- GERENCIAMENTO DE FASES -->
+    <div class="card">
+        <h3>🏆 Gerenciar Fases do Torneio</h3>
+        
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+            <select id="faseSelecionada">
+                <option value="oitavas">Oitavas de Final (16 avos)</option>
+                <option value="quartas">Quartas de Final</option>
+                <option value="semifinais">Semifinais</option>
+                <option value="terceiro">Disputa de 3º Lugar</option>
+                <option value="final">Final</option>
+            </select>
+            <button onclick="adicionarJogoMataMata()" style="background: #1565c0;">➕ Adicionar Jogo à Fase</button>
+            <button onclick="resetarFaseMataMata()" style="background: #ff6f00;">🗑️ Resetar Todos os Jogos da Fase</button>
+        </div>
+        
+        <div id="jogosMataMataContainer">
+            <h4>📋 Jogos do Mata-Mata:</h4>
+            <div id="jogosMataMataList"></div>
+        </div>
+    </div>
+
+    <h2 style="color: white;">📊 Resultados dos Jogos</h2>
+    
+    <div style="text-align: center; margin-bottom: 20px;">
+        <button onclick="resetarTodosResultados()" style="background: #ff6f00;">⚠️ RESETAR TODOS OS RESULTADOS</button>
+        <p style="color: white; font-size: 12px; margin-top: 5px;">Cuidado! Isso vai apagar todos os resultados e liberar todos os palpites.</p>
+    </div>
+    
+    <div id="adminJogos"></div>
+
+    <button class="btnSalvar" onclick="salvarResultados()">
+        ✅ Salvar Resultados Oficiais
+    </button>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+<script src="config.js"></script>
+<script src="jogos.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>

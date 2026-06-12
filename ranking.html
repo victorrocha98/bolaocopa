@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 Bolão da Copa - Ranking</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+    <a href="palpites.html">Palpites</a>
+    <a href="ranking.html" class="active">Ranking</a>
+    <a href="admin.html">Admin</a>
+    <a href="#" onclick="logout()" style="float: right;">🚪 Sair</a>
+</nav>
+
+<div class="container">
+
+    <h1>🏅 Classificação Geral</h1>
+    <p style="text-align: center; color: white;">✅ Cada acerto de placar exato vale <strong>1 ponto</strong></p>
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr><th>Posição</th><th>Participante</th><th>Pontos</th></tr>
+            </thead>
+            <tbody id="ranking"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+<script src="config.js"></script>
+<script src="jogos.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>

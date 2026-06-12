@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bolão da Copa - Palpites</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+    <a href="palpites.html">Palpites</a>
+    <a href="ranking.html">Ranking</a>
+    <a href="admin.html">Admin</a>
+    <a href="#" onclick="logout()" style="float: right;">🚪 Sair</a>
+</nav>
+
+<div class="container">
+
+    <h1>🏆 Bolão da Copa</h1>
+    
+    <div id="statusJogo" class="status-card"></div>
+
+    <!-- Abas das fases (vão aparecer automaticamente) -->
+    <div id="filtroDias" class="abas-container"></div>
+
+    <!-- Área dos jogos -->
+    <div id="areaJogos"></div>
+
+    <button id="btnSalvarPalpites" class="btnSalvar" onclick="salvarPalpites()" style="display: none;">
+        💾 Salvar Palpites
+    </button>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+<script src="config.js"></script>
+<script src="jogos.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>

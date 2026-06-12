@@ -1,0 +1,673 @@
+/* ==========================================================================
+   1. ESTILOS GERAIS E ESTRUTURA
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #0d47a1 0%, #08306b 100%);
+    color: #333;
+    min-height: 100vh;
+}
+
+nav {
+    background: #08306b;
+    padding: 12px 15px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 10px;
+    padding: 8px 12px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
+nav a:hover {
+    background: #1565c0;
+    opacity: 1;
+}
+
+nav a.active {
+    background: #ffd700;
+    color: #08306b;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 15px;
+}
+
+h1 {
+    text-align: center;
+    color: white;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+h2 {
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+}
+
+h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,.25);
+}
+
+/* ==========================================================================
+   2. FORMULÁRIOS, BOTÕES E INPUTS
+   ========================================================================== */
+select {
+    padding: 12px;
+    width: 100%;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    font-size: 16px;
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+}
+
+select:focus {
+    outline: none;
+    border-color: #1565c0;
+}
+
+input {
+    width: 70px;
+    padding: 8px 6px;
+    text-align: center;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: #1565c0;
+    box-shadow: 0 0 5px rgba(21,101,192,0.3);
+}
+
+input:disabled {
+    background: #ffcccc !important;
+    border-color: #c62828 !important;
+    color: #666;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+button {
+    background: #1565c0;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+button:hover {
+    background: #0d47a1;
+    transform: scale(1.02);
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+.btnSalvar {
+    display: block;
+    margin: 20px auto;
+    background: #2e7d32;
+    font-size: 16px;
+    padding: 14px 28px;
+}
+
+.btnSalvar:hover {
+    background: #1b5e20;
+}
+
+/* ==========================================================================
+   3. JOGOS E CONFRONTOS
+   ========================================================================== */
+.rodada {
+    background: white;
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,.25);
+}
+
+.rodada h2 {
+    margin-top: 0;
+    color: #0d47a1;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+    text-align: center;
+}
+
+.jogo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.jogo:last-child {
+    border: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.jogo:has(input:disabled) {
+    background-color: #fff5f5;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    border-left: 4px solid #c62828;
+}
+
+.jogo span {
+    font-size: 15px;
+    font-weight: bold;
+    flex: 1;
+}
+
+.placar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.placar span {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    flex: 0;
+}
+
+/* ==========================================================================
+   4. TABELA DE RANKING / CLASSIFICAÇÃO
+   ========================================================================== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th {
+    background: #1565c0;
+    color: white;
+    font-weight: bold;
+    padding: 12px;
+    font-size: 14px;
+}
+
+td {
+    border-bottom: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+    font-size: 14px;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+/* ==========================================================================
+   5. ABAS DOS DIAS (NAVEGAÇÃO)
+   ========================================================================== */
+.abas-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: rgba(0,0,0,0.1);
+    border-radius: 50px;
+}
+
+.btn-aba {
+    background: #08306b;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    transition: all 0.2s ease;
+    flex: 0 0 auto;
+}
+
+.btn-aba:hover {
+    background: #1565c0;
+    transform: scale(1.05);
+}
+
+.btn-aba.ativo {
+    background: white;
+    color: #0d47a1;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* ==========================================================================
+   6. TELA DE LOGIN / IDENTIFICAÇÃO
+   ========================================================================== */
+#cardLogin {
+    text-align: center;
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 30px 25px;
+    border-radius: 20px;
+    background: white;
+}
+
+#cardLogin h1 {
+    color: #0d47a1;
+    margin-bottom: 10px;
+}
+
+#cardLogin h2 {
+    color: #08306b;
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+}
+
+#cardLogin select {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 12px;
+}
+
+#cardLogin input {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+#cardLogin button {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+}
+
+/* ==========================================================================
+   7. STATUS DO JOGO (TRAVA)
+   ========================================================================== */
+.status-card {
+    background: white;
+    border-radius: 12px;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: bold;
+    border-left: 5px solid;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    font-size: 14px;
+}
+
+/* ==========================================================================
+   8. BOTÕES DA ADMIN
+   ========================================================================== */
+#btnTravar, #btnDestravar {
+    margin: 5px;
+    padding: 10px 20px;
+}
+
+#btnTravar {
+    background: #c62828;
+}
+
+#btnTravar:hover {
+    background: #b71c1c;
+}
+
+#btnDestravar {
+    background: #2e7d32;
+}
+
+#btnDestravar:hover {
+    background: #1b5e20;
+}
+
+/* ==========================================================================
+   9. ESTILOS PARA JOGOS BLOQUEADOS (RESULTADO JÁ LANÇADO)
+   ========================================================================== */
+.jogo input:disabled {
+    background: #ffcccc !important;
+    border-color: #c62828 !important;
+    color: #666;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.jogo .mensagem-bloqueio {
+    display: block;
+    font-size: 11px;
+    color: #c62828;
+    margin-top: 5px;
+    font-weight: normal;
+}
+
+/* ==========================================================================
+   10. RESPONSIVIDADE (MOBILE) - COMPLETO
+   ========================================================================== */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+    
+    h2 {
+        font-size: 1.2rem;
+    }
+    
+    /* Menu responsivo */
+    nav {
+        padding: 10px;
+        gap: 3px;
+    }
+    
+    nav a {
+        margin: 0 5px;
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+    
+    /* Abas responsivas */
+    .abas-container {
+        gap: 5px;
+        padding: 8px;
+        border-radius: 20px;
+        overflow-x: auto;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .btn-aba {
+        padding: 6px 12px;
+        font-size: 11px;
+        white-space: nowrap;
+    }
+    
+    /* Jogos - empilhar verticalmente */
+    .jogo {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+        padding: 12px;
+    }
+    
+    .jogo span {
+        font-size: 14px;
+        width: 100%;
+    }
+    
+    .placar {
+        justify-content: center;
+        gap: 12px;
+    }
+    
+    .placar input {
+        width: 65px;
+        padding: 8px;
+        font-size: 16px;
+    }
+    
+    .placar span {
+        font-size: 20px;
+    }
+    
+    /* Card de login */
+    #cardLogin {
+        margin: 20px 15px;
+        padding: 25px 20px;
+    }
+    
+    /* Tabela responsiva */
+    table {
+        font-size: 12px;
+    }
+    
+    th, td {
+        padding: 10px 5px;
+    }
+    
+    /* Botões */
+    button {
+        padding: 10px 18px;
+        font-size: 13px;
+    }
+    
+    .btnSalvar {
+        width: 90%;
+        font-size: 14px;
+    }
+    
+    /* Status card */
+    .status-card {
+        font-size: 12px;
+        padding: 10px;
+    }
+    
+    /* Admin buttons */
+    #btnTravar, #btnDestravar {
+        width: 100%;
+        margin: 5px 0;
+    }
+}
+
+/* ==========================================================================
+   11. TELAS MUITO PEQUENAS (até 480px)
+   ========================================================================== */
+@media (max-width: 480px) {
+    .container {
+        padding: 8px;
+    }
+    
+    h1 {
+        font-size: 1.3rem;
+    }
+    
+    .card {
+        padding: 15px;
+    }
+    
+    .rodada {
+        padding: 12px;
+    }
+    
+    .jogo {
+        padding: 10px;
+    }
+    
+    .jogo span {
+        font-size: 13px;
+    }
+    
+    .placar input {
+        width: 55px;
+        padding: 6px;
+        font-size: 14px;
+    }
+    
+    .btn-aba {
+        padding: 5px 10px;
+        font-size: 10px;
+    }
+    
+    nav a {
+        padding: 5px 8px;
+        font-size: 11px;
+        margin: 0 3px;
+    }
+    
+    th, td {
+        padding: 8px 4px;
+        font-size: 11px;
+    }
+}
+
+/* ==========================================================================
+   12. LANDSCAPE (ROTAÇÃO DO CELULAR)
+   ========================================================================== */
+@media (max-width: 768px) and (orientation: landscape) {
+    .jogo {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+    }
+    
+    .jogo span {
+        text-align: left;
+        font-size: 12px;
+    }
+    
+    .placar {
+        justify-content: flex-end;
+    }
+    
+    .abas-container {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        justify-content: flex-start;
+    }
+}
+
+/* ==========================================================================
+   13. ANIMAÇÕES E MELHORIAS
+   ========================================================================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.rodada, .card {
+    animation: fadeIn 0.3s ease;
+}
+
+/* Loading spinner */
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: white;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #08306b;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ffd700;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #ffed4a;
+}
+
+/* ==========================================================================
+   14. CORES PARA PALPITES CORRETOS E ERRADOS
+   ========================================================================== */
+.palpite-correto {
+    background: #c8e6c9 !important;
+    border-left: 5px solid #2e7d32 !important;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+
+.palpite-errado {
+    background: #ffcdd2 !important;
+    border-left: 5px solid #c62828 !important;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+
+.palpite-correto input {
+    background: #a5d6a7 !important;
+    border-color: #2e7d32 !important;
+}
+
+.palpite-errado input {
+    background: #ef9a9a !important;
+    border-color: #c62828 !important;
+}
+
+/* Resultado oficial na página de palpites */
+.resultado-oficial {
+    font-size: 11px;
+    color: #666;
+    margin-top: 3px;
+}
+
+/* Animação para acertos */
+@keyframes acertoFlash {
+    0% { background: #c8e6c9; }
+    50% { background: #81c784; }
+    100% { background: #c8e6c9; }
+}
+
+.palpite-correto {
+    animation: acertoFlash 1s ease;
+}
