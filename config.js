@@ -15,7 +15,6 @@ const database = firebase.database();
 
 // Usuários padrão
 const usuariosPadrao = {
-    "Victor": "123456",
     "Paulo": "123456",
     "Levi": "123456",
     "Isaac": "123456",
