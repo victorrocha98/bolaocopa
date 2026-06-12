@@ -19,20 +19,19 @@ const fasesGrupos = [
     {
         nome: "13/06/2026 - Dia 3",
         jogos: [
-            
-            { id: 6, casa: "Haiti", fora: "Escocia" },
-            { id: 7, casa: "Brasil", fora: "Marrocos" },
-            { id: 8, casa: "Catar", fora: "Suíça" }
+            { id: 5, casa: "Haiti", fora: "Escócia" },
+            { id: 6, casa: "Brasil", fora: "Marrocos" },
+            { id: 7, casa: "Catar", fora: "Suíça" }
         ]
     },
     {
         nome: "14/06/2026 - Dia 4",
         jogos: [
-            { id: 9, casa: "Austrália", fora: "Turquia" }
-            { id: 10, casa: "Costa do Marfim", fora: "Equador" },
-            { id: 11, casa: "Alemanha", fora: "Curaçau" },
-            { id: 12, casa: "Holanda", fora: "Japão" },
-            { id: 13, casa: "Suécia", fora: "Tunísia" }
+            { id: 8, casa: "Austrália", fora: "Turquia" },
+            { id: 9, casa: "Costa do Marfim", fora: "Equador" },
+            { id: 10, casa: "Alemanha", fora: "Curaçau" },
+            { id: 11, casa: "Holanda", fora: "Japão" },
+            { id: 12, casa: "Suécia", fora: "Tunísia" }
         ]
     },
     {
@@ -49,13 +48,13 @@ const fasesGrupos = [
         jogos: [
             { id: 17, casa: "França", fora: "Senegal" },
             { id: 18, casa: "Iraque", fora: "Noruega" },
-            { id: 19, casa: "Argentina", fora: "Argélia" },
+            { id: 19, casa: "Argentina", fora: "Argélia" }
         ]
     },
     {
         nome: "17/06/2026 - Dia 7",
         jogos: [
-            { id: 20, casa: "Áustria", fora: "Jordânia" }
+            { id: 20, casa: "Áustria", fora: "Jordânia" },
             { id: 21, casa: "Gana", fora: "Panamá" },
             { id: 22, casa: "Inglaterra", fora: "Croácia" },
             { id: 23, casa: "Portugal", fora: "RD Congo" },
@@ -85,13 +84,13 @@ const fasesGrupos = [
             { id: 32, casa: "Turquia", fora: "Paraguai" },
             { id: 33, casa: "Alemanha", fora: "Costa do Marfim" },
             { id: 34, casa: "Equador", fora: "Curaçau" },
-            { id: 35, casa: "Holanda", fora: "Suécia" },
+            { id: 35, casa: "Holanda", fora: "Suécia" }
         ]
     },
     {
         nome: "21/06/2026 - Dia 11",
         jogos: [
-            { id: 36, casa: "Tunísia", fora: "Japão" }
+            { id: 36, casa: "Tunísia", fora: "Japão" },
             { id: 37, casa: "Uruguai", fora: "Cabo Verde" },
             { id: 38, casa: "Espanha", fora: "Arábia Saudita" },
             { id: 39, casa: "Bélgica", fora: "Irã" },
@@ -103,13 +102,13 @@ const fasesGrupos = [
         jogos: [
             { id: 41, casa: "Noruega", fora: "Senegal" },
             { id: 42, casa: "França", fora: "Iraque" },
-            { id: 43, casa: "Argentina", fora: "Áustria" },
+            { id: 43, casa: "Argentina", fora: "Áustria" }
         ]
     },
     {
         nome: "23/06/2026 - Dia 13",
         jogos: [
-            { id: 44, casa: "Jordânia", fora: "Argélia" }
+            { id: 44, casa: "Jordânia", fora: "Argélia" },
             { id: 45, casa: "Inglaterra", fora: "Gana" },
             { id: 46, casa: "Panamá", fora: "Croácia" },
             { id: 47, casa: "Portugal", fora: "Uzbequistão" },
@@ -143,21 +142,21 @@ const fasesGrupos = [
         jogos: [
             { id: 61, casa: "Noruega", fora: "França" },
             { id: 62, casa: "Senegal", fora: "Iraque" },
-            { id: 64, casa: "Cabo Verde", fora: "Arábia Saudita" },
-            { id: 65, casa: "Uruguai", fora: "Espanha" }
+            { id: 63, casa: "Cabo Verde", fora: "Arábia Saudita" },
+            { id: 64, casa: "Uruguai", fora: "Espanha" }
         ]
     },
     {
         nome: "27/06/2026 - Dia 17",
         jogos: [
-            { id: 66, casa: "Egito", fora: "Irã" },
-            { id: 67, casa: "Panamá", fora: "Inglaterra" },
-            { id: 68, casa: "Croácia", fora: "Gana" },
-            { id: 69, casa: "Argélia", fora: "Áustria" },
-            { id: 70, casa: "Jordânia", fora: "Argentina" },
-            { id: 71, casa: "Colômbia", fora: "Portugal" },
-            { id: 72, casa: "RD Congo", fora: "Uzbequistão" }
-            { id: 73, casa: "Nova Zelândia", fora: "Bélgica" },
+            { id: 65, casa: "Egito", fora: "Irã" },
+            { id: 66, casa: "Panamá", fora: "Inglaterra" },
+            { id: 67, casa: "Croácia", fora: "Gana" },
+            { id: 68, casa: "Argélia", fora: "Áustria" },
+            { id: 69, casa: "Jordânia", fora: "Argentina" },
+            { id: 70, casa: "Colômbia", fora: "Portugal" },
+            { id: 71, casa: "RD Congo", fora: "Uzbequistão" },
+            { id: 72, casa: "Nova Zelândia", fora: "Bélgica" }
         ]
     }
 ];
