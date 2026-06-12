@@ -66,10 +66,14 @@ function carregarUsuarios() {
         let html = '<div style="display: flex; flex-direction: column; gap: 10px;">';
         
         usuariosArray.forEach(nome => {
+            const userData = usuarios[nome];
             html += `
-            <div style="display: flex; justify-content: space-between; align-items: center; background: #f5f5f5; padding: 10px; border-radius: 8px;">
-                <span><strong>${nome}</strong></span>
-                <button onclick="excluirUsuario('${nome}')" style="background: #c62828; padding: 5px 10px;">🗑️ Excluir</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #f5f5f5; padding: 10px; border-radius: 8px; flex-wrap: wrap; gap: 8px;">
+                <span><strong>${nome}</strong> (senha: ${userData.senha})</span>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="editarUsuario('${nome}')" style="background: #ff9800; padding: 5px 10px;">✏️ Editar</button>
+                    <button onclick="excluirUsuario('${nome}')" style="background: #c62828; padding: 5px 10px;">🗑️ Excluir</button>
+                </div>
             </div>
             `;
         });
@@ -116,6 +120,56 @@ function excluirUsuario(nome) {
             })
             .catch(err => alert("Erro: " + err));
     }
+}
+
+function editarUsuario(nomeAntigo) {
+    database.ref(`usuarios/${nomeAntigo}`).once('value', snapshot => {
+        const userData = snapshot.val();
+        if (!userData) return;
+        
+        const novoNome = prompt("Digite o NOVO nome do usuário:", nomeAntigo);
+        if (!novoNome || novoNome === nomeAntigo) return;
+        
+        const novaSenha = prompt("Digite a NOVA senha (ou deixe igual):", userData.senha);
+        if (!novaSenha) return;
+        
+        database.ref(`usuarios/${novoNome}`).once('value', snapshot => {
+            if (snapshot.exists()) {
+                alert("❌ Já existe um usuário com este nome!");
+                return;
+            }
+            
+            database.ref(`palpites/${nomeAntigo}`).once('value', snapshotPalpites => {
+                const palpites = snapshotPalpites.val() || {};
+                
+                const novosDados = {
+                    senha: novaSenha,
+                    podeAlterar: true,
+                    criadoEm: new Date().toISOString(),
+                    nomeAnterior: nomeAntigo
+                };
+                
+                database.ref(`usuarios/${novoNome}`).set(novosDados)
+                    .then(() => {
+                        if (Object.keys(palpites).length > 0) {
+                            database.ref(`palpites/${novoNome}`).set(palpites)
+                                .then(() => {
+                                    database.ref(`usuarios/${nomeAntigo}`).remove();
+                                    database.ref(`palpites/${nomeAntigo}`).remove();
+                                    alert(`✅ Usuário "${nomeAntigo}" renomeado para "${novoNome}"!`);
+                                    carregarUsuarios();
+                                })
+                                .catch(err => alert("Erro: " + err));
+                        } else {
+                            database.ref(`usuarios/${nomeAntigo}`).remove();
+                            alert(`✅ Usuário "${nomeAntigo}" renomeado para "${novoNome}"!`);
+                            carregarUsuarios();
+                        }
+                    })
+                    .catch(err => alert("Erro: " + err));
+            });
+        });
+    });
 }
 
 // =====================
@@ -230,7 +284,6 @@ function carregarJogos() {
             const resultado = resultados[jogo.id];
             const temResultado = resultado && resultado.casa !== "" && resultado.casa !== undefined;
             
-            // Verificar se o usuário já salvou este palpite
             const palpiteJaSalvo = palpites[jogo.id] && (palpites[jogo.id].casa !== "" && palpites[jogo.id].casa !== undefined && palpites[jogo.id].casa !== null);
             
             let statusCor = "";
@@ -283,7 +336,6 @@ function carregarJogos() {
         
         const btnSalvar = document.getElementById("btnSalvarPalpites");
         if (btnSalvar) {
-            // Verificar se todos os jogos do dia já foram salvos
             let todosSalvos = true;
             blocoRodada.jogos.forEach(jogo => {
                 if (!palpites[jogo.id] || palpites[jogo.id].casa === "" || palpites[jogo.id].casa === undefined) {
@@ -310,7 +362,6 @@ function salvarPalpites() {
     const todasFases = window.rodadas || [];
     const blocoRodada = todasFases[diaAtivoIndex];
     
-    // Verificar se o usuário já tem palpites salvos para este dia
     database.ref(`palpites/${usuario}`).once('value', snapshot => {
         const palpitesExistentes = snapshot.val() || {};
         let jaTemPalpite = false;
