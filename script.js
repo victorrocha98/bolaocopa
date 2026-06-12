@@ -185,7 +185,7 @@ function carregarStatusTrava() {
                 statusDiv.style.background = "#ffebee";
                 statusDiv.style.color = "#c62828";
             } else {
-                statusDiv.innerHTML = "🔓 PALPITES ABERTOS - Você pode alterar seus palpites!";
+                statusDiv.innerHTML = "🔓 PALPITES ABERTOS - VOCÊ NÃO PODE ALTERAR SEUS PALPITES!";
                 statusDiv.style.background = "#e8f5e9";
                 statusDiv.style.color = "#2e7d32";
             }
