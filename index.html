@@ -14,13 +14,7 @@
         <h2>Entrar no Bolão</h2>
         
         <select id="nomeParticipante">
-            <option value="">Selecione seu nome</option>
-            <option>Victor</option>
-            <option>Paulo</option>
-            <option>Levi</option>
-            <option>Isaac</option>
-            <option>Abrão</option>
-            <option>Gabriel</option>
+            <option value="">Carregando usuários...</option>
         </select>
         
         <input type="password" id="senha" placeholder="Digite sua senha" style="width: 100%; margin: 10px 0; padding: 10px; box-sizing: border-box;">
@@ -35,8 +29,24 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
 <script src="config.js"></script>
-<script src="jogos.js"></script>
 <script src="script.js"></script>
+
+<script>
+    // Carregar usuários automaticamente do Firebase
+    database.ref("usuarios").once('value', snapshot => {
+        const usuarios = snapshot.val() || {};
+        const select = document.getElementById("nomeParticipante");
+        
+        select.innerHTML = '<option value="">Selecione seu nome</option>';
+        
+        Object.keys(usuarios).forEach(nome => {
+            const option = document.createElement("option");
+            option.value = nome;
+            option.textContent = nome;
+            select.appendChild(option);
+        });
+    });
+</script>
 
 </body>
 </html>
