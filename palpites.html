@@ -9,10 +9,16 @@
 <body>
 
 <nav>
-    <a href="palpites.html">Palpites</a>
-    <a href="ranking.html">Ranking</a>
-    <a href="admin.html">Admin</a>
-    <a href="#" onclick="logout()" style="float: right;">🚪 Sair</a>
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div style="display: flex; gap: 15px;">
+            <a href="palpites.html">Palpites</a>
+            <a href="ranking.html">Ranking</a>
+            <a href="admin.html">Admin</a>
+        </div>
+        <div id="userInfo" style="color: white; font-weight: bold; background: #1565c0; padding: 5px 15px; border-radius: 20px;">
+            👤 Carregando...
+        </div>
+    </div>
 </nav>
 
 <div class="container">
@@ -37,6 +43,14 @@
 <script src="config.js"></script>
 <script src="jogos.js"></script>
 <script src="script.js"></script>
+
+<script>
+    // Mostrar nome do usuário no topo
+    const usuarioLogado = localStorage.getItem("usuarioLogado");
+    if (usuarioLogado) {
+        document.getElementById("userInfo").innerHTML = `👤 ${usuarioLogado}`;
+    }
+</script>
 
 </body>
 </html>

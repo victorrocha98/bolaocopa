@@ -106,6 +106,7 @@ function adicionarUsuario() {
             alert(`✅ Usuário ${nome} adicionado!`);
             document.getElementById("novoUsuario").value = "";
             carregarUsuarios();
+            carregarUsuariosSelect();
         }).catch(err => alert("Erro: " + err));
     });
 }
@@ -117,6 +118,7 @@ function excluirUsuario(nome) {
             .then(() => {
                 alert(`✅ Usuário ${nome} excluído!`);
                 carregarUsuarios();
+                carregarUsuariosSelect();
             })
             .catch(err => alert("Erro: " + err));
     }
@@ -158,12 +160,14 @@ function editarUsuario(nomeAntigo) {
                                     database.ref(`palpites/${nomeAntigo}`).remove();
                                     alert(`✅ Usuário "${nomeAntigo}" renomeado para "${novoNome}"!`);
                                     carregarUsuarios();
+                                    carregarUsuariosSelect();
                                 })
                                 .catch(err => alert("Erro: " + err));
                         } else {
                             database.ref(`usuarios/${nomeAntigo}`).remove();
                             alert(`✅ Usuário "${nomeAntigo}" renomeado para "${novoNome}"!`);
                             carregarUsuarios();
+                            carregarUsuariosSelect();
                         }
                     })
                     .catch(err => alert("Erro: " + err));
@@ -185,7 +189,7 @@ function carregarStatusTrava() {
                 statusDiv.style.background = "#ffebee";
                 statusDiv.style.color = "#c62828";
             } else {
-                statusDiv.innerHTML = "🔓 PALPITES ABERTOS - VOCÊ NÃO PODE ALTERAR SEUS PALPITES!";
+                statusDiv.innerHTML = "🔓 PALPITES ABERTOS - Você pode alterar seus palpites!";
                 statusDiv.style.background = "#e8f5e9";
                 statusDiv.style.color = "#2e7d32";
             }
@@ -250,7 +254,7 @@ function mudarDia(index) {
 }
 
 // =====================
-// CARREGAR JOGOS (PALPITES) - COM NOVA PONTUAÇÃO
+// CARREGAR JOGOS (PALPITES)
 // =====================
 function carregarJogos() {
     const area = document.getElementById("areaJogos");
@@ -300,7 +304,6 @@ function carregarJogos() {
                     statusCor = "palpite-correto";
                     mensagemStatus = "✅ PLACAR EXATO! +3 pontos 🎯";
                 } else {
-                    // Verificar se acertou o vencedor/empate (tendência)
                     let palpiteTendencia, resultadoTendencia;
                     
                     if (palpiteCasa > palpiteFora) palpiteTendencia = "C";
@@ -569,6 +572,141 @@ function destravarPalpites() {
 }
 
 // =====================
+// ADMIN - VISUALIZAR E EDITAR PALPITES DOS USUÁRIOS
+// =====================
+
+function carregarUsuariosSelect() {
+    const selectUsuario = document.getElementById("selecionarUsuarioPalpite");
+    if (!selectUsuario) return;
+    
+    database.ref("usuarios").once('value', snapshot => {
+        const usuarios = snapshot.val() || {};
+        selectUsuario.innerHTML = '<option value="">Selecione um usuário</option>';
+        
+        Object.keys(usuarios).forEach(nome => {
+            const option = document.createElement("option");
+            option.value = nome;
+            option.textContent = nome;
+            selectUsuario.appendChild(option);
+        });
+    });
+}
+
+function carregarFasesSelect() {
+    const selectFase = document.getElementById("selecionarFasePalpite");
+    if (!selectFase) return;
+    
+    const todasFases = window.rodadas || [];
+    selectFase.innerHTML = '<option value="">Selecione a fase</option>';
+    
+    todasFases.forEach((fase, index) => {
+        const option = document.createElement("option");
+        option.value = index;
+        option.textContent = fase.nome;
+        selectFase.appendChild(option);
+    });
+}
+
+function carregarPalpitesUsuario() {
+    const usuario = document.getElementById("selecionarUsuarioPalpite").value;
+    const faseIndex = document.getElementById("selecionarFasePalpite").value;
+    const container = document.getElementById("palpitesUsuarioContainer");
+    
+    if (!usuario || faseIndex === "") {
+        alert("Selecione um usuário e uma fase!");
+        return;
+    }
+    
+    const todasFases = window.rodadas || [];
+    const fase = todasFases[parseInt(faseIndex)];
+    
+    if (!fase || !fase.jogos) {
+        container.innerHTML = "<p style='color:red;'>Erro ao carregar fase.</p>";
+        return;
+    }
+    
+    container.innerHTML = "<div class='loading'>🔄 Carregando palpites...</div>";
+    
+    Promise.all([
+        database.ref(`palpites/${usuario}`).once('value'),
+        database.ref("resultados").once('value')
+    ]).then(([palpitesSnap, resultadosSnap]) => {
+        const palpites = palpitesSnap.val() || {};
+        const resultados = resultadosSnap.val() || {};
+        
+        let html = `<h4>📝 Palpites de <strong style="color:#0d47a1;">${usuario}</strong> - ${fase.nome}</h4>`;
+        html += `<div style="max-height: 300px; overflow-y: auto;">`;
+        
+        fase.jogos.forEach(jogo => {
+            const palpite = palpites[jogo.id] || { casa: "", fora: "" };
+            const resultado = resultados[jogo.id];
+            const temResultado = resultado && resultado.casa !== "";
+            
+            html += `
+            <div class="jogo" style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 8px;">
+                <div style="flex:1;">
+                    <strong>${jogo.casa}</strong> x <strong>${jogo.fora}</strong>
+                    ${temResultado ? `<div style="font-size:11px; color:#2e7d32;">Resultado oficial: ${resultado.casa} - ${resultado.fora}</div>` : '<div style="font-size:11px; color:#ff9800;">Aguardando resultado</div>'}
+                </div>
+                <div class="placar">
+                    <input type="number" id="edit_casa_${jogo.id}" value="${palpite.casa}" min="0" placeholder="?" style="width:60px;">
+                    <span>x</span>
+                    <input type="number" id="edit_fora_${jogo.id}" value="${palpite.fora}" min="0" placeholder="?" style="width:60px;">
+                </div>
+            </div>
+            `;
+        });
+        
+        html += `</div>`;
+        html += `<input type="hidden" id="edit_usuario" value="${usuario}">`;
+        html += `<input type="hidden" id="edit_faseIndex" value="${faseIndex}">`;
+        
+        container.innerHTML = html;
+    }).catch(err => {
+        container.innerHTML = `<p style='color:red;'>Erro: ${err.message}</p>`;
+    });
+}
+
+function salvarAlteracaoPalpite() {
+    const usuario = document.getElementById("edit_usuario")?.value;
+    const faseIndex = document.getElementById("edit_faseIndex")?.value;
+    
+    if (!usuario) {
+        alert("Selecione um usuário primeiro!");
+        return;
+    }
+    
+    const todasFases = window.rodadas || [];
+    const fase = todasFases[parseInt(faseIndex)];
+    
+    if (!fase) return;
+    
+    const palpitesAtualizados = {};
+    
+    fase.jogos.forEach(jogo => {
+        const casaInput = document.getElementById(`edit_casa_${jogo.id}`);
+        const foraInput = document.getElementById(`edit_fora_${jogo.id}`);
+        
+        if (casaInput && foraInput) {
+            palpitesAtualizados[jogo.id] = {
+                casa: casaInput.value || "",
+                fora: foraInput.value || ""
+            };
+        }
+    });
+    
+    database.ref(`palpites/${usuario}`).update(palpitesAtualizados)
+        .then(() => {
+            alert(`✅ Palpites de ${usuario} atualizados com sucesso!`);
+            carregarPalpitesUsuario();
+            if (document.getElementById("ranking")) {
+                mostrarRanking();
+            }
+        })
+        .catch(err => alert("Erro ao salvar: " + err));
+}
+
+// =====================
 // CALCULAR PONTOS (NOVA PONTUAÇÃO)
 // =====================
 function calcularPontos(pc, pf, rc, rf) {
@@ -579,12 +717,10 @@ function calcularPontos(pc, pf, rc, rf) {
     
     if (isNaN(pc) || isNaN(pf) || isNaN(rc) || isNaN(rf)) return 0;
     
-    // Acertou o placar exato? 3 pontos
     if (pc === rc && pf === rf) {
         return 3;
     }
     
-    // Verificar se acertou o vencedor ou empate (tendência) - 1 ponto
     let palpiteTendencia, resultadoTendencia;
     
     if (pc > pf) {
@@ -617,7 +753,7 @@ function mostrarRanking() {
     const tabela = document.getElementById("ranking");
     if (!tabela) return;
     
-    tabela.innerHTML = "<tr><td colspan='3'>Carregando...</td></tr>";
+    tabela.innerHTML = "<td><td colspan='3'>Carregando...</td></tr>";
     
     database.ref("resultados").once('value', snapshotResultados => {
         const resultados = snapshotResultados.val() || {};
@@ -709,6 +845,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (document.getElementById("adminJogos")) {
             montarAdmin();
             carregarUsuarios();
+            carregarUsuariosSelect();
+            carregarFasesSelect();
         }
         
         if (document.getElementById("ranking")) {
