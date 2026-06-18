@@ -710,7 +710,7 @@ function salvarAlteracaoPalpite() {
 }
 
 // =====================
-// CLASSIFICAÇÃO DOS GRUPOS - CORRETA
+// CLASSIFICAÇÃO DOS GRUPOS - CORRIGIDA
 // =====================
 
 // Mapeamento dos times por grupo (CORRETO)
@@ -731,7 +731,14 @@ const gruposTimes = {
 
 function limparNomeTime(nome) {
     if (!nome) return '';
-    return nome.replace(/[\u{1F1E0}-\u{1F1FF}]/gu, '').trim();
+    // Remove emojis, bandeiras e espaços extras
+    let nomeLimpo = nome.replace(/[\u{1F1E0}-\u{1F1FF}]/gu, '').trim();
+    // Remove bandeiras da Inglaterra e Escócia (que são diferentes)
+    nomeLimpo = nomeLimpo.replace(/[\u{1F3F4}\u{E0067}\u{E0062}\u{E0077}\u{E006C}\u{E0073}\u{E007F}]/gu, '').trim();
+    nomeLimpo = nomeLimpo.replace(/[\u{1F3F4}\u{E0067}\u{E0062}\u{E0073}\u{E0063}\u{E0074}\u{E007F}]/gu, '').trim();
+    // Remove qualquer outro caractere especial
+    nomeLimpo = nomeLimpo.replace(/[^a-zA-ZÀ-ÿ\s]/g, '').trim();
+    return nomeLimpo;
 }
 
 function carregarClassificacaoGrupos(grupoSelecionado) {
@@ -746,8 +753,11 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
     }
     window.grupoSelecionado = grupoSelecionado;
     
+    console.log("Carregando classificação do grupo", grupoSelecionado);
+    
     database.ref("resultados").once('value', snapshot => {
         const resultados = snapshot.val() || {};
+        console.log("Resultados carregados:", Object.keys(resultados).length);
         
         let grupoEncontrado = null;
         let timesDoGrupo = [];
@@ -766,6 +776,8 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
         
         const classificacao = calcularClassificacaoGrupo(timesDoGrupo, resultados);
         
+        console.log("Classificação calculada:", classificacao);
+        
         let html = `
         <div style="background: white; border-radius: 8px; padding: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
             <div style="text-align: center; font-weight: bold; font-size: 12px; color: #0d47a1; margin-bottom: 5px;">${grupoEncontrado}</div>
@@ -775,6 +787,9 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
                         <th style="padding: 2px 3px; text-align: left; font-size: 9px;">Time</th>
                         <th style="padding: 2px 3px; text-align: center; font-size: 9px;">P</th>
                         <th style="padding: 2px 3px; text-align: center; font-size: 9px;">J</th>
+                        <th style="padding: 2px 3px; text-align: center; font-size: 9px;">V</th>
+                        <th style="padding: 2px 3px; text-align: center; font-size: 9px;">E</th>
+                        <th style="padding: 2px 3px; text-align: center; font-size: 9px;">D</th>
                         <th style="padding: 2px 3px; text-align: center; font-size: 9px;">SG</th>
                     </tr>
                 </thead>
@@ -782,19 +797,36 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
         `;
         
         classificacao.forEach((item, index) => {
-            const corFundo = index < 2 ? 'background: #e8f5e9;' : '';
-            const destaque = index < 2 ? 'font-weight: bold;' : '';
-            // Pegar apenas a primeira palavra do time (ou abreviação)
+            const temJogos = item.jogos > 0;
+            const corFundo = index < 2 && temJogos ? 'background: #e8f5e9;' : '';
+            const destaque = index < 2 && temJogos ? 'font-weight: bold;' : '';
+            
+            const jogosDisplay = temJogos ? item.jogos : '-';
+            const pontosDisplay = temJogos ? item.pontos : '-';
+            const vitoriasDisplay = temJogos ? item.vitorias : '-';
+            const empatesDisplay = temJogos ? item.empates : '-';
+            const derrotasDisplay = temJogos ? item.derrotas : '-';
+            const saldoDisplay = temJogos ? item.saldoGols : '-';
+            
             let nomeTime = item.time;
-            if (nomeTime.length > 12) {
-                nomeTime = nomeTime.substring(0, 10) + '...';
+            if (nomeTime.length > 14) {
+                nomeTime = nomeTime.substring(0, 12) + '...';
             }
+            
+            let classificacaoIcon = '';
+            if (index < 2 && temJogos) {
+                classificacaoIcon = ' 🟢';
+            }
+            
             html += `
                 <tr style="${corFundo}">
-                    <td style="padding: 2px 3px; text-align: left; ${destaque}; font-size: 10px;">${index+1} ${nomeTime}</td>
-                    <td style="padding: 2px 3px; text-align: center; ${destaque}; font-size: 10px;">${item.pontos}</td>
-                    <td style="padding: 2px 3px; text-align: center; font-size: 10px;">${item.jogos}</td>
-                    <td style="padding: 2px 3px; text-align: center; ${destaque}; font-size: 10px;">${item.saldoGols}</td>
+                    <td style="padding: 2px 3px; text-align: left; ${destaque}; font-size: 10px;">${index+1} ${nomeTime}${classificacaoIcon}</td>
+                    <td style="padding: 2px 3px; text-align: center; ${destaque}; font-size: 10px;">${pontosDisplay}</td>
+                    <td style="padding: 2px 3px; text-align: center; font-size: 10px;">${jogosDisplay}</td>
+                    <td style="padding: 2px 3px; text-align: center; font-size: 10px;">${vitoriasDisplay}</td>
+                    <td style="padding: 2px 3px; text-align: center; font-size: 10px;">${empatesDisplay}</td>
+                    <td style="padding: 2px 3px; text-align: center; font-size: 10px;">${derrotasDisplay}</td>
+                    <td style="padding: 2px 3px; text-align: center; ${destaque}; font-size: 10px;">${saldoDisplay}</td>
                 </tr>
             `;
         });
@@ -809,13 +841,15 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
         `;
         
         container.innerHTML = html;
+        console.log("Classificação do grupo", grupoSelecionado, "carregada!");
     }).catch(err => {
-        console.error("Erro:", err);
-        container.innerHTML = "<p style='text-align:center;color:red;font-size:11px;'>❌ Erro</p>";
+        console.error("Erro ao carregar classificação:", err);
+        container.innerHTML = "<p style='text-align:center;color:red;font-size:11px;'>❌ Erro ao carregar</p>";
     });
 }
 
 function calcularClassificacaoGrupo(times, resultados) {
+    // Inicializar estatísticas
     const stats = {};
     times.forEach(time => {
         stats[time] = {
@@ -832,37 +866,55 @@ function calcularClassificacaoGrupo(times, resultados) {
     
     const todasFases = window.rodadas || [];
     
+    console.log("Times do grupo:", times);
+    console.log("Resultados disponíveis:", Object.keys(resultados));
+    
+    // Processar APENAS os resultados que existem
     Object.keys(resultados).forEach(id => {
         const resultado = resultados[id];
         if (!resultado || resultado.casa === undefined || resultado.fora === undefined) return;
         
+        // Encontrar o jogo correspondente no jogos.js
         let timeCasa = null;
         let timeFora = null;
+        let jogoEncontrado = null;
         
         for (let fase of todasFases) {
             for (let jogo of fase.jogos) {
                 if (jogo.id == id) {
                     timeCasa = limparNomeTime(jogo.casa);
                     timeFora = limparNomeTime(jogo.fora);
+                    jogoEncontrado = jogo;
                     break;
                 }
             }
             if (timeCasa) break;
         }
         
-        if (!timeCasa || !timeFora) return;
+        if (!timeCasa || !timeFora) {
+            console.log("Jogo não encontrado para ID:", id);
+            return;
+        }
         
-        const casaNoGrupo = times.some(t => limparNomeTime(t) === timeCasa);
-        const foraNoGrupo = times.some(t => limparNomeTime(t) === timeFora);
+        console.log(`Processando jogo ${id}: ${timeCasa} x ${timeFora} = ${resultado.casa}-${resultado.fora}`);
         
+        // Verificar se os times estão neste grupo (comparação case-insensitive)
+        const casaNoGrupo = times.some(t => limparNomeTime(t).toLowerCase() === timeCasa.toLowerCase());
+        const foraNoGrupo = times.some(t => limparNomeTime(t).toLowerCase() === timeFora.toLowerCase());
+        
+        console.log(`Casa no grupo: ${casaNoGrupo}, Fora no grupo: ${foraNoGrupo}`);
+        
+        // Se nenhum dos dois está no grupo, ignorar
         if (!casaNoGrupo && !foraNoGrupo) return;
         
         const golsCasa = parseInt(resultado.casa);
         const golsFora = parseInt(resultado.fora);
         
+        // Atualizar estatísticas para o time da casa
         if (casaNoGrupo) {
-            const timeKey = times.find(t => limparNomeTime(t) === timeCasa);
+            const timeKey = times.find(t => limparNomeTime(t).toLowerCase() === timeCasa.toLowerCase());
             if (timeKey) {
+                console.log(`Atualizando ${timeKey}: ${golsCasa}-${golsFora}`);
                 stats[timeKey].jogos++;
                 stats[timeKey].golsPro += golsCasa;
                 stats[timeKey].golsContra += golsFora;
@@ -879,9 +931,11 @@ function calcularClassificacaoGrupo(times, resultados) {
             }
         }
         
+        // Atualizar estatísticas para o time visitante
         if (foraNoGrupo) {
-            const timeKey = times.find(t => limparNomeTime(t) === timeFora);
+            const timeKey = times.find(t => limparNomeTime(t).toLowerCase() === timeFora.toLowerCase());
             if (timeKey) {
+                console.log(`Atualizando ${timeKey}: ${golsFora}-${golsCasa}`);
                 stats[timeKey].jogos++;
                 stats[timeKey].golsPro += golsFora;
                 stats[timeKey].golsContra += golsCasa;
@@ -899,10 +953,14 @@ function calcularClassificacaoGrupo(times, resultados) {
         }
     });
     
+    // Calcular saldo de gols
     Object.keys(stats).forEach(time => {
         stats[time].saldoGols = stats[time].golsPro - stats[time].golsContra;
     });
     
+    console.log("Estatísticas finais:", stats);
+    
+    // Converter para array
     const classificacao = Object.keys(stats).map(time => ({
         time: time,
         pontos: stats[time].pontos,
@@ -915,9 +973,19 @@ function calcularClassificacaoGrupo(times, resultados) {
         saldoGols: stats[time].saldoGols
     }));
     
+    // Ordenar: times com mais jogos primeiro, depois por pontos
     classificacao.sort((a, b) => {
+        // Primeiro, times que já jogaram aparecem primeiro
+        if (a.jogos === 0 && b.jogos > 0) return 1;
+        if (a.jogos > 0 && b.jogos === 0) return -1;
+        
+        // Depois ordenar por pontos
         if (b.pontos !== a.pontos) return b.pontos - a.pontos;
+        
+        // Depois por saldo de gols
         if (b.saldoGols !== a.saldoGols) return b.saldoGols - a.saldoGols;
+        
+        // Depois por gols pró
         return b.golsPro - a.golsPro;
     });
     
