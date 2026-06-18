@@ -189,7 +189,7 @@ function carregarStatusTrava() {
                 statusDiv.style.background = "#ffebee";
                 statusDiv.style.color = "#c62828";
             } else {
-                statusDiv.innerHTML = "🔓 PALPITES ABERTOS - VOCÊ NÃO PODE ALTERAR SEUS PALPITES!";
+                statusDiv.innerHTML = "🔓 PALPITES ABERTOS - Você pode alterar seus palpites!";
                 statusDiv.style.background = "#e8f5e9";
                 statusDiv.style.color = "#2e7d32";
             }
@@ -211,6 +211,9 @@ function carregarResultadosOficiais() {
         }
         if (document.getElementById("ranking")) {
             mostrarRanking();
+        }
+        if (document.getElementById("classificacaoGrupos")) {
+            carregarClassificacaoGrupos(window.grupoSelecionado || 'A');
         }
     });
 }
@@ -707,7 +710,222 @@ function salvarAlteracaoPalpite() {
 }
 
 // =====================
-// CALCULAR PONTOS (NOVA PONTUAÇÃO)
+// CLASSIFICAÇÃO DOS GRUPOS - CORRETA
+// =====================
+
+// Mapeamento dos times por grupo (CORRETO)
+const gruposTimes = {
+    "Grupo A": ["México", "África do Sul", "Coreia do Sul", "República Tcheca"],
+    "Grupo B": ["Canadá", "Bósnia e Herzegovina", "Catar", "Suíça"],
+    "Grupo C": ["Brasil", "Marrocos", "Haiti", "Escócia"],
+    "Grupo D": ["Estados Unidos", "Paraguai", "Austrália", "Turquia"],
+    "Grupo E": ["Alemanha", "Curaçau", "Costa do Marfim", "Equador"],
+    "Grupo F": ["Holanda", "Japão", "Suécia", "Tunísia"],
+    "Grupo G": ["Bélgica", "Egito", "Irã", "Nova Zelândia"],
+    "Grupo H": ["Espanha", "Cabo Verde", "Arábia Saudita", "Uruguai"],
+    "Grupo I": ["França", "Senegal", "Iraque", "Noruega"],
+    "Grupo J": ["Argentina", "Argélia", "Áustria", "Jordânia"],
+    "Grupo K": ["Portugal", "RD Congo", "Uzbequistão", "Colômbia"],
+    "Grupo L": ["Inglaterra", "Croácia", "Gana", "Panamá"]
+};
+
+function limparNomeTime(nome) {
+    if (!nome) return '';
+    return nome.replace(/[\u{1F1E0}-\u{1F1FF}]/gu, '').trim();
+}
+
+function carregarClassificacaoGrupos(grupoSelecionado) {
+    const container = document.getElementById("classificacaoGrupos");
+    if (!container) {
+        console.log("Container classificacaoGrupos não encontrado");
+        return;
+    }
+    
+    if (!grupoSelecionado) {
+        grupoSelecionado = window.grupoSelecionado || 'A';
+    }
+    window.grupoSelecionado = grupoSelecionado;
+    
+    database.ref("resultados").once('value', snapshot => {
+        const resultados = snapshot.val() || {};
+        
+        let grupoEncontrado = null;
+        let timesDoGrupo = [];
+        
+        Object.keys(gruposTimes).forEach(grupo => {
+            if (grupo.includes(grupoSelecionado)) {
+                grupoEncontrado = grupo;
+                timesDoGrupo = gruposTimes[grupo];
+            }
+        });
+        
+        if (!grupoEncontrado || timesDoGrupo.length === 0) {
+            container.innerHTML = "<p style='text-align:center;color:red;font-size:11px;'>Grupo não encontrado</p>";
+            return;
+        }
+        
+        const classificacao = calcularClassificacaoGrupo(timesDoGrupo, resultados);
+        
+        let html = `
+        <div style="background: white; border-radius: 8px; padding: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
+            <div style="text-align: center; font-weight: bold; font-size: 12px; color: #0d47a1; margin-bottom: 5px;">${grupoEncontrado}</div>
+            <table style="width: 100%; font-size: 10px; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #1565c0; color: white;">
+                        <th style="padding: 2px 3px; text-align: left; font-size: 9px;">Time</th>
+                        <th style="padding: 2px 3px; text-align: center; font-size: 9px;">P</th>
+                        <th style="padding: 2px 3px; text-align: center; font-size: 9px;">J</th>
+                        <th style="padding: 2px 3px; text-align: center; font-size: 9px;">SG</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        classificacao.forEach((item, index) => {
+            const corFundo = index < 2 ? 'background: #e8f5e9;' : '';
+            const destaque = index < 2 ? 'font-weight: bold;' : '';
+            // Pegar apenas a primeira palavra do time (ou abreviação)
+            let nomeTime = item.time;
+            if (nomeTime.length > 12) {
+                nomeTime = nomeTime.substring(0, 10) + '...';
+            }
+            html += `
+                <tr style="${corFundo}">
+                    <td style="padding: 2px 3px; text-align: left; ${destaque}; font-size: 10px;">${index+1} ${nomeTime}</td>
+                    <td style="padding: 2px 3px; text-align: center; ${destaque}; font-size: 10px;">${item.pontos}</td>
+                    <td style="padding: 2px 3px; text-align: center; font-size: 10px;">${item.jogos}</td>
+                    <td style="padding: 2px 3px; text-align: center; ${destaque}; font-size: 10px;">${item.saldoGols}</td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                </tbody>
+            </table>
+            <div style="font-size: 8px; color: #999; text-align: center; margin-top: 4px;">
+                🟢 Classificados | P=Pontos | J=Jogos | SG=Saldo
+            </div>
+        </div>
+        `;
+        
+        container.innerHTML = html;
+    }).catch(err => {
+        console.error("Erro:", err);
+        container.innerHTML = "<p style='text-align:center;color:red;font-size:11px;'>❌ Erro</p>";
+    });
+}
+
+function calcularClassificacaoGrupo(times, resultados) {
+    const stats = {};
+    times.forEach(time => {
+        stats[time] = {
+            pontos: 0,
+            jogos: 0,
+            vitorias: 0,
+            empates: 0,
+            derrotas: 0,
+            golsPro: 0,
+            golsContra: 0,
+            saldoGols: 0
+        };
+    });
+    
+    const todasFases = window.rodadas || [];
+    
+    Object.keys(resultados).forEach(id => {
+        const resultado = resultados[id];
+        if (!resultado || resultado.casa === undefined || resultado.fora === undefined) return;
+        
+        let timeCasa = null;
+        let timeFora = null;
+        
+        for (let fase of todasFases) {
+            for (let jogo of fase.jogos) {
+                if (jogo.id == id) {
+                    timeCasa = limparNomeTime(jogo.casa);
+                    timeFora = limparNomeTime(jogo.fora);
+                    break;
+                }
+            }
+            if (timeCasa) break;
+        }
+        
+        if (!timeCasa || !timeFora) return;
+        
+        const casaNoGrupo = times.some(t => limparNomeTime(t) === timeCasa);
+        const foraNoGrupo = times.some(t => limparNomeTime(t) === timeFora);
+        
+        if (!casaNoGrupo && !foraNoGrupo) return;
+        
+        const golsCasa = parseInt(resultado.casa);
+        const golsFora = parseInt(resultado.fora);
+        
+        if (casaNoGrupo) {
+            const timeKey = times.find(t => limparNomeTime(t) === timeCasa);
+            if (timeKey) {
+                stats[timeKey].jogos++;
+                stats[timeKey].golsPro += golsCasa;
+                stats[timeKey].golsContra += golsFora;
+                
+                if (golsCasa > golsFora) {
+                    stats[timeKey].vitorias++;
+                    stats[timeKey].pontos += 3;
+                } else if (golsCasa === golsFora) {
+                    stats[timeKey].empates++;
+                    stats[timeKey].pontos += 1;
+                } else {
+                    stats[timeKey].derrotas++;
+                }
+            }
+        }
+        
+        if (foraNoGrupo) {
+            const timeKey = times.find(t => limparNomeTime(t) === timeFora);
+            if (timeKey) {
+                stats[timeKey].jogos++;
+                stats[timeKey].golsPro += golsFora;
+                stats[timeKey].golsContra += golsCasa;
+                
+                if (golsFora > golsCasa) {
+                    stats[timeKey].vitorias++;
+                    stats[timeKey].pontos += 3;
+                } else if (golsFora === golsCasa) {
+                    stats[timeKey].empates++;
+                    stats[timeKey].pontos += 1;
+                } else {
+                    stats[timeKey].derrotas++;
+                }
+            }
+        }
+    });
+    
+    Object.keys(stats).forEach(time => {
+        stats[time].saldoGols = stats[time].golsPro - stats[time].golsContra;
+    });
+    
+    const classificacao = Object.keys(stats).map(time => ({
+        time: time,
+        pontos: stats[time].pontos,
+        jogos: stats[time].jogos,
+        vitorias: stats[time].vitorias,
+        empates: stats[time].empates,
+        derrotas: stats[time].derrotas,
+        golsPro: stats[time].golsPro,
+        golsContra: stats[time].golsContra,
+        saldoGols: stats[time].saldoGols
+    }));
+    
+    classificacao.sort((a, b) => {
+        if (b.pontos !== a.pontos) return b.pontos - a.pontos;
+        if (b.saldoGols !== a.saldoGols) return b.saldoGols - a.saldoGols;
+        return b.golsPro - a.golsPro;
+    });
+    
+    return classificacao;
+}
+
+// =====================
+// CALCULAR PONTOS
 // =====================
 function calcularPontos(pc, pf, rc, rf) {
     pc = parseInt(pc);
@@ -753,7 +971,7 @@ function mostrarRanking() {
     const tabela = document.getElementById("ranking");
     if (!tabela) return;
     
-    tabela.innerHTML = "<td><td colspan='3'>Carregando...</td></tr>";
+    tabela.innerHTML = "<tr><td colspan='3'>Carregando...</td></tr>";
     
     database.ref("resultados").once('value', snapshotResultados => {
         const resultados = snapshotResultados.val() || {};
@@ -831,6 +1049,20 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Fases carregadas:", window.rodadas);
     
     carregarResultadosOficiais();
+    
+    // Carregar classificação se estiver na página de palpites
+    if (document.getElementById("classificacaoGrupos")) {
+        console.log("Carregando classificação dos grupos...");
+        setTimeout(function() {
+            carregarClassificacaoGrupos('A');
+        }, 500);
+        
+        // Atualizar quando resultados mudarem
+        database.ref("resultados").on('value', function() {
+            console.log("Resultados atualizados, recarregando classificação...");
+            carregarClassificacaoGrupos(window.grupoSelecionado || 'A');
+        });
+    }
     
     if (!window.location.pathname.includes("index.html")) {
         const usuarioLogado = verificarLogin();

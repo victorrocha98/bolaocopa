@@ -30,13 +30,47 @@
     
     <div id="statusJogo" class="status-card"></div>
 
-    <div id="filtroDias" class="abas-container"></div>
+    <!-- CONTEÚDO PRINCIPAL: CLASSIFICAÇÃO + JOGOS LADO A LADO -->
+    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
 
-    <div id="areaJogos"></div>
+        <!-- COLUDA ESQUERDA: CLASSIFICAÇÃO -->
+        <div style="flex: 0 0 280px; min-width: 250px;">
+            <div class="card" style="padding: 12px; background: #f5f5f5; position: sticky; top: 80px;">
+                <h4 style="text-align: center; color: #0d47a1; margin-bottom: 8px; font-size: 14px;">📊 Classificação</h4>
+                
+                <!-- Abas dos grupos (menores) -->
+                <div style="display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; margin-bottom: 10px;">
+                    <button class="btn-grupo-mini ativo" onclick="selecionarGrupo('A')">A</button>
+                    <button class="btn-grupo-mini" onclick="selecionarGrupo('B')">B</button>
+                    <button class="btn-grupo-mini" onclick="selecionarGrupo('C')">C</button>
+                    <button class="btn-grupo-mini" onclick="selecionarGrupo('D')">D</button>
+                    <button class="btn-grupo-mini" onclick="selecionarGrupo('E')">E</button>
+                    <button class="btn-grupo-mini" onclick="selecionarGrupo('F')">F</button>
+                    <button class="btn-grupo-mini" onclick="selecionarGrupo('G')">G</button>
+                    <button class="btn-grupo-mini" onclick="selecionarGrupo('H')">H</button>
+                    <button class="btn-grupo-mini" onclick="selecionarGrupo('I')">I</button>
+                    <button class="btn-grupo-mini" onclick="selecionarGrupo('J')">J</button>
+                    <button class="btn-grupo-mini" onclick="selecionarGrupo('K')">K</button>
+                    <button class="btn-grupo-mini" onclick="selecionarGrupo('L')">L</button>
+                </div>
+                
+                <!-- Card da classificação (compacto) -->
+                <div id="classificacaoGrupos">
+                    <p style="text-align: center; color: #666; font-size: 12px;">🔄 Carregando...</p>
+                </div>
+            </div>
+        </div>
 
-    <button id="btnSalvarPalpites" class="btnSalvar" onclick="salvarPalpites()" style="display: none;">
-        💾 Salvar Palpites
-    </button>
+        <!-- COLUNA DIREITA: JOGOS -->
+        <div style="flex: 1; min-width: 300px;">
+            <div id="filtroDias" class="abas-container"></div>
+            <div id="areaJogos"></div>
+            <button id="btnSalvarPalpites" class="btnSalvar" onclick="salvarPalpites()" style="display: none;">
+                💾 Salvar Palpites
+            </button>
+        </div>
+
+    </div>
 
 </div>
 
@@ -53,6 +87,36 @@
     if (usuarioLogado) {
         document.getElementById("userInfo").innerHTML = `👤 ${usuarioLogado}`;
     }
+    
+    // Variável para controlar o grupo selecionado
+    let grupoSelecionado = 'A';
+    
+    // Função para selecionar grupo
+    function selecionarGrupo(grupo) {
+        grupoSelecionado = grupo;
+        
+        // Atualizar estilo dos botões mini
+        document.querySelectorAll('.btn-grupo-mini').forEach(btn => {
+            btn.classList.remove('ativo');
+        });
+        
+        // Marcar o botão selecionado
+        document.querySelectorAll('.btn-grupo-mini').forEach(btn => {
+            if (btn.textContent === grupo) {
+                btn.classList.add('ativo');
+            }
+        });
+        
+        // Recarregar classificação
+        carregarClassificacaoGrupos(grupo);
+    }
+    
+    // Carregar classificação ao iniciar
+    setTimeout(function() {
+        if (document.getElementById("classificacaoGrupos")) {
+            carregarClassificacaoGrupos('A');
+        }
+    }, 500);
 </script>
 
 </body>

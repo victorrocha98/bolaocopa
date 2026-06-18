@@ -389,7 +389,6 @@ tr:last-child td {
 /* ==========================================================================
    9. CORES PARA PALPITES
    ========================================================================== */
-/* Placar exato (3 pontos) - VERDE */
 .palpite-correto {
     background: #c8e6c9 !important;
     border-left: 5px solid #2e7d32 !important;
@@ -402,7 +401,6 @@ tr:last-child td {
     border-color: #2e7d32 !important;
 }
 
-/* Tendência correta (1 ponto) - AZUL #9fd6ed */
 .palpite-tendencia {
     background: #9fd6ed !important;
     border-left: 5px solid #1976d2 !important;
@@ -415,7 +413,6 @@ tr:last-child td {
     border-color: #1976d2 !important;
 }
 
-/* Errou - VERMELHO */
 .palpite-errado {
     background: #ffcdd2 !important;
     border-left: 5px solid #c62828 !important;
@@ -458,7 +455,80 @@ tr:last-child td {
 }
 
 /* ==========================================================================
-   11. RESPONSIVIDADE
+   11. ABAS DOS GRUPOS
+   ========================================================================== */
+.btn-grupo {
+    background: #1565c0;
+    color: white;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.btn-grupo:hover {
+    background: #0d47a1;
+    transform: scale(1.05);
+}
+
+.btn-grupo.ativo {
+    background: white !important;
+    color: #0d47a1 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.btn-grupo.ativo:hover {
+    transform: scale(1.05);
+}
+
+/* ==========================================================================
+   12. CLASSIFICAÇÃO DOS GRUPOS - CARD ÚNICO
+   ========================================================================== */
+#classificacaoGrupos > div {
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+#classificacaoGrupos table {
+    width: 100%;
+    font-size: 12px;
+    border-collapse: collapse;
+}
+
+#classificacaoGrupos table th {
+    background: #1565c0;
+    color: white;
+    padding: 4px;
+    text-align: center;
+    font-size: 10px;
+}
+
+#classificacaoGrupos table td {
+    padding: 4px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    font-size: 11px;
+}
+
+#classificacaoGrupos table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#classificacaoGrupos table tr:first-child {
+    background: #e8f5e9 !important;
+    font-weight: bold;
+}
+
+#classificacaoGrupos table tr:nth-child(2) {
+    background: #e8f5e9 !important;
+    font-weight: bold;
+}
+
+/* ==========================================================================
+   13. RESPONSIVIDADE
    ========================================================================== */
 @media (max-width: 768px) {
     .container {
@@ -553,6 +623,25 @@ tr:last-child td {
     #btnTravar, #btnDestravar {
         width: 100%;
         margin: 5px 0;
+    }
+    
+    .btn-grupo {
+        padding: 4px 10px;
+        font-size: 10px;
+    }
+    
+    #classificacaoGrupos table {
+        font-size: 10px;
+    }
+    
+    #classificacaoGrupos table th,
+    #classificacaoGrupos table td {
+        padding: 3px;
+        font-size: 9px;
+    }
+    
+    #classificacaoGrupos > div {
+        max-width: 100%;
     }
 }
 
@@ -665,4 +754,109 @@ tr:last-child td {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #ffed4a;
+}
+/* ==========================================================================
+   14. BOTÕES MINI DOS GRUPOS
+   ========================================================================== */
+.btn-grupo-mini {
+    background: #1565c0;
+    color: white;
+    border: none;
+    padding: 3px 8px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 10px;
+    transition: all 0.3s ease;
+    min-width: 24px;
+}
+
+.btn-grupo-mini:hover {
+    background: #0d47a1;
+    transform: scale(1.05);
+}
+
+.btn-grupo-mini.ativo {
+    background: white !important;
+    color: #0d47a1 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    border: 1px solid #0d47a1;
+}
+
+.btn-grupo-mini.ativo:hover {
+    transform: scale(1.05);
+}
+
+/* ==========================================================================
+   15. CLASSIFICAÇÃO MINI (AO LADO DOS JOGOS)
+   ========================================================================== */
+#classificacaoGrupos table {
+    width: 100%;
+    font-size: 10px;
+    border-collapse: collapse;
+}
+
+#classificacaoGrupos table th {
+    background: #1565c0;
+    color: white;
+    padding: 2px 3px;
+    text-align: center;
+    font-size: 9px;
+}
+
+#classificacaoGrupos table td {
+    padding: 2px 3px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    font-size: 10px;
+}
+
+#classificacaoGrupos table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#classificacaoGrupos table tr:first-child {
+    background: #e8f5e9 !important;
+    font-weight: bold;
+}
+
+#classificacaoGrupos table tr:nth-child(2) {
+    background: #e8f5e9 !important;
+    font-weight: bold;
+}
+
+/* ==========================================================================
+   16. RESPONSIVIDADE PARA LAYOUT LADO A LADO
+   ========================================================================== */
+@media (max-width: 768px) {
+    /* Em telas menores, a classificação vai para cima dos jogos */
+    .container > div {
+        flex-direction: column !important;
+    }
+    
+    .container > div > div:first-child {
+        flex: 1 !important;
+        min-width: 100% !important;
+        position: static !important;
+    }
+    
+    .container > div > div:last-child {
+        flex: 1 !important;
+        min-width: 100% !important;
+    }
+    
+    .btn-grupo-mini {
+        padding: 3px 8px;
+        font-size: 10px;
+    }
+    
+    #classificacaoGrupos table {
+        font-size: 11px;
+    }
+    
+    #classificacaoGrupos table th,
+    #classificacaoGrupos table td {
+        padding: 4px 6px;
+        font-size: 11px;
+    }
 }

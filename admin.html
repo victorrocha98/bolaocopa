@@ -9,14 +9,17 @@
 <body>
 
 <nav>
-    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; width: 100%;">
         <div style="display: flex; gap: 15px;">
             <a href="palpites.html">Palpites</a>
             <a href="ranking.html">Ranking</a>
             <a href="admin.html" class="active">Admin</a>
         </div>
-        <div id="userInfo" style="color: white; font-weight: bold; background: #1565c0; padding: 5px 15px; border-radius: 20px;">
-            👤 Admin
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div id="userInfo" style="color: white; font-weight: bold; background: #1565c0; padding: 5px 15px; border-radius: 20px;">
+                👤 Admin
+            </div>
+            <a href="index.html" onclick="logout()" style="color: white; text-decoration: none; background: #c62828; padding: 5px 15px; border-radius: 20px; font-weight: bold;">🚪 Sair</a>
         </div>
     </div>
 </nav>
@@ -47,14 +50,14 @@
         </div>
     </div>
 
-    <!-- NOVO: Visualização de Palpites dos Usuários -->
+    <!-- Visualização de Palpites dos Usuários -->
     <div class="card">
         <h3>📊 Visualizar Palpites dos Usuários</h3>
-        <div style="margin-bottom: 15px;">
+        <div style="margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 10px;">
             <select id="selecionarUsuarioPalpite" style="width: 250px;">
                 <option value="">Selecione um usuário</option>
             </select>
-            <select id="selecionarFasePalpite" style="width: 200px; margin-left: 10px;">
+            <select id="selecionarFasePalpite" style="width: 200px;">
                 <option value="">Selecione a fase</option>
             </select>
             <button onclick="carregarPalpitesUsuario()" style="background: #1565c0;">🔍 Ver Palpites</button>
