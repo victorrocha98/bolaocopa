@@ -107,6 +107,7 @@ function adicionarUsuario() {
             document.getElementById("novoUsuario").value = "";
             carregarUsuarios();
             carregarUsuariosSelect();
+            carregarResetUsuarios();
         }).catch(err => alert("Erro: " + err));
     });
 }
@@ -119,6 +120,7 @@ function excluirUsuario(nome) {
                 alert(`✅ Usuário ${nome} excluído!`);
                 carregarUsuarios();
                 carregarUsuariosSelect();
+                carregarResetUsuarios();
             })
             .catch(err => alert("Erro: " + err));
     }
@@ -161,6 +163,7 @@ function editarUsuario(nomeAntigo) {
                                     alert(`✅ Usuário "${nomeAntigo}" renomeado para "${novoNome}"!`);
                                     carregarUsuarios();
                                     carregarUsuariosSelect();
+                                    carregarResetUsuarios();
                                 })
                                 .catch(err => alert("Erro: " + err));
                         } else {
@@ -168,6 +171,7 @@ function editarUsuario(nomeAntigo) {
                             alert(`✅ Usuário "${nomeAntigo}" renomeado para "${novoNome}"!`);
                             carregarUsuarios();
                             carregarUsuariosSelect();
+                            carregarResetUsuarios();
                         }
                     })
                     .catch(err => alert("Erro: " + err));
@@ -189,7 +193,7 @@ function carregarStatusTrava() {
                 statusDiv.style.background = "#ffebee";
                 statusDiv.style.color = "#c62828";
             } else {
-                statusDiv.innerHTML = "🔓 PALPITES ABERTOS - Você pode alterar seus palpites!";
+                statusDiv.innerHTML = "🔓 PALPITES ABERTOS - VOCÊ NÃO PODE ALTERAR OS SEUS PALPITES!";
                 statusDiv.style.background = "#e8f5e9";
                 statusDiv.style.color = "#2e7d32";
             }
@@ -710,10 +714,238 @@ function salvarAlteracaoPalpite() {
 }
 
 // =====================
-// CLASSIFICAÇÃO DOS GRUPOS - CORRIGIDA
+// ADMIN - RESETAR PALPITES
 // =====================
 
-// Mapeamento dos times por grupo (CORRETO)
+function carregarResetUsuarios() {
+    const select = document.getElementById("resetUsuarioSelect");
+    if (!select) return;
+    
+    database.ref("usuarios").once('value', snapshot => {
+        const usuarios = snapshot.val() || {};
+        select.innerHTML = '<option value="">Selecione um usuário</option>';
+        
+        Object.keys(usuarios).forEach(nome => {
+            const option = document.createElement("option");
+            option.value = nome;
+            option.textContent = nome;
+            select.appendChild(option);
+        });
+    });
+}
+
+function carregarResetFases() {
+    const select = document.getElementById("resetFaseSelect");
+    if (!select) return;
+    
+    const todasFases = window.rodadas || [];
+    select.innerHTML = '<option value="">Selecione a fase</option>';
+    
+    todasFases.forEach((fase, index) => {
+        const option = document.createElement("option");
+        option.value = index;
+        option.textContent = fase.nome;
+        select.appendChild(option);
+    });
+}
+
+function carregarResetJogos() {
+    const usuario = document.getElementById("resetUsuarioSelect").value;
+    const faseIndex = document.getElementById("resetFaseSelect").value;
+    const selectJogo = document.getElementById("resetJogoSelect");
+    const status = document.getElementById("resetStatus");
+    
+    if (!selectJogo) return;
+    
+    if (!usuario || faseIndex === "") {
+        selectJogo.innerHTML = '<option value="">Selecione o jogo</option>';
+        return;
+    }
+    
+    const todasFases = window.rodadas || [];
+    const fase = todasFases[parseInt(faseIndex)];
+    
+    if (!fase || !fase.jogos) {
+        selectJogo.innerHTML = '<option value="">Nenhum jogo</option>';
+        return;
+    }
+    
+    selectJogo.innerHTML = '<option value="">Selecione o jogo</option>';
+    
+    database.ref(`palpites/${usuario}`).once('value', snapshot => {
+        const palpites = snapshot.val() || {};
+        
+        fase.jogos.forEach(jogo => {
+            const temPalpite = palpites[jogo.id] && palpites[jogo.id].casa !== "";
+            const option = document.createElement("option");
+            option.value = jogo.id;
+            option.textContent = temPalpite ? `✅ ${jogo.casa} x ${jogo.fora}` : `⬜ ${jogo.casa} x ${jogo.fora}`;
+            selectJogo.appendChild(option);
+        });
+    });
+}
+
+function resetarPalpiteUsuario() {
+    const usuario = document.getElementById("resetUsuarioSelect").value;
+    const jogoId = document.getElementById("resetJogoSelect").value;
+    const status = document.getElementById("resetStatus");
+    
+    if (!usuario) {
+        status.innerHTML = "⚠️ Selecione um usuário!";
+        status.style.color = "#c62828";
+        return;
+    }
+    
+    if (!jogoId) {
+        status.innerHTML = "⚠️ Selecione um jogo!";
+        status.style.color = "#c62828";
+        return;
+    }
+    
+    if (!confirm(`Tem certeza que quer resetar o palpite de ${usuario} para este jogo?`)) return;
+    
+    database.ref(`palpites/${usuario}/${jogoId}`).remove()
+        .then(() => {
+            status.innerHTML = `✅ Palpite de ${usuario} resetado com sucesso!`;
+            status.style.color = "#2e7d32";
+            carregarResetJogos();
+            if (document.getElementById("areaJogos")) carregarJogos();
+        })
+        .catch(err => {
+            status.innerHTML = `❌ Erro: ${err.message}`;
+            status.style.color = "#c62828";
+        });
+}
+
+function resetarPalpitesDia() {
+    const usuario = document.getElementById("resetUsuarioSelect").value;
+    const faseIndex = document.getElementById("resetFaseSelect").value;
+    const status = document.getElementById("resetStatus");
+    
+    if (!usuario) {
+        status.innerHTML = "⚠️ Selecione um usuário!";
+        status.style.color = "#c62828";
+        return;
+    }
+    
+    if (faseIndex === "") {
+        status.innerHTML = "⚠️ Selecione uma fase/dia!";
+        status.style.color = "#c62828";
+        return;
+    }
+    
+    const todasFases = window.rodadas || [];
+    const fase = todasFases[parseInt(faseIndex)];
+    
+    if (!fase || !fase.jogos) {
+        status.innerHTML = "⚠️ Fase não encontrada!";
+        status.style.color = "#c62828";
+        return;
+    }
+    
+    if (!confirm(`Tem certeza que quer resetar TODOS os palpites de ${usuario} para "${fase.nome}"?`)) return;
+    
+    const updates = {};
+    fase.jogos.forEach(jogo => {
+        updates[`palpites/${usuario}/${jogo.id}`] = null;
+    });
+    
+    database.ref().update(updates)
+        .then(() => {
+            status.innerHTML = `✅ Todos os palpites de ${usuario} para "${fase.nome}" foram resetados!`;
+            status.style.color = "#2e7d32";
+            carregarResetJogos();
+            if (document.getElementById("areaJogos")) carregarJogos();
+        })
+        .catch(err => {
+            status.innerHTML = `❌ Erro: ${err.message}`;
+            status.style.color = "#c62828";
+        });
+}
+
+function resetarTodosPalpitesUsuario() {
+    const usuario = document.getElementById("resetUsuarioSelect").value;
+    const status = document.getElementById("resetStatus");
+    
+    if (!usuario) {
+        status.innerHTML = "⚠️ Selecione um usuário!";
+        status.style.color = "#c62828";
+        return;
+    }
+    
+    if (!confirm(`⚠️ ATENÇÃO! Isso vai apagar TODOS os palpites de ${usuario}! Deseja continuar?`)) return;
+    if (!confirm(`🔴 TEM CERTEZA? Essa ação não pode ser desfeita!`)) return;
+    
+    database.ref(`palpites/${usuario}`).remove()
+        .then(() => {
+            status.innerHTML = `✅ Todos os palpites de ${usuario} foram removidos!`;
+            status.style.color = "#2e7d32";
+            carregarResetJogos();
+            if (document.getElementById("areaJogos")) carregarJogos();
+        })
+        .catch(err => {
+            status.innerHTML = `❌ Erro: ${err.message}`;
+            status.style.color = "#c62828";
+        });
+}
+
+function resetarPalpitesTodosUsuariosDia() {
+    const faseIndex = document.getElementById("resetFaseSelect").value;
+    const status = document.getElementById("resetStatus");
+    
+    if (faseIndex === "") {
+        status.innerHTML = "⚠️ Selecione uma fase/dia!";
+        status.style.color = "#c62828";
+        return;
+    }
+    
+    const todasFases = window.rodadas || [];
+    const fase = todasFases[parseInt(faseIndex)];
+    
+    if (!fase || !fase.jogos) {
+        status.innerHTML = "⚠️ Fase não encontrada!";
+        status.style.color = "#c62828";
+        return;
+    }
+    
+    if (!confirm(`⚠️ ATENÇÃO! Isso vai resetar os palpites de TODOS os usuários para "${fase.nome}"! Deseja continuar?`)) return;
+    if (!confirm(`🔴 TEM CERTEZA? Essa ação afeta todos os participantes!`)) return;
+    
+    database.ref("usuarios").once('value', snapshot => {
+        const usuarios = snapshot.val() || {};
+        const usuariosArray = Object.keys(usuarios);
+        
+        if (usuariosArray.length === 0) {
+            status.innerHTML = "⚠️ Nenhum usuário cadastrado!";
+            status.style.color = "#c62828";
+            return;
+        }
+        
+        const updates = {};
+        usuariosArray.forEach(nome => {
+            fase.jogos.forEach(jogo => {
+                updates[`palpites/${nome}/${jogo.id}`] = null;
+            });
+        });
+        
+        database.ref().update(updates)
+            .then(() => {
+                status.innerHTML = `✅ Palpites de TODOS os usuários para "${fase.nome}" foram resetados!`;
+                status.style.color = "#2e7d32";
+                carregarResetJogos();
+                if (document.getElementById("areaJogos")) carregarJogos();
+            })
+            .catch(err => {
+                status.innerHTML = `❌ Erro: ${err.message}`;
+                status.style.color = "#c62828";
+            });
+    });
+}
+
+// =====================
+// CLASSIFICAÇÃO DOS GRUPOS
+// =====================
+
 const gruposTimes = {
     "Grupo A": ["México", "África do Sul", "Coreia do Sul", "República Tcheca"],
     "Grupo B": ["Canadá", "Bósnia e Herzegovina", "Catar", "Suíça"],
@@ -731,33 +963,24 @@ const gruposTimes = {
 
 function limparNomeTime(nome) {
     if (!nome) return '';
-    // Remove emojis, bandeiras e espaços extras
     let nomeLimpo = nome.replace(/[\u{1F1E0}-\u{1F1FF}]/gu, '').trim();
-    // Remove bandeiras da Inglaterra e Escócia (que são diferentes)
     nomeLimpo = nomeLimpo.replace(/[\u{1F3F4}\u{E0067}\u{E0062}\u{E0077}\u{E006C}\u{E0073}\u{E007F}]/gu, '').trim();
     nomeLimpo = nomeLimpo.replace(/[\u{1F3F4}\u{E0067}\u{E0062}\u{E0073}\u{E0063}\u{E0074}\u{E007F}]/gu, '').trim();
-    // Remove qualquer outro caractere especial
     nomeLimpo = nomeLimpo.replace(/[^a-zA-ZÀ-ÿ\s]/g, '').trim();
     return nomeLimpo;
 }
 
 function carregarClassificacaoGrupos(grupoSelecionado) {
     const container = document.getElementById("classificacaoGrupos");
-    if (!container) {
-        console.log("Container classificacaoGrupos não encontrado");
-        return;
-    }
+    if (!container) return;
     
     if (!grupoSelecionado) {
         grupoSelecionado = window.grupoSelecionado || 'A';
     }
     window.grupoSelecionado = grupoSelecionado;
     
-    console.log("Carregando classificação do grupo", grupoSelecionado);
-    
     database.ref("resultados").once('value', snapshot => {
         const resultados = snapshot.val() || {};
-        console.log("Resultados carregados:", Object.keys(resultados).length);
         
         let grupoEncontrado = null;
         let timesDoGrupo = [];
@@ -775,8 +998,6 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
         }
         
         const classificacao = calcularClassificacaoGrupo(timesDoGrupo, resultados);
-        
-        console.log("Classificação calculada:", classificacao);
         
         let html = `
         <div style="background: white; border-radius: 8px; padding: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
@@ -841,15 +1062,13 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
         `;
         
         container.innerHTML = html;
-        console.log("Classificação do grupo", grupoSelecionado, "carregada!");
     }).catch(err => {
-        console.error("Erro ao carregar classificação:", err);
+        console.error("Erro:", err);
         container.innerHTML = "<p style='text-align:center;color:red;font-size:11px;'>❌ Erro ao carregar</p>";
     });
 }
 
 function calcularClassificacaoGrupo(times, resultados) {
-    // Inicializar estatísticas
     const stats = {};
     times.forEach(time => {
         stats[time] = {
@@ -866,55 +1085,37 @@ function calcularClassificacaoGrupo(times, resultados) {
     
     const todasFases = window.rodadas || [];
     
-    console.log("Times do grupo:", times);
-    console.log("Resultados disponíveis:", Object.keys(resultados));
-    
-    // Processar APENAS os resultados que existem
     Object.keys(resultados).forEach(id => {
         const resultado = resultados[id];
         if (!resultado || resultado.casa === undefined || resultado.fora === undefined) return;
         
-        // Encontrar o jogo correspondente no jogos.js
         let timeCasa = null;
         let timeFora = null;
-        let jogoEncontrado = null;
         
         for (let fase of todasFases) {
             for (let jogo of fase.jogos) {
                 if (jogo.id == id) {
                     timeCasa = limparNomeTime(jogo.casa);
                     timeFora = limparNomeTime(jogo.fora);
-                    jogoEncontrado = jogo;
                     break;
                 }
             }
             if (timeCasa) break;
         }
         
-        if (!timeCasa || !timeFora) {
-            console.log("Jogo não encontrado para ID:", id);
-            return;
-        }
+        if (!timeCasa || !timeFora) return;
         
-        console.log(`Processando jogo ${id}: ${timeCasa} x ${timeFora} = ${resultado.casa}-${resultado.fora}`);
-        
-        // Verificar se os times estão neste grupo (comparação case-insensitive)
         const casaNoGrupo = times.some(t => limparNomeTime(t).toLowerCase() === timeCasa.toLowerCase());
         const foraNoGrupo = times.some(t => limparNomeTime(t).toLowerCase() === timeFora.toLowerCase());
         
-        console.log(`Casa no grupo: ${casaNoGrupo}, Fora no grupo: ${foraNoGrupo}`);
-        
-        // Se nenhum dos dois está no grupo, ignorar
         if (!casaNoGrupo && !foraNoGrupo) return;
         
         const golsCasa = parseInt(resultado.casa);
         const golsFora = parseInt(resultado.fora);
         
-        // Atualizar estatísticas para o time da casa
         if (casaNoGrupo) {
             const timeKey = times.find(t => limparNomeTime(t).toLowerCase() === timeCasa.toLowerCase());
             if (timeKey) {
-                console.log(`Atualizando ${timeKey}: ${golsCasa}-${golsFora}`);
                 stats[timeKey].jogos++;
                 stats[timeKey].golsPro += golsCasa;
                 stats[timeKey].golsContra += golsFora;
@@ -931,11 +1132,9 @@ function calcularClassificacaoGrupo(times, resultados) {
             }
         }
         
-        // Atualizar estatísticas para o time visitante
         if (foraNoGrupo) {
             const timeKey = times.find(t => limparNomeTime(t).toLowerCase() === timeFora.toLowerCase());
             if (timeKey) {
-                console.log(`Atualizando ${timeKey}: ${golsFora}-${golsCasa}`);
                 stats[timeKey].jogos++;
                 stats[timeKey].golsPro += golsFora;
                 stats[timeKey].golsContra += golsCasa;
@@ -953,14 +1152,10 @@ function calcularClassificacaoGrupo(times, resultados) {
         }
     });
     
-    // Calcular saldo de gols
     Object.keys(stats).forEach(time => {
         stats[time].saldoGols = stats[time].golsPro - stats[time].golsContra;
     });
     
-    console.log("Estatísticas finais:", stats);
-    
-    // Converter para array
     const classificacao = Object.keys(stats).map(time => ({
         time: time,
         pontos: stats[time].pontos,
@@ -973,19 +1168,11 @@ function calcularClassificacaoGrupo(times, resultados) {
         saldoGols: stats[time].saldoGols
     }));
     
-    // Ordenar: times com mais jogos primeiro, depois por pontos
     classificacao.sort((a, b) => {
-        // Primeiro, times que já jogaram aparecem primeiro
         if (a.jogos === 0 && b.jogos > 0) return 1;
         if (a.jogos > 0 && b.jogos === 0) return -1;
-        
-        // Depois ordenar por pontos
         if (b.pontos !== a.pontos) return b.pontos - a.pontos;
-        
-        // Depois por saldo de gols
         if (b.saldoGols !== a.saldoGols) return b.saldoGols - a.saldoGols;
-        
-        // Depois por gols pró
         return b.golsPro - a.golsPro;
     });
     
@@ -1118,16 +1305,12 @@ document.addEventListener("DOMContentLoaded", () => {
     
     carregarResultadosOficiais();
     
-    // Carregar classificação se estiver na página de palpites
     if (document.getElementById("classificacaoGrupos")) {
-        console.log("Carregando classificação dos grupos...");
         setTimeout(function() {
             carregarClassificacaoGrupos('A');
         }, 500);
         
-        // Atualizar quando resultados mudarem
         database.ref("resultados").on('value', function() {
-            console.log("Resultados atualizados, recarregando classificação...");
             carregarClassificacaoGrupos(window.grupoSelecionado || 'A');
         });
     }
@@ -1147,6 +1330,8 @@ document.addEventListener("DOMContentLoaded", () => {
             carregarUsuarios();
             carregarUsuariosSelect();
             carregarFasesSelect();
+            carregarResetUsuarios();
+            carregarResetFases();
         }
         
         if (document.getElementById("ranking")) {

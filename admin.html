@@ -35,12 +35,47 @@
         <p id="statusTrava" style="margin-top: 10px; font-weight: bold;"></p>
     </div>
 
+    <!-- SEÇÃO: RESETAR PALPITES -->
+    <div class="card" style="background: #fff3e0; border: 2px solid #ff9800;">
+        <h3>🔄 Resetar Palpites dos Usuários</h3>
+        
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: end; margin-bottom: 15px;">
+            <div>
+                <label style="font-size: 12px; font-weight: bold;">Usuário:</label>
+                <select id="resetUsuarioSelect" style="width: 200px; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+                    <option value="">Selecione um usuário</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 12px; font-weight: bold;">Fase/Dia:</label>
+                <select id="resetFaseSelect" style="width: 200px; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+                    <option value="">Selecione a fase</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 12px; font-weight: bold;">Jogo específico:</label>
+                <select id="resetJogoSelect" style="width: 220px; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+                    <option value="">Selecione o jogo</option>
+                </select>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button onclick="resetarPalpiteUsuario()" style="background: #ff9800;">🔄 Resetar Palpite do Jogo</button>
+            <button onclick="resetarPalpitesDia()" style="background: #ff6f00;">📅 Resetar Palpites do Dia</button>
+            <button onclick="resetarTodosPalpitesUsuario()" style="background: #c62828;">⚠️ Resetar TODOS os Palpites</button>
+            <button onclick="resetarPalpitesTodosUsuariosDia()" style="background: #d32f2f;">🔥 Resetar Dia para TODOS</button>
+        </div>
+        <div id="resetStatus" style="margin-top: 15px; padding: 10px; border-radius: 8px; background: #f5f5f5; font-weight: bold;"></div>
+    </div>
+
+    <!-- SEÇÃO: GERENCIAR USUÁRIOS -->
     <div class="card">
         <h3>👥 Gerenciar Participantes</h3>
         
         <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
-            <input type="text" id="novoUsuario" placeholder="Nome do novo usuário" style="width: 200px;">
-            <input type="password" id="novaSenha" placeholder="Senha" style="width: 150px;" value="123456">
+            <input type="text" id="novoUsuario" placeholder="Nome do novo usuário" style="width: 200px; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+            <input type="password" id="novaSenha" placeholder="Senha" style="width: 150px; padding: 8px; border-radius: 6px; border: 1px solid #ccc;" value="123456">
             <button onclick="adicionarUsuario()" style="background: #2e7d32;">➕ Adicionar</button>
         </div>
         
@@ -50,14 +85,14 @@
         </div>
     </div>
 
-    <!-- Visualização de Palpites dos Usuários -->
+    <!-- SEÇÃO: VISUALIZAR PALPITES DOS USUÁRIOS -->
     <div class="card">
         <h3>📊 Visualizar Palpites dos Usuários</h3>
         <div style="margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 10px;">
-            <select id="selecionarUsuarioPalpite" style="width: 250px;">
+            <select id="selecionarUsuarioPalpite" style="width: 250px; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
                 <option value="">Selecione um usuário</option>
             </select>
-            <select id="selecionarFasePalpite" style="width: 200px;">
+            <select id="selecionarFasePalpite" style="width: 200px; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
                 <option value="">Selecione a fase</option>
             </select>
             <button onclick="carregarPalpitesUsuario()" style="background: #1565c0;">🔍 Ver Palpites</button>
@@ -68,6 +103,7 @@
         </div>
     </div>
 
+    <!-- SEÇÃO: RESULTADOS DOS JOGOS -->
     <h2 style="color: white;">📊 Resultados dos Jogos</h2>
     
     <div style="text-align: center; margin-bottom: 20px;">
@@ -89,6 +125,27 @@
 <script src="config.js"></script>
 <script src="jogos.js"></script>
 <script src="script.js"></script>
+
+<script>
+    // Carregar selects de reset
+    setTimeout(() => {
+        carregarResetUsuarios();
+        carregarResetFases();
+    }, 500);
+    
+    // Quando selecionar um usuário ou fase, carregar os jogos
+    document.addEventListener("DOMContentLoaded", function() {
+        const resetUsuario = document.getElementById("resetUsuarioSelect");
+        const resetFase = document.getElementById("resetFaseSelect");
+        
+        if (resetUsuario) {
+            resetUsuario.addEventListener("change", carregarResetJogos);
+        }
+        if (resetFase) {
+            resetFase.addEventListener("change", carregarResetJogos);
+        }
+    });
+</script>
 
 </body>
 </html>
