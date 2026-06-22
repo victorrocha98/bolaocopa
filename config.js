@@ -19,7 +19,6 @@ const usuariosPadrao = {
     "Paulo": "123456",
     "Levi": "123456",
     "Isaac": "123456",
-    "Gabriel": "123456"
 };
 
 // Inicializar usuários no banco
