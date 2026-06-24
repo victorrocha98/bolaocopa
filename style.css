@@ -921,3 +921,131 @@ tr:last-child td {
 ::-webkit-scrollbar-thumb:hover {
     background: #ffed4a;
 }
+
+/* ==========================================================================
+   21. ABAS DO RANKING
+   ========================================================================== */
+.btn-aba-ranking {
+    background: rgba(8, 48, 107, 0.8);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(5px);
+}
+
+.btn-aba-ranking:hover {
+    background: #1565c0;
+    transform: scale(1.05);
+}
+
+.btn-aba-ranking.ativo {
+    background: white;
+    color: #0d47a1;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+.btn-aba-ranking.ativo:hover {
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    .btn-aba-ranking {
+        padding: 8px 14px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .btn-aba-ranking {
+        padding: 6px 10px;
+        font-size: 10px;
+    }
+}
+
+/* ==========================================================================
+   22. CLASSIFICAÇÃO - 3º COLOCADOS
+   ========================================================================== */
+.classificado-terceiro {
+    background: #e3f2fd !important;
+    border-left: 4px solid #1565c0 !important;
+}
+
+.classificado-terceiro td:first-child {
+    color: #1565c0;
+    font-weight: bold;
+}
+
+.eliminado-terceiro {
+    background: #ffebee !important;
+    border-left: 4px solid #c62828 !important;
+}
+
+.eliminado-terceiro td:first-child {
+    color: #c62828;
+    font-weight: bold;
+    text-decoration: line-through;
+}
+/* ==========================================================================
+   CLASSIFICAÇÃO DOS GRUPOS - ADMIN
+   ========================================================================== */
+#classificacaoGruposAdmin .status-classificado {
+    background: #e8f5e9 !important;
+}
+
+#classificacaoGruposAdmin .status-eliminado {
+    background: #ffebee !important;
+}
+
+#classificacaoGruposAdmin .status-indefinido {
+    background: #f5f5f5 !important;
+}
+
+#classificacaoGruposAdmin button {
+    transition: all 0.2s ease;
+}
+
+#classificacaoGruposAdmin button:hover {
+    transform: scale(1.1);
+}
+
+/* ==========================================================================
+   CLASSIFICAÇÃO - VISUALIZAÇÃO
+   ========================================================================== */
+#classificacaoGrupos table tr {
+    transition: all 0.2s ease;
+}
+
+#classificacaoGrupos table tr:hover {
+    opacity: 0.8;
+}
+/* ==========================================================================
+   CLASSIFICAÇÃO 3º COLOCADOS
+   ========================================================================== */
+#terceirosColocados input[type="checkbox"] {
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+}
+
+#terceirosColocados label {
+    transition: all 0.2s ease;
+}
+
+#terceirosColocados label:hover {
+    transform: scale(1.05);
+}
+
+#terceirosColocados div[style*="background: #e3f2fd"] {
+    border-left: 3px solid #1565c0;
+    padding-left: 8px;
+}
+
+#terceirosColocados div[style*="background: #ffebee"] {
+    border-left: 3px solid #c62828;
+    padding-left: 8px;
+}

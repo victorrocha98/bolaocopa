@@ -1,3 +1,4 @@
+<!-- ranking.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -26,11 +27,18 @@
 
 <div class="container">
 
-    <h1>🏅 Classificação Geral</h1>
+    <h1>🏅 Classificação</h1>
     <p style="text-align: center; color: white; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px;">
         📊 Pontuação: <strong style="color: #ffd700;">1 ponto</strong> = acertar o vencedor/empate | 
         <strong style="color: #ffd700;">3 pontos</strong> = acertar o placar exato 🎯
     </p>
+
+    <!-- ABAS DE FILTRO DO RANKING -->
+    <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+        <button class="btn-aba-ranking ativo" onclick="filtrarRanking('geral')" id="btnRankingGeral">📊 Classificação Geral</button>
+        <button class="btn-aba-ranking" onclick="filtrarRanking('grupos')" id="btnRankingGrupos">🏆 Fase de Grupos</button>
+        <button class="btn-aba-ranking" onclick="filtrarRanking('mata')" id="btnRankingMata">🏆 Mata-Mata</button>
+    </div>
 
     <div class="card">
         <table>
@@ -55,6 +63,131 @@
     if (usuarioLogado) {
         document.getElementById("userInfo").innerHTML = `👤 ${usuarioLogado}`;
     }
+
+    // Variável para controlar o filtro atual
+    let filtroRankingAtual = 'geral';
+
+    function filtrarRanking(filtro) {
+        filtroRankingAtual = filtro;
+        
+        // Atualizar estilo dos botões
+        document.querySelectorAll('.btn-aba-ranking').forEach(btn => {
+            btn.classList.remove('ativo');
+        });
+        
+        if (filtro === 'geral') {
+            document.getElementById('btnRankingGeral').classList.add('ativo');
+        } else if (filtro === 'grupos') {
+            document.getElementById('btnRankingGrupos').classList.add('ativo');
+        } else if (filtro === 'mata') {
+            document.getElementById('btnRankingMata').classList.add('ativo');
+        }
+        
+        // Recarregar ranking com o filtro
+        mostrarRanking(filtro);
+    }
+
+    // Sobrescrever a função mostrarRanking para aceitar filtro
+    const mostrarRankingOriginal = window.mostrarRanking;
+    
+    window.mostrarRanking = function(filtro) {
+        const tabela = document.getElementById("ranking");
+        if (!tabela) return;
+        
+        const filtroUsar = filtro || filtroRankingAtual || 'geral';
+        
+        tabela.innerHTML = "<tr><td colspan='3'>Carregando...</td></tr>";
+        
+        // Determinar quais IDs de jogos fazem parte de cada fase
+        const todasFases = window.rodadas || [];
+        const idsGrupos = [];
+        const idsMataMata = [];
+        
+        // Os primeiros 17 dias são fase de grupos (72 jogos)
+        // Os demais são mata-mata
+        todasFases.forEach((fase, index) => {
+            if (index < 17) { // 17 dias de grupos (72 jogos)
+                fase.jogos.forEach(jogo => idsGrupos.push(jogo.id));
+            } else {
+                fase.jogos.forEach(jogo => idsMataMata.push(jogo.id));
+            }
+        });
+        
+        let idsFiltrados = null;
+        if (filtroUsar === 'grupos') {
+            idsFiltrados = idsGrupos;
+        } else if (filtroUsar === 'mata') {
+            idsFiltrados = idsMataMata;
+        }
+        // Se for 'geral', idsFiltrados = null (todos os jogos)
+        
+        database.ref("resultados").once('value', snapshotResultados => {
+            const resultados = snapshotResultados.val() || {};
+            
+            database.ref("palpites").once('value', snapshotPalpites => {
+                const palpitesTodos = snapshotPalpites.val() || {};
+                
+                database.ref("usuarios").once('value', snapshotUsuarios => {
+                    const usuarios = snapshotUsuarios.val() || {};
+                    const participantes = Object.keys(usuarios);
+                    
+                    if (participantes.length === 0) {
+                        tabela.innerHTML = "<tr><td colspan='3'>Nenhum usuário cadastrado</td></tr>";
+                        return;
+                    }
+                    
+                    const ranking = [];
+                    
+                    participantes.forEach(nome => {
+                        let pontos = 0;
+                        const palpites = palpitesTodos[nome] || {};
+                        
+                        Object.keys(resultados).forEach(id => {
+                            // Se tiver filtro, verificar se o jogo está no filtro
+                            if (idsFiltrados !== null && !idsFiltrados.includes(parseInt(id))) {
+                                return;
+                            }
+                            
+                            const resultado = resultados[id];
+                            const palpite = palpites[id];
+                            if (palpite && resultado && resultado.casa !== undefined && resultado.casa !== "") {
+                                pontos += calcularPontos(palpite.casa, palpite.fora, resultado.casa, resultado.fora);
+                            }
+                        });
+                        ranking.push({ nome, pontos });
+                    });
+                    
+                    ranking.sort((a, b) => b.pontos - a.pontos);
+                    tabela.innerHTML = "";
+                    
+                    if (ranking.length === 0 || ranking.every(item => item.pontos === 0)) {
+                        tabela.innerHTML = "<tr><td colspan='3'>Nenhum ponto registrado nesta fase</td></tr>";
+                        return;
+                    }
+                    
+                    ranking.forEach((item, index) => {
+                        let medalha = '';
+                        if (index === 0) medalha = ' 🏆';
+                        else if (index === 1) medalha = ' 🥈';
+                        else if (index === 2) medalha = ' 🥉';
+                        
+                        tabela.innerHTML += `
+                        <tr>
+                            <td>${index + 1}º${medalha}</td>
+                            <td>${item.nome}</td>
+                            <td><strong>${item.pontos} ponto${item.pontos !== 1 ? 's' : ''}</strong></td>
+                        </tr>
+                        `;
+                    });
+                });
+            });
+        });
+    };
+
+    // Inicializar com o filtro geral
+    setTimeout(() => {
+        mostrarRanking('geral');
+    }, 300);
 </script>
 
 </body>

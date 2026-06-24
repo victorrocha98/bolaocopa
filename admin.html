@@ -35,6 +35,34 @@
         <p id="statusTrava" style="margin-top: 10px; font-weight: bold;"></p>
     </div>
 
+    <!-- SEÇÃO: 3º COLOCADOS -->
+        <!-- SEÇÃO: 3º COLOCADOS -->
+    <div class="card" style="background: #e3f2fd; border: 2px solid #1565c0;">
+        <h3>📋 3º Colocados por Grupo</h3>
+        <p style="font-size: 13px; color: #666; margin-bottom: 15px;">
+            Marque os times de cada grupo:
+            <span style="color: #1565c0; font-weight: bold;">🔵 Azul</span> = 3º colocado (classificado) | 
+            <span style="color: #c62828; font-weight: bold;">🔴 Vermelho</span> = Eliminado
+            <br><strong style="color: #0d47a1;">💡 Clique em "Salvar Grupo" para salvar individualmente cada grupo</strong>
+        </p>
+        
+        <div id="terceirosColocados" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
+            <p style="grid-column: 1 / -1; text-align: center; color: #666;">🔄 Carregando...</p>
+        </div>
+        
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+            <button onclick="salvarTodosTerceirosColocados()" style="background: #1565c0;">
+                💾 Salvar Todos os Grupos
+            </button>
+            <button onclick="resetarTerceirosColocados()" style="background: #c62828;">
+                🔄 Resetar Todos
+            </button>
+            <button onclick="classificarAutomaticamenteTerceiros()" style="background: #ff9800;">
+                🤖 Classificar Automático (3º e 4º)
+            </button>
+        </div>
+        <div id="statusTerceiros" style="margin-top: 10px; font-weight: bold;"></div>
+    </div>
     <!-- SEÇÃO: RESETAR PALPITES -->
     <div class="card" style="background: #fff3e0; border: 2px solid #ff9800;">
         <h3>🔄 Resetar Palpites dos Usuários</h3>
@@ -132,6 +160,13 @@
         carregarResetUsuarios();
         carregarResetFases();
     }, 500);
+    
+    // Carregar 3º colocados
+    setTimeout(() => {
+        if (document.getElementById("terceirosColocados")) {
+            carregarTerceirosColocados();
+        }
+    }, 600);
     
     // Quando selecionar um usuário ou fase, carregar os jogos
     document.addEventListener("DOMContentLoaded", function() {

@@ -178,19 +178,46 @@ const fasesGrupos = [
 // FASES DO MATA-MATA
 // ============================================
 
+// ============================================
+// 16 AVOS DE FINAL (CONFRONTOS REAIS)
+// ============================================
+
 const dezesseisAvos = {
     nome: "🏆 16 Avos de Final",
     jogos: [
-        { id: 73, casa: "Brasil 🇧🇷", fora: "🇨🇱 Chile" },
-        { id: 74, casa: "Argentina 🇦🇷", fora: "🇺🇾 Uruguai" },
-        { id: 75, casa: "França 🇫🇷", fora: "🇩🇪 Alemanha" },
-        { id: 76, casa: "Portugal 🇵🇹", fora: "🇪🇸 Espanha" },
-        { id: 77, casa: "Inglaterra 🏴󠁧󠁢󠁥󠁮󠁧󠁿", fora: "🇳🇱 Holanda" },
-        { id: 78, casa: "Bélgica 🇧🇪", fora: "🇭🇷 Croácia" },
-        { id: 79, casa: "Itália 🇮🇹", fora: "🇸🇪 Suécia" },
-        { id: 80, casa: "Dinamarca 🇩🇰", fora: "🇨🇭 Suíça" }
+        // Domingo, 28 de junho
+        { id: 73, casa: "2º A", fora: "2º B", data: "28/06 - 16h", local: "Los Angeles" },
+        
+        // Segunda-feira, 29 de junho
+        { id: 74, casa: "1º C", fora: "2º F", data: "29/06 - 14h", local: "Houston" },
+        { id: 75, casa: "Alemanha 🇩🇪", fora: "3º (A/B/C/D/F)", data: "29/06 - 17h30", local: "Boston" },
+        { id: 76, casa: "1º F", fora: "2º C", data: "29/06 - 22h", local: "Monterrey" },
+        
+        // Terça-feira, 30 de junho
+        { id: 77, casa: "2º E", fora: "2º I", data: "30/06 - 14h", local: "Dallas" },
+        { id: 78, casa: "1º I", fora: "3º (C/D/F/G/H)", data: "30/06 - 18h", local: "Nova York/Nova Jersey" },
+        { id: 79, casa: "México 🇲🇽", fora: "3º (C/E/F/H/I)", data: "30/06 - 22h", local: "Cidade do México" },
+        
+        // Quarta-feira, 1º de julho
+        { id: 80, casa: "1º L", fora: "3º (E/H/I/J/K)", data: "01/07 - 13h", local: "Atlanta" },
+        { id: 81, casa: "1º G", fora: "3º (A/E/H/I/J)", data: "01/07 - 17h", local: "Seattle" },
+        { id: 82, casa: "Estados Unidos 🇺🇸", fora: "3º (B/E/F/I/J)", data: "01/07 - 21h", local: "Santa Clara" },
+        
+        // Quinta-feira, 2 de julho
+        { id: 83, casa: "1º H", fora: "2º J", data: "02/07 - 16h", local: "Los Angeles" },
+        { id: 84, casa: "2º K", fora: "2º L", data: "02/07 - 20h", local: "Toronto" },
+        
+        // Sexta-feira, 3 de julho
+        { id: 85, casa: "1º B", fora: "3º (E/F/G/I/J)", data: "03/07 - 00h", local: "Vancouver" },
+        { id: 86, casa: "1º D", fora: "2º G", data: "03/07 - 15h", local: "Dallas" },
+        { id: 87, casa: "1º J", fora: "2º H", data: "03/07 - 19h", local: "Miami" },
+        { id: 88, casa: "1º K", fora: "3º (D/E/I/J/L)", data: "03/07 - 22h30", local: "Kansas City" }
     ]
 };
+
+// ============================================
+// FASES DO MATA-MATA (OITAVAS EM DIANTE)
+// ============================================
 
 const oitavas = {
     nome: "🏆 Oitavas de Final",
@@ -252,3 +279,4 @@ if (typeof window !== 'undefined') {
 }
 
 console.log(`✅ ${rodadas.length} fases carregadas!`);
+console.log(`📊 ${dezesseisAvos.jogos.length} jogos nos 16 avos de final!`);
