@@ -10,18 +10,18 @@ let resultadosOficiais = {};
 // GRUPOS E TIMES
 // =====================
 const gruposTimes = {
-    "A": ["México", "África do Sul", "Coreia do Sul", "República Tcheca"],
-    "B": ["Canadá", "Bósnia e Herzegovina", "Catar", "Suíça"],
-    "C": ["Brasil", "Marrocos", "Haiti", "Escócia"],
-    "D": ["Estados Unidos", "Paraguai", "Austrália", "Turquia"],
-    "E": ["Alemanha", "Curaçau", "Costa do Marfim", "Equador"],
-    "F": ["Holanda", "Japão", "Suécia", "Tunísia"],
-    "G": ["Bélgica", "Egito", "Irã", "Nova Zelândia"],
-    "H": ["Espanha", "Cabo Verde", "Arábia Saudita", "Uruguai"],
-    "I": ["França", "Senegal", "Iraque", "Noruega"],
-    "J": ["Argentina", "Argélia", "Áustria", "Jordânia"],
-    "K": ["Portugal", "RD Congo", "Uzbequistão", "Colômbia"],
-    "L": ["Inglaterra", "Croácia", "Gana", "Panamá"]
+    "A": ['<span class="fi fi-mx"></span> México', '<span class="fi fi-za"></span> África do Sul', '<span class="fi fi-kr"></span> Coreia do Sul', '<span class="fi fi-cz"></span> República Tcheca'],
+    "B": ['<span class="fi fi-ca"></span> Canadá', '<span class="fi fi-ba"></span> Bósnia e Herzegovina', '<span class="fi fi-qa"></span> Catar', '<span class="fi fi-ch"></span> Suíça'],
+    "C": ['<span class="fi fi-br"></span> Brasil', '<span class="fi fi-ma"></span> Marrocos', '<span class="fi fi-ht"></span> Haiti', '<span class="fi fi-gb-sct"></span> Escócia'],
+    "D": ['<span class="fi fi-us"></span> Estados Unidos', '<span class="fi fi-py"></span> Paraguai', '<span class="fi fi-au"></span> Austrália', '<span class="fi fi-tr"></span> Turquia'],
+    "E": ['<span class="fi fi-de"></span> Alemanha', '<span class="fi fi-cw"></span> Curaçau', '<span class="fi fi-ci"></span> Costa do Marfim', '<span class="fi fi-ec"></span> Equador'],
+    "F": ['<span class="fi fi-nl"></span> Holanda', '<span class="fi fi-jp"></span> Japão', '<span class="fi fi-se"></span> Suécia', '<span class="fi fi-tn"></span> Tunísia'],
+    "G": ['<span class="fi fi-be"></span> Bélgica', '<span class="fi fi-eg"></span> Egito', '<span class="fi fi-ir"></span> Irã', '<span class="fi fi-nz"></span> Nova Zelândia'],
+    "H": ['<span class="fi fi-es"></span> Espanha', '<span class="fi fi-cv"></span> Cabo Verde', '<span class="fi fi-sa"></span> Arábia Saudita', '<span class="fi fi-uy"></span> Uruguai'],
+    "I": ['<span class="fi fi-fr"></span> França', '<span class="fi fi-sn"></span> Senegal', '<span class="fi fi-iq"></span> Iraque', '<span class="fi fi-no"></span> Noruega'],
+    "J": ['<span class="fi fi-ar"></span> Argentina', '<span class="fi fi-dz"></span> Argélia', '<span class="fi fi-at"></span> Áustria', '<span class="fi fi-jo"></span> Jordânia'],
+    "K": ['<span class="fi fi-pt"></span> Portugal', '<span class="fi fi-cd"></span> RD Congo', '<span class="fi fi-uz"></span> Uzbequistão', '<span class="fi fi-co"></span> Colômbia'],
+    "L": ['<span class="fi fi-gb-eng"></span> Inglaterra', '<span class="fi fi-hr"></span> Croácia', '<span class="fi fi-gh"></span> Gana', '<span class="fi fi-pa"></span> Panamá']
 };
 
 // =====================
@@ -490,7 +490,6 @@ function salvarPalpites() {
         });
     } else {
         // MATA-MATA: Salvar apenas os palpites preenchidos (jogo por jogo)
-        // Verificar se o usuário já tem palpites salvos para estes jogos
         database.ref(`palpites/${usuario}`).once('value', function(snapshot) {
             const palpitesExistentes = snapshot.val() || {};
             
@@ -546,6 +545,7 @@ function salvarPalpites() {
         });
     }
 }
+
 // =====================
 // ADMIN - MOSTRAR JOGOS
 // =====================
@@ -690,10 +690,6 @@ function destravarPalpites() {
 
 // =====================
 // GERENCIAR 3º COLOCADOS (ADMIN) - COM CHECKBOXES
-// =====================
-
-// =====================
-// GERENCIAR 3º COLOCADOS (ADMIN) - COM BOTÃO INDIVIDUAL POR GRUPO
 // =====================
 
 function carregarTerceirosColocados() {
@@ -936,7 +932,6 @@ function salvarTodosTerceirosColocados() {
         }
     });
     
-    // Verificar se há grupos modificados sem terceiro
     if (gruposSemTerceiro.length > 0) {
         document.getElementById("statusTerceiros").innerHTML = 
             `⚠️ Os grupos ${gruposSemTerceiro.join(', ')} foram modificados mas não têm 3º colocado! Marque 1 time como 3º em cada.`;
@@ -944,7 +939,6 @@ function salvarTodosTerceirosColocados() {
         return;
     }
     
-    // Verificar grupos com mais de 1 terceiro
     if (gruposInvalidos.length > 0) {
         document.getElementById("statusTerceiros").innerHTML = 
             `⚠️ Grupos com mais de 1 terceiro: ${gruposInvalidos.join(', ')}`;
@@ -1404,10 +1398,16 @@ function resetarPalpitesTodosUsuariosDia() {
 
 function limparNomeTime(nome) {
     if (!nome) return '';
-    let nomeLimpo = nome.replace(/[\u{1F1E0}-\u{1F1FF}]/gu, '').trim();
+    
+    // Remover tags HTML (como <span class="fi fi-xx"></span>)
+    let nomeLimpo = nome.replace(/<[^>]*>/g, '').trim();
+    
+    // Remover emojis restantes
+    nomeLimpo = nomeLimpo.replace(/[\u{1F1E0}-\u{1F1FF}]/gu, '').trim();
     nomeLimpo = nomeLimpo.replace(/[\u{1F3F4}\u{E0067}\u{E0062}\u{E0077}\u{E006C}\u{E0073}\u{E007F}]/gu, '').trim();
     nomeLimpo = nomeLimpo.replace(/[\u{1F3F4}\u{E0067}\u{E0062}\u{E0073}\u{E0063}\u{E0074}\u{E007F}]/gu, '').trim();
     nomeLimpo = nomeLimpo.replace(/[^a-zA-ZÀ-ÿ\s]/g, '').trim();
+    
     return nomeLimpo;
 }
 
@@ -1439,7 +1439,10 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
         
         const timesDoGrupo = gruposTimes[grupoSelecionado];
         const classificacao = calcularClassificacaoGrupo(timesDoGrupo, resultados);
-        const salvosGrupo = terceirosColocados[grupoSelecionado] || {};
+        const terceiroStatus = terceirosColocados[grupoSelecionado] || "";
+        
+        // Limpar o nome do terceiro colocado para comparação
+        const terceiroLimpo = terceiroStatus ? limparNomeTime(terceiroStatus) : "";
         
         let html = `
         <div style="background: white; border-radius: 8px; padding: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
@@ -1466,18 +1469,27 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
             let statusIcon = '';
             let statusText = '';
             
-            const status = salvosGrupo[item.time] || '';
+            // Limpar o nome do item para comparação
+            const itemLimpo = limparNomeTime(item.time);
             
-            if (status === 'terceiro') {
+            // Verificar se este time é o terceiro colocado
+            const isTerceiro = (terceiroLimpo && itemLimpo === terceiroLimpo);
+            // Verificar se o terceiro colocado foi marcado como ELIMINADO
+            const isEliminado = (terceiroStatus === "ELIMINADO" && index === 2);
+            
+            if (isTerceiro) {
+                // 3º colocado CLASSIFICADO - AZUL CLARO
                 corFundo = 'background: #e3f2fd;';
                 destaque = 'font-weight: bold;';
                 statusIcon = ' 🔵';
                 statusText = '3º Classificado';
-            } else if (status === 'eliminado') {
+            } else if (isEliminado) {
+                // 3º colocado ELIMINADO - VERMELHO
                 corFundo = 'background: #ffebee;';
                 statusIcon = ' ❌';
                 statusText = 'Eliminado';
             } else if (index < 2 && temJogos) {
+                // 1º e 2º colocados - VERDE
                 corFundo = 'background: #e8f5e9;';
                 destaque = 'font-weight: bold;';
                 statusIcon = ' 🟢';
@@ -1491,10 +1503,8 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
             const derrotasDisplay = temJogos ? item.derrotas : '-';
             const saldoDisplay = temJogos ? item.saldoGols : '-';
             
+            // Mostrar o nome com a bandeira (original)
             let nomeTime = item.time;
-            if (nomeTime.length > 14) {
-                nomeTime = nomeTime.substring(0, 12) + '...';
-            }
             
             let title = statusText ? ` title="${statusText}"` : '';
             
@@ -1515,7 +1525,7 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
                 </tbody>
             </table>
             <div style="font-size: 8px; color: #999; text-align: center; margin-top: 4px;">
-                🟢 1º/2º | 🔵 3º Classificado | ❌ Eliminado | P=Pontos | J=Jogos | SG=Saldo
+                🟢 1º/2º | 🔵 3º Classificado | ❌ 3º Eliminado | P=Pontos | J=Jogos | SG=Saldo
             </div>
         </div>
         `;
@@ -1532,7 +1542,10 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
 function calcularClassificacaoGrupo(times, resultados) {
     const stats = {};
     times.forEach(function(time) {
-        stats[time] = {
+        // Usar o nome limpo como chave
+        const nomeLimpo = limparNomeTime(time);
+        stats[nomeLimpo] = {
+            timeOriginal: time,
             pontos: 0,
             jogos: 0,
             vitorias: 0,
@@ -1568,11 +1581,12 @@ function calcularClassificacaoGrupo(times, resultados) {
         
         if (!timeCasa || !timeFora) return;
         
-        const casaNoGrupo = times.some(function(t) {
-            return limparNomeTime(t).toLowerCase() === timeCasa.toLowerCase();
+        // Verificar se os times estão no grupo
+        const casaNoGrupo = Object.keys(stats).some(function(t) {
+            return t.toLowerCase() === timeCasa.toLowerCase();
         });
-        const foraNoGrupo = times.some(function(t) {
-            return limparNomeTime(t).toLowerCase() === timeFora.toLowerCase();
+        const foraNoGrupo = Object.keys(stats).some(function(t) {
+            return t.toLowerCase() === timeFora.toLowerCase();
         });
         
         if (!casaNoGrupo && !foraNoGrupo) return;
@@ -1581,8 +1595,8 @@ function calcularClassificacaoGrupo(times, resultados) {
         const golsFora = parseInt(resultado.fora);
         
         if (casaNoGrupo) {
-            const timeKey = times.find(function(t) {
-                return limparNomeTime(t).toLowerCase() === timeCasa.toLowerCase();
+            const timeKey = Object.keys(stats).find(function(t) {
+                return t.toLowerCase() === timeCasa.toLowerCase();
             });
             if (timeKey) {
                 stats[timeKey].jogos++;
@@ -1602,8 +1616,8 @@ function calcularClassificacaoGrupo(times, resultados) {
         }
         
         if (foraNoGrupo) {
-            const timeKey = times.find(function(t) {
-                return limparNomeTime(t).toLowerCase() === timeFora.toLowerCase();
+            const timeKey = Object.keys(stats).find(function(t) {
+                return t.toLowerCase() === timeFora.toLowerCase();
             });
             if (timeKey) {
                 stats[timeKey].jogos++;
@@ -1623,13 +1637,15 @@ function calcularClassificacaoGrupo(times, resultados) {
         }
     });
     
+    // Calcular saldo de gols
     Object.keys(stats).forEach(function(time) {
         stats[time].saldoGols = stats[time].golsPro - stats[time].golsContra;
     });
     
+    // Converter para array e ordenar
     const classificacao = Object.keys(stats).map(function(time) {
         return {
-            time: time,
+            time: stats[time].timeOriginal,
             pontos: stats[time].pontos,
             jogos: stats[time].jogos,
             vitorias: stats[time].vitorias,

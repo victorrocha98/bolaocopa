@@ -34,7 +34,6 @@ body.login-page {
     min-height: 100vh;
 }
 
-/* Overlay escuro para melhor legibilidade do login */
 body.login-page::before {
     content: '';
     position: fixed;
@@ -779,7 +778,6 @@ tr:last-child td {
         max-width: 100%;
     }
 
-    /* Layout lado a lado fica em coluna */
     .container > div {
         flex-direction: column !important;
     }
@@ -990,8 +988,42 @@ tr:last-child td {
     font-weight: bold;
     text-decoration: line-through;
 }
+
 /* ==========================================================================
-   CLASSIFICAÇÃO DOS GRUPOS - ADMIN
+   23. BANDEIRAS FLAG-ICONS
+   ========================================================================== */
+.fi {
+    display: inline-block;
+    width: 1.2em;
+    height: 1.2em;
+    vertical-align: middle;
+    margin-right: 4px;
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.jogo .fi, .card .fi, .rodada .fi {
+    width: 1.4em;
+    height: 1.4em;
+    font-size: 1.1em;
+}
+
+/* Ajuste para bandeiras pequenas */
+.fi-xs {
+    width: 1em;
+    height: 1em;
+    font-size: 0.8em;
+}
+
+/* Ajuste para bandeiras grandes */
+.fi-lg {
+    width: 2em;
+    height: 2em;
+    font-size: 1.5em;
+}
+
+/* ==========================================================================
+   24. CLASSIFICAÇÃO DOS GRUPOS - ADMIN
    ========================================================================== */
 #classificacaoGruposAdmin .status-classificado {
     background: #e8f5e9 !important;
@@ -1014,7 +1046,7 @@ tr:last-child td {
 }
 
 /* ==========================================================================
-   CLASSIFICAÇÃO - VISUALIZAÇÃO
+   25. CLASSIFICAÇÃO - VISUALIZAÇÃO
    ========================================================================== */
 #classificacaoGrupos table tr {
     transition: all 0.2s ease;
@@ -1023,8 +1055,9 @@ tr:last-child td {
 #classificacaoGrupos table tr:hover {
     opacity: 0.8;
 }
+
 /* ==========================================================================
-   CLASSIFICAÇÃO 3º COLOCADOS
+   26. TERCEIROS COLOCADOS - CHECKBOXES
    ========================================================================== */
 #terceirosColocados input[type="checkbox"] {
     cursor: pointer;
