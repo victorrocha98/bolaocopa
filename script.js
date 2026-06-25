@@ -775,7 +775,7 @@ function destravarPalpites() {
 }
 
 // =====================
-// GERENCIAR 3º COLOCADOS (ADMIN)
+// GERENCIAR 3º COLOCADOS (ADMIN) - CORRIGIDO
 // =====================
 
 function carregarTerceirosColocados() {
@@ -842,6 +842,7 @@ function carregarTerceirosColocados() {
                 `;
             });
             
+            // Contar status do grupo
             const terceiros = Object.keys(salvosGrupo).filter(key => salvosGrupo[key] === 'terceiro');
             const eliminados = Object.keys(salvosGrupo).filter(key => salvosGrupo[key] === 'eliminado');
             
@@ -953,17 +954,22 @@ function salvarGrupoTerceiros(grupo) {
     const salvos = window.terceirosTemp[grupo] || {};
     const terceiros = Object.keys(salvos).filter(key => salvos[key] === 'terceiro');
     
-    if (terceiros.length === 0) {
-        document.getElementById("statusTerceiros").innerHTML = 
-            `⚠️ Grupo ${grupo} não tem 3º colocado! Marque 1 time como 3º.`;
-        document.getElementById("statusTerceiros").style.color = "#c62828";
-        return;
-    }
+    // REMOVIDA A OBRIGAÇÃO DE TER 1 TERCEIRO
+    // Agora pode salvar sem terceiro, só com eliminados, ou só com terceiro
     
+    // Verificar se tem mais de 1 terceiro (isso continua proibido)
     if (terceiros.length > 1) {
         document.getElementById("statusTerceiros").innerHTML = 
             `⚠️ Grupo ${grupo} tem ${terceiros.length} terceiros! Marque apenas 1.`;
         document.getElementById("statusTerceiros").style.color = "#c62828";
+        return;
+    }
+    
+    // Se não tem terceiro nem eliminado, avisar
+    if (terceiros.length === 0 && Object.keys(salvos).length === 0) {
+        document.getElementById("statusTerceiros").innerHTML = 
+            `⚠️ Grupo ${grupo} não tem nenhuma marcação!`;
+        document.getElementById("statusTerceiros").style.color = "#ff9800";
         return;
     }
     
@@ -1013,25 +1019,15 @@ function salvarTodosTerceirosColocados() {
     }
     
     let gruposInvalidos = [];
-    let gruposSemTerceiro = [];
     
     gruposComAlteracoes.forEach(function(grupo) {
         const salvos = window.terceirosTemp[grupo] || {};
         const terceiros = Object.keys(salvos).filter(key => salvos[key] === 'terceiro');
         
-        if (terceiros.length === 0) {
-            gruposSemTerceiro.push(grupo);
-        } else if (terceiros.length > 1) {
+        if (terceiros.length > 1) {
             gruposInvalidos.push(`${grupo} (${terceiros.length} terceiros)`);
         }
     });
-    
-    if (gruposSemTerceiro.length > 0) {
-        document.getElementById("statusTerceiros").innerHTML = 
-            `⚠️ Os grupos ${gruposSemTerceiro.join(', ')} foram modificados mas não têm 3º colocado! Marque 1 time como 3º em cada.`;
-        document.getElementById("statusTerceiros").style.color = "#c62828";
-        return;
-    }
     
     if (gruposInvalidos.length > 0) {
         document.getElementById("statusTerceiros").innerHTML = 
@@ -1526,15 +1522,27 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
         
         const timesDoGrupo = gruposTimes[grupoSelecionado].map(t => t.nome);
         const classificacao = calcularClassificacaoGrupo(timesDoGrupo, resultados);
-        const terceiroStatus = terceirosColocados[grupoSelecionado] || "";
+        const salvosGrupo = terceirosColocados[grupoSelecionado] || {};
         
-        console.log(`📌 Grupo ${grupoSelecionado} - 3º colocado:`, terceiroStatus);
+        console.log(`📌 Grupo ${grupoSelecionado} - Salvos:`, salvosGrupo);
         
-        // CORREÇÃO: Garantir que terceiroStatus seja string
-        const terceiroStatusStr = typeof terceiroStatus === 'object' ? JSON.stringify(terceiroStatus) : terceiroStatus;
-        const terceiroLimpo = terceiroStatusStr ? limparNomeTime(terceiroStatusStr) : "";
+        // Extrair o nome do terceiro colocado
+        let terceiroLimpo = "";
+        let eliminados = [];
+        
+        if (typeof salvosGrupo === 'object') {
+            const keys = Object.keys(salvosGrupo);
+            for (let key of keys) {
+                if (salvosGrupo[key] === 'terceiro') {
+                    terceiroLimpo = limparNomeTime(key);
+                } else if (salvosGrupo[key] === 'eliminado') {
+                    eliminados.push(limparNomeTime(key));
+                }
+            }
+        }
         
         console.log(`🔍 Terceiro limpo: "${terceiroLimpo}"`);
+        console.log(`🔍 Eliminados:`, eliminados);
         
         let html = `
         <div style="background: white; border-radius: 8px; padding: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
@@ -1563,21 +1571,28 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
             
             const itemLimpo = limparNomeTime(item.time);
             
+            // Verificar se o time é o terceiro colocado
             const isTerceiro = (terceiroLimpo && itemLimpo === terceiroLimpo);
-            const isEliminado = (terceiroStatusStr === "ELIMINADO" && index === 2);
+            // Verificar se o time está na lista de eliminados
+            const isEliminado = eliminados.some(function(elim) {
+                return elim === itemLimpo;
+            });
             
-            console.log(`🔍 Time: ${item.time} | Limpo: "${itemLimpo}" | TerceiroLimpo: "${terceiroLimpo}" | isTerceiro: ${isTerceiro}`);
+            console.log(`🔍 Time: ${item.time} | Limpo: "${itemLimpo}" | isTerceiro: ${isTerceiro} | isEliminado: ${isEliminado}`);
             
             if (isTerceiro) {
+                // 3º colocado CLASSIFICADO - AZUL CLARO
                 corFundo = 'background: #e3f2fd;';
                 destaque = 'font-weight: bold;';
                 statusIcon = ' 🔵';
                 statusText = '3º Classificado';
             } else if (isEliminado) {
+                // ELIMINADO - VERMELHO (independente da posição)
                 corFundo = 'background: #ffebee;';
                 statusIcon = ' ❌';
                 statusText = 'Eliminado';
             } else if (index < 2 && temJogos) {
+                // 1º e 2º colocados - VERDE
                 corFundo = 'background: #e8f5e9;';
                 destaque = 'font-weight: bold;';
                 statusIcon = ' 🟢';
@@ -1619,7 +1634,7 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
                 </tbody>
             </table>
             <div style="font-size: 8px; color: #999; text-align: center; margin-top: 4px;">
-                🟢 1º/2º | 🔵 3º Classificado | ❌ 3º Eliminado | P=Pontos | J=Jogos | SG=Saldo
+                🟢 1º/2º | 🔵 3º Classificado | ❌ Eliminado | P=Pontos | J=Jogos | SG=Saldo
             </div>
         </div>
         `;
