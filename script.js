@@ -7,22 +7,119 @@ let palpitesBloqueados = false;
 let resultadosOficiais = {};
 
 // =====================
-// GRUPOS E TIMES
+// GRUPOS E TIMES - COM BANDEIRAS CORRETAS PARA EXIBIÇÃO
 // =====================
 const gruposTimes = {
-    "A": ['<span class="fi fi-mx"></span> México', '<span class="fi fi-za"></span> África do Sul', '<span class="fi fi-kr"></span> Coreia do Sul', '<span class="fi fi-cz"></span> República Tcheca'],
-    "B": ['<span class="fi fi-ca"></span> Canadá', '<span class="fi fi-ba"></span> Bósnia e Herzegovina', '<span class="fi fi-qa"></span> Catar', '<span class="fi fi-ch"></span> Suíça'],
-    "C": ['<span class="fi fi-br"></span> Brasil', '<span class="fi fi-ma"></span> Marrocos', '<span class="fi fi-ht"></span> Haiti', '<span class="fi fi-gb-sct"></span> Escócia'],
-    "D": ['<span class="fi fi-us"></span> Estados Unidos', '<span class="fi fi-py"></span> Paraguai', '<span class="fi fi-au"></span> Austrália', '<span class="fi fi-tr"></span> Turquia'],
-    "E": ['<span class="fi fi-de"></span> Alemanha', '<span class="fi fi-cw"></span> Curaçau', '<span class="fi fi-ci"></span> Costa do Marfim', '<span class="fi fi-ec"></span> Equador'],
-    "F": ['<span class="fi fi-nl"></span> Holanda', '<span class="fi fi-jp"></span> Japão', '<span class="fi fi-se"></span> Suécia', '<span class="fi fi-tn"></span> Tunísia'],
-    "G": ['<span class="fi fi-be"></span> Bélgica', '<span class="fi fi-eg"></span> Egito', '<span class="fi fi-ir"></span> Irã', '<span class="fi fi-nz"></span> Nova Zelândia'],
-    "H": ['<span class="fi fi-es"></span> Espanha', '<span class="fi fi-cv"></span> Cabo Verde', '<span class="fi fi-sa"></span> Arábia Saudita', '<span class="fi fi-uy"></span> Uruguai'],
-    "I": ['<span class="fi fi-fr"></span> França', '<span class="fi fi-sn"></span> Senegal', '<span class="fi fi-iq"></span> Iraque', '<span class="fi fi-no"></span> Noruega'],
-    "J": ['<span class="fi fi-ar"></span> Argentina', '<span class="fi fi-dz"></span> Argélia', '<span class="fi fi-at"></span> Áustria', '<span class="fi fi-jo"></span> Jordânia'],
-    "K": ['<span class="fi fi-pt"></span> Portugal', '<span class="fi fi-cd"></span> RD Congo', '<span class="fi fi-uz"></span> Uzbequistão', '<span class="fi fi-co"></span> Colômbia'],
-    "L": ['<span class="fi fi-gb-eng"></span> Inglaterra', '<span class="fi fi-hr"></span> Croácia', '<span class="fi fi-gh"></span> Gana', '<span class="fi fi-pa"></span> Panamá']
+    "A": [
+        { nome: "México", bandeira: "fi fi-mx" },
+        { nome: "África do Sul", bandeira: "fi fi-za" },
+        { nome: "Coreia do Sul", bandeira: "fi fi-kr" },
+        { nome: "República Tcheca", bandeira: "fi fi-cz" }
+    ],
+    "B": [
+        { nome: "Canadá", bandeira: "fi fi-ca" },
+        { nome: "Bósnia e Herzegovina", bandeira: "fi fi-ba" },
+        { nome: "Catar", bandeira: "fi fi-qa" },
+        { nome: "Suíça", bandeira: "fi fi-ch" }
+    ],
+    "C": [
+        { nome: "Brasil", bandeira: "fi fi-br" },
+        { nome: "Marrocos", bandeira: "fi fi-ma" },
+        { nome: "Haiti", bandeira: "fi fi-ht" },
+        { nome: "Escócia", bandeira: "fi fi-gb-sct" }
+    ],
+    "D": [
+        { nome: "Estados Unidos", bandeira: "fi fi-us" },
+        { nome: "Paraguai", bandeira: "fi fi-py" },
+        { nome: "Austrália", bandeira: "fi fi-au" },
+        { nome: "Turquia", bandeira: "fi fi-tr" }
+    ],
+    "E": [
+        { nome: "Alemanha", bandeira: "fi fi-de" },
+        { nome: "Curaçau", bandeira: "fi fi-cw" },
+        { nome: "Costa do Marfim", bandeira: "fi fi-ci" },
+        { nome: "Equador", bandeira: "fi fi-ec" }
+    ],
+    "F": [
+        { nome: "Holanda", bandeira: "fi fi-nl" },
+        { nome: "Japão", bandeira: "fi fi-jp" },
+        { nome: "Suécia", bandeira: "fi fi-se" },
+        { nome: "Tunísia", bandeira: "fi fi-tn" }
+    ],
+    "G": [
+        { nome: "Bélgica", bandeira: "fi fi-be" },
+        { nome: "Egito", bandeira: "fi fi-eg" },
+        { nome: "Irã", bandeira: "fi fi-ir" },
+        { nome: "Nova Zelândia", bandeira: "fi fi-nz" }
+    ],
+    "H": [
+        { nome: "Espanha", bandeira: "fi fi-es" },
+        { nome: "Cabo Verde", bandeira: "fi fi-cv" },
+        { nome: "Arábia Saudita", bandeira: "fi fi-sa" },
+        { nome: "Uruguai", bandeira: "fi fi-uy" }
+    ],
+    "I": [
+        { nome: "França", bandeira: "fi fi-fr" },
+        { nome: "Senegal", bandeira: "fi fi-sn" },
+        { nome: "Iraque", bandeira: "fi fi-iq" },
+        { nome: "Noruega", bandeira: "fi fi-no" }
+    ],
+    "J": [
+        { nome: "Argentina", bandeira: "fi fi-ar" },
+        { nome: "Argélia", bandeira: "fi fi-dz" },
+        { nome: "Áustria", bandeira: "fi fi-at" },
+        { nome: "Jordânia", bandeira: "fi fi-jo" }
+    ],
+    "K": [
+        { nome: "Portugal", bandeira: "fi fi-pt" },
+        { nome: "RD Congo", bandeira: "fi fi-cd" },
+        { nome: "Uzbequistão", bandeira: "fi fi-uz" },
+        { nome: "Colômbia", bandeira: "fi fi-co" }
+    ],
+    "L": [
+        { nome: "Inglaterra", bandeira: "fi fi-gb-eng" },
+        { nome: "Croácia", bandeira: "fi fi-hr" },
+        { nome: "Gana", bandeira: "fi fi-gh" },
+        { nome: "Panamá", bandeira: "fi fi-pa" }
+    ]
 };
+
+// =====================
+// FUNÇÕES AUXILIARES
+// =====================
+function getNomeLimpo(time) {
+    if (typeof time === 'string') {
+        return time;
+    }
+    return time.nome;
+}
+
+function limparNomeTime(nome) {
+    if (!nome) return '';
+    
+    // Se for objeto, pegar a propriedade nome
+    if (typeof nome === 'object' && nome.nome) {
+        nome = nome.nome;
+    }
+    
+    // Se ainda for objeto, converter para string
+    if (typeof nome === 'object') {
+        nome = JSON.stringify(nome);
+    }
+    
+    // Se não for string, converter
+    if (typeof nome !== 'string') {
+        nome = String(nome);
+    }
+    
+    let nomeLimpo = nome.replace(/<[^>]*>/g, '').trim();
+    nomeLimpo = nomeLimpo.replace(/[\u{1F1E0}-\u{1F1FF}]/gu, '').trim();
+    nomeLimpo = nomeLimpo.replace(/[\u{1F3F4}\u{E0067}\u{E0062}\u{E0077}\u{E006C}\u{E0073}\u{E007F}]/gu, '').trim();
+    nomeLimpo = nomeLimpo.replace(/[\u{1F3F4}\u{E0067}\u{E0062}\u{E0073}\u{E0063}\u{E0074}\u{E007F}]/gu, '').trim();
+    nomeLimpo = nomeLimpo.replace(/[^a-zA-ZÀ-ÿ\s]/g, '').trim();
+    
+    return nomeLimpo;
+}
 
 // =====================
 // LOGIN
@@ -422,10 +519,8 @@ function salvarPalpites() {
         return;
     }
     
-    // Verificar se é fase de grupos (até o dia 17) ou mata-mata
     const isFaseGrupos = diaAtivoIndex < 17;
     
-    // Coletar palpites preenchidos
     const palpitesAtualizados = {};
     let palpitesPreenchidos = 0;
     let palpitesVazios = 0;
@@ -450,19 +545,16 @@ function salvarPalpites() {
         }
     });
     
-    // Verificar se pelo menos 1 palpite foi preenchido
     if (palpitesPreenchidos === 0) {
         alert("⚠️ Preencha pelo menos 1 palpite antes de salvar!");
         return;
     }
     
-    // Para fase de grupos: obriga a preencher todos
     if (isFaseGrupos && palpitesVazios > 0) {
         alert(`⚠️ Na fase de grupos você deve preencher TODOS os ${blocoRodada.jogos.length} jogos do dia! Faltam ${palpitesVazios} jogo(s).`);
         return;
     }
     
-    // Verificar se algum palpite já foi salvo anteriormente (apenas para fase de grupos)
     if (isFaseGrupos) {
         database.ref(`palpites/${usuario}`).once('value', snapshot => {
             const palpitesExistentes = snapshot.val() || {};
@@ -480,7 +572,6 @@ function salvarPalpites() {
                 return;
             }
             
-            // Salvar palpites
             database.ref(`palpites/${usuario}`).update(palpitesAtualizados)
                 .then(() => {
                     alert(`✅ ${palpitesPreenchidos} palpite(s) do dia salvos com sucesso!`);
@@ -489,11 +580,9 @@ function salvarPalpites() {
                 .catch(err => alert("Erro: " + err));
         });
     } else {
-        // MATA-MATA: Salvar apenas os palpites preenchidos (jogo por jogo)
         database.ref(`palpites/${usuario}`).once('value', function(snapshot) {
             const palpitesExistentes = snapshot.val() || {};
             
-            // Verificar quais jogos já foram salvos
             let jogosJaSalvos = [];
             let jogosNovos = [];
             
@@ -505,7 +594,6 @@ function salvarPalpites() {
                 }
             });
             
-            // Se algum jogo já foi salvo, perguntar se quer substituir
             if (jogosJaSalvos.length > 0) {
                 const confirmar = confirm(
                     `⚠️ Você já tem palpites salvos para ${jogosJaSalvos.length} jogo(s) desta fase.\n\n` +
@@ -514,7 +602,6 @@ function salvarPalpites() {
                 );
                 
                 if (!confirmar) {
-                    // Remover os jogos que já estavam salvos para não substituir
                     jogosJaSalvos.forEach(function(jogoId) {
                         delete palpitesAtualizados[jogoId];
                     });
@@ -527,7 +614,6 @@ function salvarPalpites() {
                 }
             }
             
-            // Salvar apenas os palpites novos (ou todos se confirmou substituir)
             if (Object.keys(palpitesAtualizados).length > 0) {
                 database.ref(`palpites/${usuario}`).update(palpitesAtualizados)
                     .then(function() {
@@ -689,7 +775,7 @@ function destravarPalpites() {
 }
 
 // =====================
-// GERENCIAR 3º COLOCADOS (ADMIN) - COM CHECKBOXES
+// GERENCIAR 3º COLOCADOS (ADMIN)
 // =====================
 
 function carregarTerceirosColocados() {
@@ -719,7 +805,9 @@ function carregarTerceirosColocados() {
             let html = `<strong style="display: block; color: #0d47a1; margin-bottom: 8px; text-align: center;">Grupo ${grupo}</strong>`;
             
             times.forEach(function(time) {
-                const status = salvosGrupo[time] || '';
+                const nomeTime = time.nome;
+                const bandeira = time.bandeira;
+                const status = salvosGrupo[nomeTime] || '';
                 
                 let checkedTerceiro = status === 'terceiro' ? 'checked' : '';
                 let checkedEliminado = status === 'eliminado' ? 'checked' : '';
@@ -731,18 +819,22 @@ function carregarTerceirosColocados() {
                     bgColor = 'background: #ffebee;';
                 }
                 
+                const nomeEscapado = nomeTime.replace(/'/g, "\\'");
+                
                 html += `
                 <div style="display: flex; align-items: center; padding: 4px 0; border-bottom: 1px solid #eee; font-size: 12px; ${bgColor}">
-                    <span style="flex: 1; font-weight: normal;">${time}</span>
+                    <span style="flex: 1; font-weight: normal;">
+                        <span class="${bandeira}"></span> ${nomeTime}
+                    </span>
                     <div style="display: flex; gap: 8px; align-items: center;">
                         <label style="display: flex; align-items: center; gap: 3px; font-size: 11px; cursor: pointer;">
-                            <input type="checkbox" id="terceiro_${grupo}_${time}" value="terceiro" ${checkedTerceiro} 
-                                   onchange="marcarTerceiro('${grupo}', '${time}', this.checked)">
+                            <input type="checkbox" id="terceiro_${grupo}_${nomeTime}" value="terceiro" ${checkedTerceiro} 
+                                   onchange="marcarTerceiro('${grupo}', '${nomeEscapado}', this.checked)">
                             🔵 3º
                         </label>
                         <label style="display: flex; align-items: center; gap: 3px; font-size: 11px; cursor: pointer;">
-                            <input type="checkbox" id="eliminado_${grupo}_${time}" value="eliminado" ${checkedEliminado}
-                                   onchange="marcarEliminado('${grupo}', '${time}', this.checked)">
+                            <input type="checkbox" id="eliminado_${grupo}_${nomeTime}" value="eliminado" ${checkedEliminado}
+                                   onchange="marcarEliminado('${grupo}', '${nomeEscapado}', this.checked)">
                             🔴 Elim
                         </label>
                     </div>
@@ -750,7 +842,6 @@ function carregarTerceirosColocados() {
                 `;
             });
             
-            // Contar status do grupo
             const terceiros = Object.keys(salvosGrupo).filter(key => salvosGrupo[key] === 'terceiro');
             const eliminados = Object.keys(salvosGrupo).filter(key => salvosGrupo[key] === 'eliminado');
             
@@ -772,7 +863,6 @@ function carregarTerceirosColocados() {
             
             html += `<div style="font-size: 10px; color: ${statusCor}; text-align: center; margin-top: 5px; font-style: italic;">${statusGrupo}</div>`;
             
-            // Botão Salvar Grupo Individual
             html += `
             <div style="text-align: center; margin-top: 8px;">
                 <button onclick="salvarGrupoTerceiros('${grupo}')" 
@@ -805,7 +895,22 @@ function marcarTerceiro(grupo, time, checked) {
         delete window.terceirosTemp[grupo][time];
     }
     
-    atualizarStatusVisual(grupo);
+    carregarTerceirosColocados();
+    
+    const statusDiv = document.getElementById("statusTerceiros");
+    if (statusDiv) {
+        const salvos = window.terceirosTemp[grupo] || {};
+        const terceiros = Object.keys(salvos).filter(key => salvos[key] === 'terceiro');
+        const eliminados = Object.keys(salvos).filter(key => salvos[key] === 'eliminado');
+        
+        let msg = `📌 Grupo ${grupo}: `;
+        if (terceiros.length > 0) msg += `🔵 ${terceiros.join(', ')} (3º) `;
+        if (eliminados.length > 0) msg += `🔴 ${eliminados.join(', ')} (Eliminados)`;
+        if (terceiros.length === 0 && eliminados.length === 0) msg += 'Nenhum marcado';
+        
+        statusDiv.innerHTML = msg;
+        statusDiv.style.color = "#1565c0";
+    }
 }
 
 function marcarEliminado(grupo, time, checked) {
@@ -820,10 +925,6 @@ function marcarEliminado(grupo, time, checked) {
         delete window.terceirosTemp[grupo][time];
     }
     
-    atualizarStatusVisual(grupo);
-}
-
-function atualizarStatusVisual(grupo) {
     carregarTerceirosColocados();
     
     const statusDiv = document.getElementById("statusTerceiros");
@@ -843,7 +944,6 @@ function atualizarStatusVisual(grupo) {
 }
 
 function salvarGrupoTerceiros(grupo) {
-    // Verificar se o grupo tem alterações
     if (!window.terceirosTemp || !window.terceirosTemp[grupo]) {
         document.getElementById("statusTerceiros").innerHTML = `⚠️ Nenhuma alteração no grupo ${grupo}!`;
         document.getElementById("statusTerceiros").style.color = "#ff9800";
@@ -853,7 +953,6 @@ function salvarGrupoTerceiros(grupo) {
     const salvos = window.terceirosTemp[grupo] || {};
     const terceiros = Object.keys(salvos).filter(key => salvos[key] === 'terceiro');
     
-    // Verificar se tem exatamente 1 terceiro colocado
     if (terceiros.length === 0) {
         document.getElementById("statusTerceiros").innerHTML = 
             `⚠️ Grupo ${grupo} não tem 3º colocado! Marque 1 time como 3º.`;
@@ -868,33 +967,30 @@ function salvarGrupoTerceiros(grupo) {
         return;
     }
     
-    // Buscar dados atuais do Firebase
     database.ref("terceirosColocados").once('value', function(snapshot) {
         const dadosAtuais = snapshot.val() || {};
         
-        // Atualizar apenas o grupo específico
         dadosAtuais[grupo] = window.terceirosTemp[grupo];
         
-        // Salvar no Firebase
         database.ref("terceirosColocados").set(dadosAtuais)
             .then(function() {
                 document.getElementById("statusTerceiros").innerHTML = `✅ Grupo ${grupo} salvo com sucesso!`;
                 document.getElementById("statusTerceiros").style.color = "#2e7d32";
                 
-                // Limpar o temp apenas para esse grupo
                 delete window.terceirosTemp[grupo];
                 
-                // Recarregar
                 carregarTerceirosColocados();
                 
-                // Atualizar classificação
-                if (document.getElementById("classificacaoGrupos")) {
-                    carregarClassificacaoGrupos(window.grupoSelecionado || 'A');
-                }
+                setTimeout(function() {
+                    if (document.getElementById("classificacaoGrupos")) {
+                        carregarClassificacaoGrupos(window.grupoSelecionado || 'A');
+                    }
+                }, 300);
             })
             .catch(function(err) {
                 document.getElementById("statusTerceiros").innerHTML = `❌ Erro ao salvar grupo ${grupo}: ${err.message}`;
                 document.getElementById("statusTerceiros").style.color = "#c62828";
+                console.error("Erro ao salvar:", err);
             });
     });
 }
@@ -906,7 +1002,6 @@ function salvarTodosTerceirosColocados() {
         return;
     }
     
-    // Pegar apenas os grupos que têm alterações
     const gruposComAlteracoes = Object.keys(window.terceirosTemp).filter(grupo => {
         return Object.keys(window.terceirosTemp[grupo]).length > 0;
     });
@@ -917,7 +1012,6 @@ function salvarTodosTerceirosColocados() {
         return;
     }
     
-    // Verificar apenas os grupos que foram modificados
     let gruposInvalidos = [];
     let gruposSemTerceiro = [];
     
@@ -946,31 +1040,33 @@ function salvarTodosTerceirosColocados() {
         return;
     }
     
-    // Buscar dados atuais do Firebase
     database.ref("terceirosColocados").once('value', function(snapshot) {
         const dadosAtuais = snapshot.val() || {};
         
-        // Atualizar apenas os grupos que foram modificados
         gruposComAlteracoes.forEach(function(grupo) {
             dadosAtuais[grupo] = window.terceirosTemp[grupo];
         });
         
-        // Salvar no Firebase
         database.ref("terceirosColocados").set(dadosAtuais)
             .then(function() {
                 document.getElementById("statusTerceiros").innerHTML = 
                     `✅ ${gruposComAlteracoes.length} grupo(s) salvos com sucesso: ${gruposComAlteracoes.join(', ')}`;
                 document.getElementById("statusTerceiros").style.color = "#2e7d32";
+                
                 window.terceirosTemp = {};
+                
                 carregarTerceirosColocados();
                 
-                if (document.getElementById("classificacaoGrupos")) {
-                    carregarClassificacaoGrupos(window.grupoSelecionado || 'A');
-                }
+                setTimeout(function() {
+                    if (document.getElementById("classificacaoGrupos")) {
+                        carregarClassificacaoGrupos(window.grupoSelecionado || 'A');
+                    }
+                }, 300);
             })
             .catch(function(err) {
                 document.getElementById("statusTerceiros").innerHTML = "❌ Erro: " + err.message;
                 document.getElementById("statusTerceiros").style.color = "#c62828";
+                console.error("Erro ao salvar:", err);
             });
     });
 }
@@ -984,9 +1080,11 @@ function resetarTerceirosColocados() {
                 window.terceirosTemp = {};
                 carregarTerceirosColocados();
                 
-                if (document.getElementById("classificacaoGrupos")) {
-                    carregarClassificacaoGrupos(window.grupoSelecionado || 'A');
-                }
+                setTimeout(function() {
+                    if (document.getElementById("classificacaoGrupos")) {
+                        carregarClassificacaoGrupos(window.grupoSelecionado || 'A');
+                    }
+                }, 300);
             })
             .catch(function(err) {
                 document.getElementById("statusTerceiros").innerHTML = "❌ Erro: " + err.message;
@@ -1003,7 +1101,8 @@ function classificarAutomaticamenteTerceiros() {
         
         Object.keys(gruposTimes).forEach(function(grupo) {
             const times = gruposTimes[grupo];
-            const classificacao = calcularClassificacaoGrupo(times, resultados);
+            const nomesTimes = times.map(t => t.nome);
+            const classificacao = calcularClassificacaoGrupo(nomesTimes, resultados);
             
             if (!window.terceirosTemp[grupo]) window.terceirosTemp[grupo] = {};
             
@@ -1396,21 +1495,6 @@ function resetarPalpitesTodosUsuariosDia() {
 // CLASSIFICAÇÃO DOS GRUPOS
 // =====================
 
-function limparNomeTime(nome) {
-    if (!nome) return '';
-    
-    // Remover tags HTML (como <span class="fi fi-xx"></span>)
-    let nomeLimpo = nome.replace(/<[^>]*>/g, '').trim();
-    
-    // Remover emojis restantes
-    nomeLimpo = nomeLimpo.replace(/[\u{1F1E0}-\u{1F1FF}]/gu, '').trim();
-    nomeLimpo = nomeLimpo.replace(/[\u{1F3F4}\u{E0067}\u{E0062}\u{E0077}\u{E006C}\u{E0073}\u{E007F}]/gu, '').trim();
-    nomeLimpo = nomeLimpo.replace(/[\u{1F3F4}\u{E0067}\u{E0062}\u{E0073}\u{E0063}\u{E0074}\u{E007F}]/gu, '').trim();
-    nomeLimpo = nomeLimpo.replace(/[^a-zA-ZÀ-ÿ\s]/g, '').trim();
-    
-    return nomeLimpo;
-}
-
 function carregarClassificacaoGrupos(grupoSelecionado) {
     const container = document.getElementById("classificacaoGrupos");
     if (!container) {
@@ -1437,12 +1521,20 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
         const resultados = resultadosSnap.val() || {};
         const terceirosColocados = terceirosSnap.val() || {};
         
-        const timesDoGrupo = gruposTimes[grupoSelecionado];
+        console.log("📊 Resultados carregados:", Object.keys(resultados).length, "jogos");
+        console.log("📋 3º colocados carregados:", terceirosColocados);
+        
+        const timesDoGrupo = gruposTimes[grupoSelecionado].map(t => t.nome);
         const classificacao = calcularClassificacaoGrupo(timesDoGrupo, resultados);
         const terceiroStatus = terceirosColocados[grupoSelecionado] || "";
         
-        // Limpar o nome do terceiro colocado para comparação
-        const terceiroLimpo = terceiroStatus ? limparNomeTime(terceiroStatus) : "";
+        console.log(`📌 Grupo ${grupoSelecionado} - 3º colocado:`, terceiroStatus);
+        
+        // CORREÇÃO: Garantir que terceiroStatus seja string
+        const terceiroStatusStr = typeof terceiroStatus === 'object' ? JSON.stringify(terceiroStatus) : terceiroStatus;
+        const terceiroLimpo = terceiroStatusStr ? limparNomeTime(terceiroStatusStr) : "";
+        
+        console.log(`🔍 Terceiro limpo: "${terceiroLimpo}"`);
         
         let html = `
         <div style="background: white; border-radius: 8px; padding: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
@@ -1469,27 +1561,23 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
             let statusIcon = '';
             let statusText = '';
             
-            // Limpar o nome do item para comparação
             const itemLimpo = limparNomeTime(item.time);
             
-            // Verificar se este time é o terceiro colocado
             const isTerceiro = (terceiroLimpo && itemLimpo === terceiroLimpo);
-            // Verificar se o terceiro colocado foi marcado como ELIMINADO
-            const isEliminado = (terceiroStatus === "ELIMINADO" && index === 2);
+            const isEliminado = (terceiroStatusStr === "ELIMINADO" && index === 2);
+            
+            console.log(`🔍 Time: ${item.time} | Limpo: "${itemLimpo}" | TerceiroLimpo: "${terceiroLimpo}" | isTerceiro: ${isTerceiro}`);
             
             if (isTerceiro) {
-                // 3º colocado CLASSIFICADO - AZUL CLARO
                 corFundo = 'background: #e3f2fd;';
                 destaque = 'font-weight: bold;';
                 statusIcon = ' 🔵';
                 statusText = '3º Classificado';
             } else if (isEliminado) {
-                // 3º colocado ELIMINADO - VERMELHO
                 corFundo = 'background: #ffebee;';
                 statusIcon = ' ❌';
                 statusText = 'Eliminado';
             } else if (index < 2 && temJogos) {
-                // 1º e 2º colocados - VERDE
                 corFundo = 'background: #e8f5e9;';
                 destaque = 'font-weight: bold;';
                 statusIcon = ' 🟢';
@@ -1503,14 +1591,20 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
             const derrotasDisplay = temJogos ? item.derrotas : '-';
             const saldoDisplay = temJogos ? item.saldoGols : '-';
             
-            // Mostrar o nome com a bandeira (original)
-            let nomeTime = item.time;
+            let nomeComBandeira = item.time;
+            for (let grupo in gruposTimes) {
+                const encontrado = gruposTimes[grupo].find(t => t.nome === item.time);
+                if (encontrado) {
+                    nomeComBandeira = `<span class="${encontrado.bandeira}"></span> ${encontrado.nome}`;
+                    break;
+                }
+            }
             
             let title = statusText ? ` title="${statusText}"` : '';
             
             html += `
                 <tr style="${corFundo}"${title}>
-                    <td style="padding: 2px 3px; text-align: left; ${destaque}; font-size: 10px;">${index+1} ${nomeTime}${statusIcon}</td>
+                    <td style="padding: 2px 3px; text-align: left; ${destaque}; font-size: 10px;">${index+1} ${nomeComBandeira}${statusIcon}</td>
                     <td style="padding: 2px 3px; text-align: center; ${destaque}; font-size: 10px;">${pontosDisplay}</td>
                     <td style="padding: 2px 3px; text-align: center; font-size: 10px;">${jogosDisplay}</td>
                     <td style="padding: 2px 3px; text-align: center; font-size: 10px;">${vitoriasDisplay}</td>
@@ -1542,10 +1636,10 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
 function calcularClassificacaoGrupo(times, resultados) {
     const stats = {};
     times.forEach(function(time) {
-        // Usar o nome limpo como chave
         const nomeLimpo = limparNomeTime(time);
+        const nomeOriginal = typeof time === 'object' && time.nome ? time.nome : time;
         stats[nomeLimpo] = {
-            timeOriginal: time,
+            timeOriginal: nomeOriginal,
             pontos: 0,
             jogos: 0,
             vitorias: 0,
@@ -1581,7 +1675,6 @@ function calcularClassificacaoGrupo(times, resultados) {
         
         if (!timeCasa || !timeFora) return;
         
-        // Verificar se os times estão no grupo
         const casaNoGrupo = Object.keys(stats).some(function(t) {
             return t.toLowerCase() === timeCasa.toLowerCase();
         });
@@ -1637,12 +1730,10 @@ function calcularClassificacaoGrupo(times, resultados) {
         }
     });
     
-    // Calcular saldo de gols
     Object.keys(stats).forEach(function(time) {
         stats[time].saldoGols = stats[time].golsPro - stats[time].golsContra;
     });
     
-    // Converter para array e ordenar
     const classificacao = Object.keys(stats).map(function(time) {
         return {
             time: stats[time].timeOriginal,
@@ -1839,6 +1930,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
         
         database.ref("terceirosColocados").on('value', function() {
+            console.log("🔄 Listener do terceirosColocados disparado!");
             carregarClassificacaoGrupos(window.grupoSelecionado || 'A');
         });
     }
