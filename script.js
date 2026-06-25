@@ -417,60 +417,135 @@ function salvarPalpites() {
     const todasFases = window.rodadas || [];
     const blocoRodada = todasFases[diaAtivoIndex];
     
-    database.ref(`palpites/${usuario}`).once('value', snapshot => {
-        const palpitesExistentes = snapshot.val() || {};
-        let jaTemPalpite = false;
+    if (!blocoRodada || !blocoRodada.jogos || blocoRodada.jogos.length === 0) {
+        alert("⚠️ Nenhum jogo nesta fase!");
+        return;
+    }
+    
+    // Verificar se é fase de grupos (até o dia 17) ou mata-mata
+    const isFaseGrupos = diaAtivoIndex < 17;
+    
+    // Coletar palpites preenchidos
+    const palpitesAtualizados = {};
+    let palpitesPreenchidos = 0;
+    let palpitesVazios = 0;
+    
+    blocoRodada.jogos.forEach(jogo => {
+        const casaInput = document.getElementById(`casa_${jogo.id}`);
+        const foraInput = document.getElementById(`fora_${jogo.id}`);
         
-        blocoRodada.jogos.forEach(jogo => {
-            if (palpitesExistentes[jogo.id] && palpitesExistentes[jogo.id].casa !== "" && palpitesExistentes[jogo.id].casa !== undefined) {
-                jaTemPalpite = true;
-            }
-        });
-        
-        if (jaTemPalpite) {
-            alert("⚠️ Você já salvou seus palpites para este dia! Não é possível alterar após salvar.");
-            carregarJogos();
-            return;
-        }
-        
-        const palpitesAtualizados = {};
-        let todosPreenchidos = true;
-        
-        blocoRodada.jogos.forEach(jogo => {
-            const casaInput = document.getElementById(`casa_${jogo.id}`);
-            const foraInput = document.getElementById(`fora_${jogo.id}`);
+        if (casaInput && foraInput && !casaInput.disabled) {
+            const casaVal = casaInput.value.trim();
+            const foraVal = foraInput.value.trim();
             
-            if (casaInput && foraInput && !casaInput.disabled) {
-                if (casaInput.value === "" || foraInput.value === "") {
-                    todosPreenchidos = false;
+            if (casaVal !== "" && foraVal !== "") {
+                palpitesAtualizados[jogo.id] = {
+                    casa: casaVal,
+                    fora: foraVal
+                };
+                palpitesPreenchidos++;
+            } else {
+                palpitesVazios++;
+            }
+        }
+    });
+    
+    // Verificar se pelo menos 1 palpite foi preenchido
+    if (palpitesPreenchidos === 0) {
+        alert("⚠️ Preencha pelo menos 1 palpite antes de salvar!");
+        return;
+    }
+    
+    // Para fase de grupos: obriga a preencher todos
+    if (isFaseGrupos && palpitesVazios > 0) {
+        alert(`⚠️ Na fase de grupos você deve preencher TODOS os ${blocoRodada.jogos.length} jogos do dia! Faltam ${palpitesVazios} jogo(s).`);
+        return;
+    }
+    
+    // Verificar se algum palpite já foi salvo anteriormente (apenas para fase de grupos)
+    if (isFaseGrupos) {
+        database.ref(`palpites/${usuario}`).once('value', snapshot => {
+            const palpitesExistentes = snapshot.val() || {};
+            let jaTemPalpite = false;
+            
+            blocoRodada.jogos.forEach(jogo => {
+                if (palpitesExistentes[jogo.id] && palpitesExistentes[jogo.id].casa !== "" && palpitesExistentes[jogo.id].casa !== undefined) {
+                    jaTemPalpite = true;
+                }
+            });
+            
+            if (jaTemPalpite) {
+                alert("⚠️ Você já salvou seus palpites para este dia! Não é possível alterar após salvar.");
+                carregarJogos();
+                return;
+            }
+            
+            // Salvar palpites
+            database.ref(`palpites/${usuario}`).update(palpitesAtualizados)
+                .then(() => {
+                    alert(`✅ ${palpitesPreenchidos} palpite(s) do dia salvos com sucesso!`);
+                    carregarJogos();
+                })
+                .catch(err => alert("Erro: " + err));
+        });
+    } else {
+        // MATA-MATA: Salvar apenas os palpites preenchidos (jogo por jogo)
+        // Verificar se o usuário já tem palpites salvos para estes jogos
+        database.ref(`palpites/${usuario}`).once('value', function(snapshot) {
+            const palpitesExistentes = snapshot.val() || {};
+            
+            // Verificar quais jogos já foram salvos
+            let jogosJaSalvos = [];
+            let jogosNovos = [];
+            
+            Object.keys(palpitesAtualizados).forEach(function(jogoId) {
+                if (palpitesExistentes[jogoId] && palpitesExistentes[jogoId].casa !== "" && palpitesExistentes[jogoId].casa !== undefined) {
+                    jogosJaSalvos.push(jogoId);
                 } else {
-                    palpitesAtualizados[jogo.id] = {
-                        casa: casaInput.value || "0",
-                        fora: foraInput.value || "0"
-                    };
+                    jogosNovos.push(jogoId);
+                }
+            });
+            
+            // Se algum jogo já foi salvo, perguntar se quer substituir
+            if (jogosJaSalvos.length > 0) {
+                const confirmar = confirm(
+                    `⚠️ Você já tem palpites salvos para ${jogosJaSalvos.length} jogo(s) desta fase.\n\n` +
+                    `Deseja SOBRESCREVER os palpites antigos pelos novos?\n` +
+                    `(Clique em OK para substituir, Cancelar para manter os antigos)`
+                );
+                
+                if (!confirmar) {
+                    // Remover os jogos que já estavam salvos para não substituir
+                    jogosJaSalvos.forEach(function(jogoId) {
+                        delete palpitesAtualizados[jogoId];
+                    });
+                    
+                    if (Object.keys(palpitesAtualizados).length === 0) {
+                        alert("ℹ️ Nenhum palpite novo para salvar. Seus palpites antigos foram mantidos.");
+                        carregarJogos();
+                        return;
+                    }
                 }
             }
-        });
-        
-        if (!todosPreenchidos) {
-            alert("⚠️ Preencha TODOS os palpites do dia antes de salvar!");
-            return;
-        }
-        
-        if (Object.keys(palpitesAtualizados).length === 0) {
-            alert("⚠️ Nenhum palpite para salvar!");
-            return;
-        }
-        
-        database.ref(`palpites/${usuario}`).update(palpitesAtualizados)
-            .then(() => {
-                alert(`✅ Palpites do dia salvos com sucesso! Agora eles estão bloqueados.`);
+            
+            // Salvar apenas os palpites novos (ou todos se confirmou substituir)
+            if (Object.keys(palpitesAtualizados).length > 0) {
+                database.ref(`palpites/${usuario}`).update(palpitesAtualizados)
+                    .then(function() {
+                        const totalSalvos = Object.keys(palpitesAtualizados).length;
+                        alert(`✅ ${totalSalvos} palpite(s) do mata-mata salvos com sucesso!`);
+                        carregarJogos();
+                    })
+                    .catch(function(err) {
+                        alert("❌ Erro ao salvar: " + err);
+                    });
+            } else {
+                alert("ℹ️ Nenhum palpite novo para salvar.");
                 carregarJogos();
-            })
-            .catch(err => alert("Erro: " + err));
-    });
+            }
+        });
+    }
 }
-
 // =====================
 // ADMIN - MOSTRAR JOGOS
 // =====================
