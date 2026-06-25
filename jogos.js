@@ -186,12 +186,12 @@ const dezesseisAvos = {
     nome: "🏆 16 Avos de Final",
     jogos: [
         // Domingo, 28 de junho
-        { id: 73, casa: "2º A", fora: "2º B", data: "28/06 - 16h", local: "Los Angeles" },
+        { id: 73, casa: "África do Sul 🇿🇦", fora: "🇨🇦 Canadá ", data: "28/06 - 16h", local: "Los Angeles" },
         
         // Segunda-feira, 29 de junho
-        { id: 74, casa: "1º C", fora: "2º F", data: "29/06 - 14h", local: "Houston" },
+        { id: 74, casa: "Brasil 🇧🇷", fora: "2º F", data: "29/06 - 14h", local: "Houston" },
         { id: 75, casa: "Alemanha 🇩🇪", fora: "3º (A/B/C/D/F)", data: "29/06 - 17h30", local: "Boston" },
-        { id: 76, casa: "1º F", fora: "2º C", data: "29/06 - 22h", local: "Monterrey" },
+        { id: 76, casa: "1º F", fora: "🇲🇦 Marrocos", data: "29/06 - 22h", local: "Monterrey" },
         
         // Terça-feira, 30 de junho
         { id: 77, casa: "2º E", fora: "2º I", data: "30/06 - 14h", local: "Dallas" },
@@ -208,9 +208,9 @@ const dezesseisAvos = {
         { id: 84, casa: "2º K", fora: "2º L", data: "02/07 - 20h", local: "Toronto" },
         
         // Sexta-feira, 3 de julho
-        { id: 85, casa: "1º B", fora: "3º (E/F/G/I/J)", data: "03/07 - 00h", local: "Vancouver" },
+        { id: 85, casa: "Suíça 🇨🇭", fora: "3º (E/F/G/I/J)", data: "03/07 - 00h", local: "Vancouver" },
         { id: 86, casa: "1º D", fora: "2º G", data: "03/07 - 15h", local: "Dallas" },
-        { id: 87, casa: "1º J", fora: "2º H", data: "03/07 - 19h", local: "Miami" },
+        { id: 87, casa: "Argentina 🇦🇷 ", fora: "2º H", data: "03/07 - 19h", local: "Miami" },
         { id: 88, casa: "1º K", fora: "3º (D/E/I/J/L)", data: "03/07 - 22h30", local: "Kansas City" }
     ]
 };
