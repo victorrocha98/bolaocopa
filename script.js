@@ -426,23 +426,27 @@ function carregarJogos() {
                 const resultCasa = parseInt(resultado.casa);
                 const resultFora = parseInt(resultado.fora);
                 
+                // LÓGICA DE FEEDBACK VISUAL ATUALIZADA AQUI
                 if (palpiteCasa === resultCasa && palpiteFora === resultFora) {
                     statusCor = "palpite-correto";
-                    mensagemStatus = "✅ PLACAR EXATO! +3 pontos 🎯";
+                    
+                    if (palpiteCasa === palpiteFora && palpite.classificado === resultado.classificado && palpite.classificado) {
+                        mensagemStatus = "✅ PLACAR EXATO + CLASSIFICADO! +4 pontos 🎯🏆";
+                    } else {
+                        mensagemStatus = "✅ PLACAR EXATO! +3 pontos 🎯";
+                    }
                 } else {
-                    let palpiteTendencia, resultadoTendencia;
-                    
-                    if (palpiteCasa > palpiteFora) palpiteTendencia = "C";
-                    else if (palpiteCasa < palpiteFora) palpiteTendencia = "F";
-                    else palpiteTendencia = "E";
-                    
-                    if (resultCasa > resultFora) resultadoTendencia = "C";
-                    else if (resultCasa < resultFora) resultadoTendencia = "F";
-                    else resultadoTendencia = "E";
+                    let palpiteTendencia = palpiteCasa > palpiteFora ? "C" : (palpiteCasa < palpiteFora ? "F" : "E");
+                    let resultadoTendencia = resultCasa > resultFora ? "C" : (resultCasa < resultFora ? "F" : "E");
                     
                     if (palpiteTendencia === resultadoTendencia) {
                         statusCor = "palpite-tendencia";
-                        mensagemStatus = `🎯 Acertou o vencedor! +1 ponto (Resultado: ${resultado.casa}-${resultado.fora})`;
+                        
+                        if (palpiteTendencia === "E" && palpite.classificado === resultado.classificado && palpite.classificado) {
+                            mensagemStatus = `🎯 Acertou empate + classificado! +2 pontos (Resultado: ${resultado.casa}-${resultado.fora})`;
+                        } else {
+                            mensagemStatus = `🎯 Acertou o vencedor! +1 ponto (Resultado: ${resultado.casa}-${resultado.fora})`;
+                        }
                     } else {
                         statusCor = "palpite-errado";
                         mensagemStatus = `❌ Errou! Resultado: ${resultado.casa}-${resultado.fora}`;
@@ -2033,56 +2037,38 @@ function calcularClassificacaoGrupo(times, resultados) {
 // =====================
 // CALCULAR PONTOS (CORRIGIDO PARA MATA-MATA)
 // =====================
-function calcularPontos(pc, pf, rc, rf, classificado, classificadoReal) {
-    pc = parseInt(pc);
-    pf = parseInt(pf);
-    rc = parseInt(rc);
-    rf = parseInt(rf);
-    
-    if (isNaN(pc) || isNaN(pf) || isNaN(rc) || isNaN(rf)) return 0;
-    
+function calcularPontos(palpiteCasa, palpiteFora, resultCasa, resultFora, palpiteClassificado = "", resultClassificado = "") {
+    const pCasa = parseInt(palpiteCasa);
+    const pFora = parseInt(palpiteFora);
+    const rCasa = parseInt(resultCasa);
+    const rFora = parseInt(resultFora);
+
+    if (isNaN(rCasa) || isNaN(rFora)) return 0;
+
     let pontos = 0;
-    
-    // 1. Pontos do placar
-    if (pc === rc && pf === rf) {
-        // PLACAR EXATO - 3 pontos
-        pontos += 3;
-    } else {
-        // Verificar tendência (vencedor/empate)
-        let palpiteTendencia, resultadoTendencia;
-        
-        if (pc > pf) palpiteTendencia = "C";
-        else if (pc < pf) palpiteTendencia = "F";
-        else palpiteTendencia = "E";
-        
-        if (rc > rf) resultadoTendencia = "C";
-        else if (rc < rf) resultadoTendencia = "F";
-        else resultadoTendencia = "E";
-        
-        // Acertou o vencedor/empate - 1 ponto
-        if (palpiteTendencia === resultadoTendencia) {
-            pontos += 1;
+
+    // Acertou o Placar Exato
+    if (pCasa === rCasa && pFora === rFora) {
+        pontos = 3;
+        if (pCasa === pFora && palpiteClassificado && resultClassificado && palpiteClassificado === resultClassificado) {
+            pontos += 1; 
         }
+        return pontos;
     }
-    
-    // 2. Ponto extra para MATA-MATA: se acertou o classificado
-    // Verifica se o resultado foi empate (rc === rf) E se o palpite foi empate (pc === pf)
-    // E se o usuário selecionou um classificado e acertou
-    const isResultadoEmpate = rc === rf;
-    const isPalpiteEmpate = pc === pf;
-    
-    // Só dá o bônus se:
-    // 1. O jogo terminou empatado no tempo normal
-    // 2. O usuário palpou empate
-    // 3. O usuário selecionou um classificado
-    // 4. O usuário acertou o classificado
-    if (isResultadoEmpate && isPalpiteEmpate && classificado && classificadoReal && classificado === classificadoReal) {
-        pontos += 1;
+
+    // Acertou a Tendência
+    let palpiteTendencia = pCasa > pFora ? "C" : (pCasa < pFora ? "F" : "E");
+    let resultadoTendencia = rCasa > rFora ? "C" : (rCasa < rFora ? "F" : "E");
+
+    if (palpiteTendencia === resultadoTendencia) {
+        pontos = 1;
+        if (palpiteTendencia === "E" && palpiteClassificado && resultClassificado && palpiteClassificado === resultClassificado) {
+            pontos += 1; 
+        }
+        return pontos;
     }
-    
-    console.log(`📊 Cálculo: ${pc}x${pf} vs ${rc}x${rf} | Classif: ${classificado} vs ${classificadoReal} | Pontos: ${pontos}`);
-    
-    return pontos;
+
+    return 0;
 }
 
 // =====================

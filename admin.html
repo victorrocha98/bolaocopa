@@ -36,7 +36,6 @@
         <p id="statusTrava" style="margin-top: 10px; font-weight: bold;"></p>
     </div>
 
-    <!-- SEÇÃO: 3º COLOCADOS -->
     <div class="card" style="background: #e3f2fd; border: 2px solid #1565c0;">
         <h3>📋 3º Colocados por Grupo</h3>
         <p style="font-size: 13px; color: #666; margin-bottom: 15px;">
@@ -64,7 +63,6 @@
         <div id="statusTerceiros" style="margin-top: 10px; font-weight: bold;"></div>
     </div>
 
-    <!-- SEÇÃO: RESETAR PALPITES -->
     <div class="card" style="background: #fff3e0; border: 2px solid #ff9800;">
         <h3>🔄 Resetar Palpites dos Usuários</h3>
         
@@ -98,7 +96,6 @@
         <div id="resetStatus" style="margin-top: 15px; padding: 10px; border-radius: 8px; background: #f5f5f5; font-weight: bold;"></div>
     </div>
 
-    <!-- SEÇÃO: GERENCIAR USUÁRIOS -->
     <div class="card">
         <h3>👥 Gerenciar Participantes</h3>
         
@@ -114,7 +111,6 @@
         </div>
     </div>
 
-    <!-- SEÇÃO: VISUALIZAR PALPITES DOS USUÁRIOS -->
     <div class="card">
         <h3>📊 Visualizar Palpites dos Usuários</h3>
         <div style="margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 10px;">
@@ -132,8 +128,13 @@
         </div>
     </div>
 
-    <!-- SEÇÃO: RESULTADOS DOS JOGOS -->
     <h2 style="color: white;">📊 Resultados dos Jogos</h2>
+    
+    <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+        <button class="btn-aba-ranking ativo" onclick="filtrarAdmin('todos')" id="btnAdminTodos">📋 Todos os Jogos</button>
+        <button class="btn-aba-ranking" onclick="filtrarAdmin('grupos')" id="btnAdminGrupos">🏆 Fase de Grupos</button>
+        <button class="btn-aba-ranking" onclick="filtrarAdmin('mata')" id="btnAdminMata">🔥 Mata-Mata</button>
+    </div>
     
     <div style="text-align: center; margin-bottom: 20px;">
         <button onclick="resetarTodosResultados()" style="background: #ff6f00;">⚠️ RESETAR TODOS OS RESULTADOS</button>
@@ -156,6 +157,9 @@
 <script src="script.js"></script>
 
 <script>
+    // Variável de controle global da aba do admin
+    window.filtroAdminAtual = 'todos';
+
     // Carregar selects de reset
     setTimeout(() => {
         carregarResetUsuarios();
@@ -181,6 +185,123 @@
             resetFase.addEventListener("change", carregarResetJogos);
         }
     });
+
+    // =========================================================================
+    // LÓGICA DE FILTRO POR ABAS (GRUPOS / MATA-MATA)
+    // =========================================================================
+    // =========================================================================
+// LÓGICA DE FILTRO POR ABAS (GRUPOS / MATA-MATA) - CORREGIDA
+// =========================================================================
+function organizarAbasAdmin() {
+    const area = document.getElementById("adminJogos");
+    if (!area) return;
+    
+    // Lista de palavras que caracterizam o Mata-Mata
+    const palavrasMata = ["16 avos", "oitavas", "quartas", "semifinais", "3º lugar", "final", "mata"];
+    
+    // Pegamos todos os blocos de jogos
+    Array.from(area.children).forEach(el => {
+        // Transformamos todo o texto contido no bloco em minúsculo
+        const texto = el.textContent.toLowerCase();
+        
+        // Verifica se qualquer palavra de mata-mata existe no texto
+        const ehMataMata = palavrasMata.some(termo => texto.includes(termo));
+        
+        if (ehMataMata) {
+            el.setAttribute('data-fase-admin', 'mata');
+        } else {
+            // Se não é mata-mata, assumimos que é fase de grupos
+            el.setAttribute('data-fase-admin', 'grupos');
+        }
+    });
+}
+
+    window.filtrarAdmin = function(fase) {
+        window.filtroAdminAtual = fase;
+        
+        // Alternar classe ativa visual nos botões
+        document.querySelectorAll('.btn-aba-ranking').forEach(btn => {
+            if (btn.id && btn.id.startsWith('btnAdmin')) {
+                btn.classList.remove('ativo');
+            }
+        });
+        
+        const btnAtivo = document.getElementById('btnAdmin' + fase.charAt(0).toUpperCase() + fase.slice(1));
+        if (btnAtivo) {
+            btnAtivo.classList.add('ativo');
+        }
+        
+        executarFiltroAdmin(fase);
+    };
+
+    function executarFiltroAdmin(fase) {
+        const area = document.getElementById("adminJogos");
+        if (!area) return;
+        
+        Array.from(area.children).forEach(el => {
+            const faseEl = el.getAttribute('data-fase-admin');
+            if (!faseEl) return;
+            
+            if (fase === 'todos' || faseEl === fase) {
+                el.style.setProperty('display', '', 'important');
+            } else {
+                el.style.setProperty('display', 'none', 'important');
+            }
+        });
+    }
+
+    // =========================================================================
+    // LÓGICA DE EXIBIÇÃO DO SELETOR DE CLASSIFICADO EM EMPATES
+    // =========================================================================
+    function gerenciarVisibilidadeClassificadoAdmin(jogoDiv) {
+        const inputs = jogoDiv.querySelectorAll('input[type="number"]');
+        const containerClassificado = jogoDiv.querySelector('[id*="container_classificado"]') || 
+                                      jogoDiv.querySelector('[id*="classificado"]')?.closest('div');
+        
+        if (inputs.length >= 2 && containerClassificado) {
+            const casaVal = inputs[0].value;
+            const foraVal = inputs[1].value;
+            
+            if (casaVal !== "" && foraVal !== "" && parseInt(casaVal) === parseInt(foraVal)) {
+                containerClassificado.style.display = "block";
+            } else {
+                containerClassificado.style.display = "none";
+                const select = containerClassificado.querySelector('select');
+                if (select && casaVal !== "" && foraVal !== "" && parseInt(casaVal) !== parseInt(foraVal)) {
+                    select.value = "";
+                }
+            }
+        }
+    }
+
+    // Monitoramento reativo em tempo real via MutationObserver e Event Listeners
+    const areaAdminJogos = document.getElementById("adminJogos");
+    if (areaAdminJogos) {
+        areaAdminJogos.addEventListener("input", function(e) {
+            if (e.target.type === "number") {
+                const jogoDiv = e.target.closest('.jogo') || e.target.parentElement.parentElement;
+                if (jogoDiv) {
+                    gerenciarVisibilidadeClassificadoAdmin(jogoDiv);
+                }
+            }
+        });
+
+        const observerAdmin = new MutationObserver(function() {
+            // 1. Taggear a estrutura das fases nos elementos injetados
+            organizarAbasAdmin();
+            
+            // 2. Aplicar o filtro da aba ativa atual
+            executarFiltroAdmin(window.filtroAdminAtual);
+            
+            // 3. Processar regra de exibição da caixa de empate
+            const blocosJogos = areaAdminJogos.querySelectorAll('.jogo');
+            blocosJogos.forEach(jogoDiv => {
+                gerenciarVisibilidadeClassificadoAdmin(jogoDiv);
+            });
+        });
+
+        observerAdmin.observe(areaAdminJogos, { childList: true, subtree: true });
+    }
 </script>
 
 </body>

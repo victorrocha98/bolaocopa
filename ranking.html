@@ -1,4 +1,3 @@
-<!-- ranking.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -33,7 +32,6 @@
         <strong style="color: #ffd700;">3 pontos</strong> = acertar o placar exato 🎯
     </p>
 
-    <!-- ABAS DE FILTRO DO RANKING -->
     <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
         <button class="btn-aba-ranking ativo" onclick="filtrarRanking('geral')" id="btnRankingGeral">📊 Classificação Geral</button>
         <button class="btn-aba-ranking" onclick="filtrarRanking('grupos')" id="btnRankingGrupos">🏆 Fase de Grupos</button>
@@ -150,8 +148,20 @@
                             
                             const resultado = resultados[id];
                             const palpite = palpites[id];
+                            
+                            // BLOCO DE CÁLCULO ATUALIZADO AQUI:
                             if (palpite && resultado && resultado.casa !== undefined && resultado.casa !== "") {
-                                pontos += calcularPontos(palpite.casa, palpite.fora, resultado.casa, resultado.fora);
+                                const classificado = palpite.classificado || "";
+                                const classificadoReal = resultado.classificado || "";
+                                
+                                pontos += calcularPontos(
+                                    parseInt(palpite.casa), 
+                                    parseInt(palpite.fora), 
+                                    parseInt(resultado.casa), 
+                                    parseInt(resultado.fora),
+                                    classificado,
+                                    classificadoReal
+                                );
                             }
                         });
                         ranking.push({ nome, pontos });
