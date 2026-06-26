@@ -97,17 +97,14 @@ function getNomeLimpo(time) {
 function limparNomeTime(nome) {
     if (!nome) return '';
     
-    // Se for objeto, pegar a propriedade nome
     if (typeof nome === 'object' && nome.nome) {
         nome = nome.nome;
     }
     
-    // Se ainda for objeto, converter para string
     if (typeof nome === 'object') {
         nome = JSON.stringify(nome);
     }
     
-    // Se não for string, converter
     if (typeof nome !== 'string') {
         nome = String(nome);
     }
@@ -404,8 +401,6 @@ function carregarJogos() {
         
         let html = `<div class="rodada"><h2>${blocoRodada.nome}</h2>`;
         
-        // CORREÇÃO: Verificar se é mata-mata pelo índice (a partir do dia 17 = 16 avos)
-        // Os dias 0 a 16 são fase de grupos (17 dias)
         const isMataMata = diaAtivoIndex >= 17;
         
         if (isMataMata) {
@@ -415,7 +410,7 @@ function carregarJogos() {
         }
         
         blocoRodada.jogos.forEach(jogo => {
-            const palpite = palpites[jogo.id] || { casa: "", fora: "" };
+            const palpite = palpites[jogo.id] || { casa: "", fora: "", classificado: "" };
             const resultado = resultados[jogo.id];
             const temResultado = resultado && resultado.casa !== "" && resultado.casa !== undefined;
             
@@ -467,6 +462,69 @@ function carregarJogos() {
                 infoExtra = `<div style="font-size:11px; color:#666; margin-top:3px;">📅 ${jogo.data} | 📍 ${jogo.local}</div>`;
             }
             
+            // SÓ PARA MATA-MATA: SEMPRE CRIAR O SELETOR, MAS OCULTO INICIALMENTE
+            let classificacaoHtml = "";
+            if (isMataMata) {
+                // Verificar se o jogo já tem resultado oficial
+                const resultCasa = temResultado ? parseInt(resultado.casa) : null;
+                const resultFora = temResultado ? parseInt(resultado.fora) : null;
+                const isEmpateOficial = temResultado && resultCasa === resultFora;
+                
+                // Se tem resultado oficial e NÃO é empate, mostra apenas o classificado
+                if (temResultado && !isEmpateOficial) {
+                    const classificadoReal = resultado.classificado || (resultCasa > resultFora ? 'casa' : 'fora');
+                    const nomeClassificado = classificadoReal === 'casa' ? jogo.casa : jogo.fora;
+                    const acertouClassificado = palpite.classificado === classificadoReal;
+                    
+                    classificacaoHtml = `
+                    <div style="margin-top:8px; padding:5px 10px; background:#e8f5e9; border-radius:6px; width:100%;">
+                        <span style="font-size:12px; color:#2e7d32; font-weight:bold;">🏆 Classificado: ${nomeClassificado}</span>
+                        ${palpite.classificado ? `<span style="font-size:11px; color:${acertouClassificado ? '#2e7d32' : '#c62828'}; margin-left:10px;">${acertouClassificado ? '✅ Acertou!' : '❌ Errou!'}</span>` : ''}
+                    </div>
+                    `;
+                } else {
+                    // Para os demais casos (sem resultado ou resultado empatado), criar o seletor
+                    // Mas escondido se não for empate e não tiver resultado
+                    const classificadoSalvo = palpite.classificado || "";
+                    const isDisabled = desabilitado;
+                    const selectDisabled = isDisabled ? 'disabled' : '';
+                    
+                    // Determinar se deve mostrar inicialmente
+                    const casaVal = palpite.casa || "";
+                    const foraVal = palpite.fora || "";
+                    const isEmpatePalpite = casaVal !== "" && foraVal !== "" && parseInt(casaVal) === parseInt(foraVal);
+                    const mostrarInicial = (temResultado && isEmpateOficial) || isEmpatePalpite;
+                    
+                    // Estilo do container: se não mostrar, fica oculto
+                    const displayStyle = mostrarInicial ? 'block' : 'none';
+                    
+                    // Mensagem de status
+                    let statusMsg = "";
+                    if (temResultado && isEmpateOficial) {
+                        statusMsg = '⚖️ Jogo empatado - selecione o classificado';
+                    } else if (isEmpatePalpite) {
+                        statusMsg = '⚖️ Empate - selecione o classificado';
+                    } else {
+                        statusMsg = '💡 Preencha o placar (empate para selecionar)';
+                    }
+                    
+                    classificacaoHtml = `
+                    <div style="margin-top:8px; padding:5px 10px; background:#f0f4f8; border-radius:6px; width:100%; display: ${displayStyle};" id="container_classificado_${jogo.id}">
+                        <label style="font-size:12px; font-weight:bold; color:#0d47a1;">
+                            🏆 Quem se classifica?
+                            <select id="classificado_${jogo.id}" style="margin-left:8px; padding:4px 8px; border-radius:5px; border:1px solid #ccc; font-size:12px;" ${selectDisabled}>
+                                <option value="">Selecione</option>
+                                <option value="casa" ${classificadoSalvo === 'casa' ? 'selected' : ''}>${jogo.casa}</option>
+                                <option value="fora" ${classificadoSalvo === 'fora' ? 'selected' : ''}>${jogo.fora}</option>
+                            </select>
+                            <span class="status-msg" style="font-size:11px; margin-left:10px; color:#ff9800;">${statusMsg}</span>
+                        </label>
+                        ${temResultado && palpite.classificado ? `<span style="font-size:11px; color:#1565c0; margin-left:10px;">✅ Classificação salva</span>` : ''}
+                    </div>
+                    `;
+                }
+            }
+            
             html += `
             <div class="jogo ${statusCor}" id="jogo_${jogo.id}">
                 <div style="flex:1;">
@@ -477,11 +535,12 @@ function carregarJogos() {
                     ${temResultado ? `<div style="font-size:11px; color:#2e7d32; margin-top:5px;">📊 PLACAR OFICIAL: ${resultado.casa} - ${resultado.fora}</div>` : ''}
                     ${mensagemStatus ? `<div style="font-size:12px; margin-top:3px; font-weight:bold;">${mensagemStatus}</div>` : ''}
                     ${palpiteJaSalvo && !temResultado ? `<div style="font-size:11px; color:#ff9800; margin-top:3px;">🔒 Palpite já salvo - não pode mais alterar</div>` : ''}
+                    ${classificacaoHtml}
                 </div>
                 <div class="placar">
-                    <input type="number" id="casa_${jogo.id}" value="${palpite.casa}" min="0" placeholder="?" ${disabledAttr} ${estiloInput}>
+                    <input type="number" id="casa_${jogo.id}" value="${palpite.casa}" min="0" placeholder="?" ${disabledAttr} ${estiloInput} onchange="verificarEmpatePalpite(${jogo.id})">
                     <span>x</span>
-                    <input type="number" id="fora_${jogo.id}" value="${palpite.fora}" min="0" placeholder="?" ${disabledAttr} ${estiloInput}>
+                    <input type="number" id="fora_${jogo.id}" value="${palpite.fora}" min="0" placeholder="?" ${disabledAttr} ${estiloInput} onchange="verificarEmpatePalpite(${jogo.id})">
                 </div>
             </div>
             `;
@@ -504,6 +563,58 @@ function carregarJogos() {
         console.error("Erro:", err);
         area.innerHTML = "<div style='text-align:center;color:red;padding:20px;background:white;border-radius:15px;'>❌ Erro ao carregar jogos</div>";
     });
+}
+
+// Função para verificar empate e mostrar/ocultar seletor nos palpites
+function verificarEmpatePalpite(jogoId) {
+    const casaInput = document.getElementById(`casa_${jogoId}`);
+    const foraInput = document.getElementById(`fora_${jogoId}`);
+    const container = document.getElementById(`container_classificado_${jogoId}`);
+    const classificadoSelect = document.getElementById(`classificado_${jogoId}`);
+    
+    if (!casaInput || !foraInput || !container) return;
+    
+    const casaVal = casaInput.value.trim();
+    const foraVal = foraInput.value.trim();
+    
+    // Se ambos os campos estão preenchidos
+    if (casaVal !== "" && foraVal !== "") {
+        const casaNum = parseInt(casaVal);
+        const foraNum = parseInt(foraVal);
+        
+        if (!isNaN(casaNum) && !isNaN(foraNum)) {
+            const isEmpate = casaNum === foraNum;
+            
+            if (isEmpate) {
+                // Mostrar o container
+                container.style.display = 'block';
+                if (classificadoSelect) {
+                    classificadoSelect.style.display = 'inline-block';
+                    classificadoSelect.disabled = false;
+                }
+                // Atualizar mensagem
+                const msgSpan = container.querySelector('.status-msg');
+                if (msgSpan) {
+                    msgSpan.textContent = '⚖️ Empate - selecione o classificado';
+                    msgSpan.style.color = '#ff9800';
+                }
+                return;
+            } else {
+                // Esconder o container
+                container.style.display = 'none';
+                if (classificadoSelect) {
+                    classificadoSelect.value = '';
+                }
+                return;
+            }
+        }
+    }
+    
+    // Se campos vazios, esconder o container
+    container.style.display = 'none';
+    if (classificadoSelect) {
+        classificadoSelect.value = '';
+    }
 }
 
 function salvarPalpites() {
@@ -538,9 +649,22 @@ function salvarPalpites() {
             const foraVal = foraInput.value.trim();
             
             if (casaVal !== "" && foraVal !== "") {
+                let classificado = "";
+                if (!isFaseGrupos) {
+                    const container = document.getElementById(`container_classificado_${jogo.id}`);
+                    // Só salva a classificação se o container estiver visível (empate)
+                    if (container && container.style.display !== 'none') {
+                        const classificadoSelect = document.getElementById(`classificado_${jogo.id}`);
+                        if (classificadoSelect) {
+                            classificado = classificadoSelect.value;
+                        }
+                    }
+                }
+                
                 palpitesAtualizados[jogo.id] = {
                     casa: casaVal,
-                    fora: foraVal
+                    fora: foraVal,
+                    classificado: classificado
                 };
                 palpitesPreenchidos++;
             } else {
@@ -557,6 +681,28 @@ function salvarPalpites() {
     if (isFaseGrupos && palpitesVazios > 0) {
         alert(`⚠️ Na fase de grupos você deve preencher TODOS os ${blocoRodada.jogos.length} jogos do dia! Faltam ${palpitesVazios} jogo(s).`);
         return;
+    }
+    
+    // Validação para mata-mata: verifica se os jogos que estão empatados têm classificação selecionada
+    if (!isFaseGrupos) {
+        let classificacaoFaltando = false;
+        let jogosFaltando = [];
+        
+        Object.keys(palpitesAtualizados).forEach(jogoId => {
+            const container = document.getElementById(`container_classificado_${jogoId}`);
+            // Se o container existe e está visível (display block), então é empate
+            if (container && container.style.display !== 'none') {
+                if (!palpitesAtualizados[jogoId].classificado) {
+                    classificacaoFaltando = true;
+                    jogosFaltando.push(jogoId);
+                }
+            }
+        });
+        
+        if (classificacaoFaltando) {
+            alert(`⚠️ Para jogos empatados do mata-mata, você deve selecionar quem se classifica! Jogos: ${jogosFaltando.length}`);
+            return;
+        }
     }
     
     if (isFaseGrupos) {
@@ -584,6 +730,7 @@ function salvarPalpites() {
                 .catch(err => alert("Erro: " + err));
         });
     } else {
+        // MATA-MATA: Salvar apenas os palpites preenchidos (jogo por jogo)
         database.ref(`palpites/${usuario}`).once('value', function(snapshot) {
             const palpitesExistentes = snapshot.val() || {};
             
@@ -666,15 +813,57 @@ function montarAdmin() {
         todasFases.forEach((bloco, index) => {
             if (!bloco.jogos || bloco.jogos.length === 0) return;
             
+            const isMataMata = index >= 17;
+            
             let html = `<div class="rodada"><h2>${bloco.nome}</h2>`;
             
             bloco.jogos.forEach(jogo => {
-                const resultado = resultados[jogo.id] || { casa: "", fora: "" };
+                const resultado = resultados[jogo.id] || { casa: "", fora: "", classificado: "" };
                 const temResultado = resultado.casa !== "" && resultado.casa !== undefined;
                 
                 let infoExtra = "";
                 if (jogo.data) {
                     infoExtra = `<div style="font-size:11px; color:#666; margin-top:3px;">📅 ${jogo.data} | 📍 ${jogo.local}</div>`;
+                }
+                
+                // Só mostrar seletor de classificação no admin se for mata-mata
+                let classificacaoAdmin = "";
+                if (isMataMata) {
+                    // Verificar se o placar é empate (para mostrar o seletor)
+                    const casaVal = resultado.casa !== "" ? parseInt(resultado.casa) : null;
+                    const foraVal = resultado.fora !== "" ? parseInt(resultado.fora) : null;
+                    const isEmpate = casaVal !== null && foraVal !== null && casaVal === foraVal;
+                    
+                    // Se tiver resultado e não for empate, mostra só o classificado
+                    if (temResultado && !isEmpate) {
+                        const classificadoReal = resultado.classificado || (casaVal > foraVal ? 'casa' : 'fora');
+                        const nomeClassificado = classificadoReal === 'casa' ? jogo.casa : jogo.fora;
+                        classificacaoAdmin = `
+                        <div style="margin-top:5px;">
+                            <span style="font-size:12px; color:#2e7d32; font-weight:bold;">🏆 Classificado: ${nomeClassificado}</span>
+                            <input type="hidden" id="rclassificado_${jogo.id}" value="${classificadoReal}">
+                        </div>
+                        `;
+                    } else {
+                        // Mostrar seletor (se não tem resultado ou se é empate)
+                        const classificadoSalvo = resultado.classificado || "";
+                        const selectDisabled = temResultado ? 'disabled' : '';
+                        const statusMsg = temResultado && isEmpate ? '⚖️ Jogo empatado - selecione o classificado' : '💡 Selecione o classificado (apenas se empatar)';
+                        
+                        classificacaoAdmin = `
+                        <div style="margin-top:5px;">
+                            <label style="font-size:12px; font-weight:bold; color:#0d47a1;">
+                                🏆 Classificado:
+                                <select id="rclassificado_${jogo.id}" style="margin-left:5px; padding:4px; border-radius:5px; border:1px solid #ccc;" ${selectDisabled}>
+                                    <option value="">Selecione</option>
+                                    <option value="casa" ${classificadoSalvo === 'casa' ? 'selected' : ''}>${jogo.casa}</option>
+                                    <option value="fora" ${classificadoSalvo === 'fora' ? 'selected' : ''}>${jogo.fora}</option>
+                                </select>
+                            </label>
+                            <span style="font-size:10px; color:#999; margin-left:5px;">${statusMsg}</span>
+                        </div>
+                        `;
+                    }
                 }
                 
                 html += `
@@ -683,11 +872,12 @@ function montarAdmin() {
                         <strong>${jogo.casa}</strong> x <strong>${jogo.fora}</strong>
                         ${infoExtra}
                         ${temResultado ? '<span style="color:#2e7d32; font-size:11px; margin-left:10px;">✅ Resultado salvo</span>' : '<span style="color:#ff9800; font-size:11px; margin-left:10px;">⏳ Pendente</span>'}
+                        ${classificacaoAdmin}
                     </div>
                     <div class="placar">
-                        <input type="number" id="rcasa_${jogo.id}" value="${temResultado ? resultado.casa : ''}" min="0" placeholder="?" style="width:70px;">
+                        <input type="number" id="rcasa_${jogo.id}" value="${temResultado ? resultado.casa : ''}" min="0" placeholder="?" style="width:70px;" onchange="verificarEmpateAdmin(${jogo.id})">
                         <span>x</span>
-                        <input type="number" id="rfora_${jogo.id}" value="${temResultado ? resultado.fora : ''}" min="0" placeholder="?" style="width:70px;">
+                        <input type="number" id="rfora_${jogo.id}" value="${temResultado ? resultado.fora : ''}" min="0" placeholder="?" style="width:70px;" onchange="verificarEmpateAdmin(${jogo.id})">
                     </div>
                     <button onclick="resetarJogo(${jogo.id})" style="background:#ff6f00; padding:5px 10px; margin-left:10px;">🔄 Reset</button>
                 </div>
@@ -729,8 +919,10 @@ function salvarResultados() {
     let jogosSalvos = [];
     const todasFases = window.rodadas || [];
     
-    todasFases.forEach(bloco => {
+    todasFases.forEach((bloco, index) => {
         if (!bloco.jogos) return;
+        
+        const isMataMata = index >= 17;
         
         bloco.jogos.forEach(jogo => {
             const casaInput = document.getElementById(`rcasa_${jogo.id}`);
@@ -745,7 +937,31 @@ function salvarResultados() {
                     const foraNum = parseInt(fora);
                     
                     if (!isNaN(casaNum) && !isNaN(foraNum)) {
+                        // Verificar se é empate
+                        const isEmpate = casaNum === foraNum;
+                        
+                        // Salvar resultado
                         resultados[jogo.id] = { casa: casaNum, fora: foraNum };
+                        
+                        // Se for mata-mata, salvar o classificado
+                        if (isMataMata) {
+                            const classificadoSelect = document.getElementById(`rclassificado_${jogo.id}`);
+                            if (classificadoSelect) {
+                                // Se o jogo não empatou, o classificado é o vencedor
+                                if (!isEmpate) {
+                                    resultados[jogo.id].classificado = casaNum > foraNum ? 'casa' : 'fora';
+                                } else {
+                                    // Se empatou, usa o valor selecionado
+                                    resultados[jogo.id].classificado = classificadoSelect.value;
+                                }
+                                console.log(`🏆 Jogo ${jogo.id} - Classificado salvo: ${resultados[jogo.id].classificado}`);
+                            } else {
+                                // Se não tem seletor (caso de jogo que não empatou), salva o vencedor
+                                resultados[jogo.id].classificado = casaNum > foraNum ? 'casa' : 'fora';
+                                console.log(`🏆 Jogo ${jogo.id} - Classificado automático: ${resultados[jogo.id].classificado}`);
+                            }
+                        }
+                        
                         jogosSalvos.push(`${jogo.casa} x ${jogo.fora} = ${casaNum}-${foraNum}`);
                     }
                 }
@@ -757,6 +973,8 @@ function salvarResultados() {
         alert("⚠️ Nenhum resultado para salvar! Preencha os placares.");
         return;
     }
+    
+    console.log("📊 Resultados a salvar:", resultados);
     
     database.ref("resultados").update(resultados)
         .then(() => {
@@ -778,8 +996,57 @@ function destravarPalpites() {
         .catch(err => alert("Erro: " + err));
 }
 
+// Função para verificar empate e mostrar/ocultar seletor no admin
+function verificarEmpateAdmin(jogoId) {
+    const casaInput = document.getElementById(`rcasa_${jogoId}`);
+    const foraInput = document.getElementById(`rfora_${jogoId}`);
+    const classificadoSelect = document.getElementById(`rclassificado_${jogoId}`);
+    
+    if (!casaInput || !foraInput || !classificadoSelect) return;
+    
+    const casaVal = casaInput.value.trim();
+    const foraVal = foraInput.value.trim();
+    
+    if (casaVal !== "" && foraVal !== "") {
+        const casaNum = parseInt(casaVal);
+        const foraNum = parseInt(foraVal);
+        
+        if (!isNaN(casaNum) && !isNaN(foraNum)) {
+            const isEmpate = casaNum === foraNum;
+            
+            // Mostrar/ocultar o seletor baseado no empate
+            const container = classificadoSelect.closest('div');
+            if (container) {
+                // Encontrar a mensagem de status
+                const statusSpan = container.querySelector('span:last-child');
+                
+                if (isEmpate) {
+                    classificadoSelect.style.display = 'inline-block';
+                    if (statusSpan) {
+                        statusSpan.textContent = '⚖️ Jogo empatado - selecione o classificado';
+                        statusSpan.style.color = '#ff9800';
+                    }
+                } else {
+                    classificadoSelect.style.display = 'inline-block'; // Mantém visível para o admin
+                    if (statusSpan) {
+                        const classificadoVal = classificadoSelect.value;
+                        if (classificadoVal) {
+                            const nomeClassificado = classificadoVal === 'casa' ? 'Casa' : 'Visitante';
+                            statusSpan.textContent = `✅ Jogo não empatou - Classificado: ${nomeClassificado}`;
+                            statusSpan.style.color = '#2e7d32';
+                        } else {
+                            statusSpan.textContent = '⚠️ Jogo não empatou - selecione o classificado (vencedor)';
+                            statusSpan.style.color = '#ff9800';
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 // =====================
-// GERENCIAR 3º COLOCADOS (ADMIN) - CORRIGIDO
+// GERENCIAR 3º COLOCADOS (ADMIN)
 // =====================
 
 function carregarTerceirosColocados() {
@@ -846,7 +1113,6 @@ function carregarTerceirosColocados() {
                 `;
             });
             
-            // Contar status do grupo
             const terceiros = Object.keys(salvosGrupo).filter(key => salvosGrupo[key] === 'terceiro');
             const eliminados = Object.keys(salvosGrupo).filter(key => salvosGrupo[key] === 'eliminado');
             
@@ -958,10 +1224,6 @@ function salvarGrupoTerceiros(grupo) {
     const salvos = window.terceirosTemp[grupo] || {};
     const terceiros = Object.keys(salvos).filter(key => salvos[key] === 'terceiro');
     
-    // REMOVIDA A OBRIGAÇÃO DE TER 1 TERCEIRO
-    // Agora pode salvar sem terceiro, só com eliminados, ou só com terceiro
-    
-    // Verificar se tem mais de 1 terceiro (isso continua proibido)
     if (terceiros.length > 1) {
         document.getElementById("statusTerceiros").innerHTML = 
             `⚠️ Grupo ${grupo} tem ${terceiros.length} terceiros! Marque apenas 1.`;
@@ -969,7 +1231,6 @@ function salvarGrupoTerceiros(grupo) {
         return;
     }
     
-    // Se não tem terceiro nem eliminado, avisar
     if (terceiros.length === 0 && Object.keys(salvos).length === 0) {
         document.getElementById("statusTerceiros").innerHTML = 
             `⚠️ Grupo ${grupo} não tem nenhuma marcação!`;
@@ -1188,7 +1449,7 @@ function carregarPalpitesUsuario() {
         html += `<div style="max-height: 300px; overflow-y: auto;">`;
         
         fase.jogos.forEach(jogo => {
-            const palpite = palpites[jogo.id] || { casa: "", fora: "" };
+            const palpite = palpites[jogo.id] || { casa: "", fora: "", classificado: "" };
             const resultado = resultados[jogo.id];
             const temResultado = resultado && resultado.casa !== "";
             
@@ -1197,12 +1458,19 @@ function carregarPalpitesUsuario() {
                 infoExtra = `<div style="font-size:10px; color:#666;">📅 ${jogo.data} | 📍 ${jogo.local}</div>`;
             }
             
+            let classificacaoInfo = "";
+            if (palpite.classificado) {
+                const texto = palpite.classificado === 'casa' ? 'Casa' : 'Visitante';
+                classificacaoInfo = `<div style="font-size:10px; color:#1565c0;">🏆 Classificado: ${texto}</div>`;
+            }
+            
             html += `
             <div class="jogo" style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 8px;">
                 <div style="flex:1;">
                     <strong>${jogo.casa}</strong> x <strong>${jogo.fora}</strong>
                     ${infoExtra}
                     ${temResultado ? `<div style="font-size:11px; color:#2e7d32;">Resultado oficial: ${resultado.casa} - ${resultado.fora}</div>` : '<div style="font-size:11px; color:#ff9800;">Aguardando resultado</div>'}
+                    ${classificacaoInfo}
                 </div>
                 <div class="placar">
                     <input type="number" id="edit_casa_${jogo.id}" value="${palpite.casa}" min="0" placeholder="?" style="width:60px;">
@@ -1521,16 +1789,10 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
         const resultados = resultadosSnap.val() || {};
         const terceirosColocados = terceirosSnap.val() || {};
         
-        console.log("📊 Resultados carregados:", Object.keys(resultados).length, "jogos");
-        console.log("📋 3º colocados carregados:", terceirosColocados);
-        
         const timesDoGrupo = gruposTimes[grupoSelecionado].map(t => t.nome);
         const classificacao = calcularClassificacaoGrupo(timesDoGrupo, resultados);
         const salvosGrupo = terceirosColocados[grupoSelecionado] || {};
         
-        console.log(`📌 Grupo ${grupoSelecionado} - Salvos:`, salvosGrupo);
-        
-        // Extrair o nome do terceiro colocado
         let terceiroLimpo = "";
         let eliminados = [];
         
@@ -1544,9 +1806,6 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
                 }
             }
         }
-        
-        console.log(`🔍 Terceiro limpo: "${terceiroLimpo}"`);
-        console.log(`🔍 Eliminados:`, eliminados);
         
         let html = `
         <div style="background: white; border-radius: 8px; padding: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
@@ -1575,28 +1834,21 @@ function carregarClassificacaoGrupos(grupoSelecionado) {
             
             const itemLimpo = limparNomeTime(item.time);
             
-            // Verificar se o time é o terceiro colocado
             const isTerceiro = (terceiroLimpo && itemLimpo === terceiroLimpo);
-            // Verificar se o time está na lista de eliminados
             const isEliminado = eliminados.some(function(elim) {
                 return elim === itemLimpo;
             });
             
-            console.log(`🔍 Time: ${item.time} | Limpo: "${itemLimpo}" | isTerceiro: ${isTerceiro} | isEliminado: ${isEliminado}`);
-            
             if (isTerceiro) {
-                // 3º colocado CLASSIFICADO - AZUL CLARO
                 corFundo = 'background: #e3f2fd;';
                 destaque = 'font-weight: bold;';
                 statusIcon = ' 🔵';
                 statusText = '3º Classificado';
             } else if (isEliminado) {
-                // ELIMINADO - VERMELHO (independente da posição)
                 corFundo = 'background: #ffebee;';
                 statusIcon = ' ❌';
                 statusText = 'Eliminado';
             } else if (index < 2 && temJogos) {
-                // 1º e 2º colocados - VERDE
                 corFundo = 'background: #e8f5e9;';
                 destaque = 'font-weight: bold;';
                 statusIcon = ' 🟢';
@@ -1779,9 +2031,9 @@ function calcularClassificacaoGrupo(times, resultados) {
 }
 
 // =====================
-// CALCULAR PONTOS
+// CALCULAR PONTOS (CORRIGIDO PARA MATA-MATA)
 // =====================
-function calcularPontos(pc, pf, rc, rf) {
+function calcularPontos(pc, pf, rc, rf, classificado, classificadoReal) {
     pc = parseInt(pc);
     pf = parseInt(pf);
     rc = parseInt(rc);
@@ -1789,33 +2041,48 @@ function calcularPontos(pc, pf, rc, rf) {
     
     if (isNaN(pc) || isNaN(pf) || isNaN(rc) || isNaN(rf)) return 0;
     
+    let pontos = 0;
+    
+    // 1. Pontos do placar
     if (pc === rc && pf === rf) {
-        return 3;
-    }
-    
-    let palpiteTendencia, resultadoTendencia;
-    
-    if (pc > pf) {
-        palpiteTendencia = "C";
-    } else if (pc < pf) {
-        palpiteTendencia = "F";
+        // PLACAR EXATO - 3 pontos
+        pontos += 3;
     } else {
-        palpiteTendencia = "E";
+        // Verificar tendência (vencedor/empate)
+        let palpiteTendencia, resultadoTendencia;
+        
+        if (pc > pf) palpiteTendencia = "C";
+        else if (pc < pf) palpiteTendencia = "F";
+        else palpiteTendencia = "E";
+        
+        if (rc > rf) resultadoTendencia = "C";
+        else if (rc < rf) resultadoTendencia = "F";
+        else resultadoTendencia = "E";
+        
+        // Acertou o vencedor/empate - 1 ponto
+        if (palpiteTendencia === resultadoTendencia) {
+            pontos += 1;
+        }
     }
     
-    if (rc > rf) {
-        resultadoTendencia = "C";
-    } else if (rc < rf) {
-        resultadoTendencia = "F";
-    } else {
-        resultadoTendencia = "E";
+    // 2. Ponto extra para MATA-MATA: se acertou o classificado
+    // Verifica se o resultado foi empate (rc === rf) E se o palpite foi empate (pc === pf)
+    // E se o usuário selecionou um classificado e acertou
+    const isResultadoEmpate = rc === rf;
+    const isPalpiteEmpate = pc === pf;
+    
+    // Só dá o bônus se:
+    // 1. O jogo terminou empatado no tempo normal
+    // 2. O usuário palpou empate
+    // 3. O usuário selecionou um classificado
+    // 4. O usuário acertou o classificado
+    if (isResultadoEmpate && isPalpiteEmpate && classificado && classificadoReal && classificado === classificadoReal) {
+        pontos += 1;
     }
     
-    if (palpiteTendencia === resultadoTendencia) {
-        return 1;
-    }
+    console.log(`📊 Cálculo: ${pc}x${pf} vs ${rc}x${rf} | Classif: ${classificado} vs ${classificadoReal} | Pontos: ${pontos}`);
     
-    return 0;
+    return pontos;
 }
 
 // =====================
@@ -1848,13 +2115,13 @@ function mostrarRanking(filtro) {
         idsFiltrados = idsMataMata;
     }
     
-    database.ref("resultados").once('value', snapshotResultados => {
+    database.ref("resultados").once('value', function(snapshotResultados) {
         const resultados = snapshotResultados.val() || {};
         
-        database.ref("palpites").once('value', snapshotPalpites => {
+        database.ref("palpites").once('value', function(snapshotPalpites) {
             const palpitesTodos = snapshotPalpites.val() || {};
             
-            database.ref("usuarios").once('value', snapshotUsuarios => {
+            database.ref("usuarios").once('value', function(snapshotUsuarios) {
                 const usuarios = snapshotUsuarios.val() || {};
                 const participantes = Object.keys(usuarios);
                 
@@ -1865,33 +2132,44 @@ function mostrarRanking(filtro) {
                 
                 const ranking = [];
                 
-                participantes.forEach(nome => {
+                participantes.forEach(function(nome) {
                     let pontos = 0;
                     const palpites = palpitesTodos[nome] || {};
                     
-                    Object.keys(resultados).forEach(id => {
+                    Object.keys(resultados).forEach(function(id) {
                         if (idsFiltrados !== null && !idsFiltrados.includes(parseInt(id))) {
                             return;
                         }
                         
                         const resultado = resultados[id];
                         const palpite = palpites[id];
+                        
                         if (palpite && resultado && resultado.casa !== undefined && resultado.casa !== "") {
-                            pontos += calcularPontos(palpite.casa, palpite.fora, resultado.casa, resultado.fora);
+                            const classificado = palpite.classificado || "";
+                            const classificadoReal = resultado.classificado || "";
+                            
+                            pontos += calcularPontos(
+                                parseInt(palpite.casa), 
+                                parseInt(palpite.fora), 
+                                parseInt(resultado.casa), 
+                                parseInt(resultado.fora),
+                                classificado,
+                                classificadoReal
+                            );
                         }
                     });
-                    ranking.push({ nome, pontos });
+                    ranking.push({ nome: nome, pontos: pontos });
                 });
                 
-                ranking.sort((a, b) => b.pontos - a.pontos);
+                ranking.sort(function(a, b) { return b.pontos - a.pontos; });
                 tabela.innerHTML = "";
                 
-                if (ranking.length === 0 || ranking.every(item => item.pontos === 0)) {
+                if (ranking.length === 0 || ranking.every(function(item) { return item.pontos === 0; })) {
                     tabela.innerHTML = "<tr><td colspan='3'>Nenhum ponto registrado nesta fase</td></tr>";
                     return;
                 }
                 
-                ranking.forEach((item, index) => {
+                ranking.forEach(function(item, index) {
                     let medalha = '';
                     if (index === 0) medalha = ' 🏆';
                     else if (index === 1) medalha = ' 🥈';
@@ -1937,7 +2215,6 @@ document.addEventListener("DOMContentLoaded", function() {
     
     carregarResultadosOficiais();
     
-    // CLASSIFICAÇÃO DOS GRUPOS
     if (document.getElementById("classificacaoGrupos")) {
         console.log("📊 Inicializando classificação dos grupos...");
         setTimeout(function() {
@@ -1954,20 +2231,17 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
     
-    // PÁGINAS PROTEGIDAS (exceto index.html)
     if (!window.location.pathname.includes("index.html")) {
         const usuarioLogado = verificarLogin();
         if (!verificarAcessoAdmin()) return;
         
         carregarStatusTrava();
         
-        // PÁGINA DE PALPITES
         if (document.getElementById("areaJogos")) {
             console.log("📝 Inicializando página de palpites...");
             inicializarInterfaceDias();
         }
         
-        // PÁGINA ADMIN
         if (document.getElementById("adminJogos")) {
             console.log("⚙️ Inicializando página admin...");
             montarAdmin();
@@ -1978,7 +2252,6 @@ document.addEventListener("DOMContentLoaded", function() {
             carregarResetFases();
         }
         
-        // 3º COLOCADOS (ADMIN)
         if (document.getElementById("terceirosColocados")) {
             console.log("📋 Inicializando 3º colocados...");
             setTimeout(function() {
@@ -1986,7 +2259,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }, 700);
         }
         
-        // RANKING
         if (document.getElementById("ranking")) {
             console.log("🏅 Inicializando ranking...");
             mostrarRanking('geral');
