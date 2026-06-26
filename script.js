@@ -404,7 +404,11 @@ function carregarJogos() {
         
         let html = `<div class="rodada"><h2>${blocoRodada.nome}</h2>`;
         
-        if (blocoRodada.jogos[0] && blocoRodada.jogos[0].data) {
+        // CORREÇÃO: Verificar se é mata-mata pelo índice (a partir do dia 17 = 16 avos)
+        // Os dias 0 a 16 são fase de grupos (17 dias)
+        const isMataMata = diaAtivoIndex >= 17;
+        
+        if (isMataMata) {
             html += `<p style="color:#666; margin-bottom:15px; text-align:center; font-size:13px;">📅 Confrontos do mata-mata</p>`;
         } else {
             html += `<p style="color:#666; margin-bottom:15px;">Faça seus palpites para os jogos abaixo:</p>`;
