@@ -186,35 +186,59 @@ const fasesGrupos = [
 // 16 AVOS DE FINAL (CONFRONTOS REAIS COM ESTÁDIOS)
 // ============================================
 
+// ============================================
+// 16 AVOS DE FINAL (CONFRONTOS ATUALIZADOS)
+// ============================================
+
 const dezesseisAvos = {
     nome: "🏆 16 Avos de Final",
     jogos: [
-        // Domingo, 28 de junho
+        // Domingo, 28 de junho - Los Angeles
         { id: 73, casa: "África do Sul <span class='fi fi-za'></span>", fora: "<span class='fi fi-ca'></span> Canadá", data: "28/06 - 16h", local: "SoFi Stadium (Los Angeles, EUA)" },
         
-        // Segunda-feira, 29 de junho
+        // Segunda-feira, 29 de junho - Houston
         { id: 74, casa: "Brasil <span class='fi fi-br'></span>", fora: "<span class='fi fi-jp'></span> Japão", data: "29/06 - 14h", local: "NRG Stadium (Houston, EUA)" },
-        { id: 75, casa: "Alemanha <span class='fi fi-de'></span>", fora: "3º (A/B/C/D/F)", data: "29/06 - 17h30", local: "Gillette Stadium (Boston, EUA)" },
-        { id: 76, casa: "Holanda <span class='fi fi-nl'></span>", fora: "<span class='fi fi-ma'></span> Marrocos", data: "29/06 - 22h", local: "Estadio BBVA (Monterrey, México)" },
         
-        // Terça-feira, 30 de junho
-        { id: 77, casa: "Costa do Marfim <span class='fi fi-ci'></span>", fora: "2º I", data: "30/06 - 14h", local: "AT&T Stadium (Dallas, EUA)" },
-        { id: 78, casa: "1º I", fora: "3º (C/D/F/G/H)", data: "30/06 - 18h", local: "MetLife Stadium (New York/Nova Jersey, EUA)" },
+        // Segunda-feira, 29 de junho - Boston
+        { id: 75, casa: "Alemanha <span class='fi fi-de'></span>", fora: "<span class='fi fi-py'></span> Paraguai", data: "29/06 - 17h30", local: "Gillette Stadium (Boston, EUA)" },
+        
+        // Segunda-feira, 29 de junho - El Gigante de Acero (Monterrey)
+        { id: 76, casa: "Holanda <span class='fi fi-nl'></span>", fora: "<span class='fi fi-ma'></span> Marrocos", data: "29/06 - 22h", local: "El Gigante de Acero (Monterrey, México)" },
+        
+        // Terça-feira, 30 de junho - Dallas
+        { id: 77, casa: "Costa do Marfim <span class='fi fi-ci'></span>", fora: "<span class='fi fi-no'></span> Noruega", data: "30/06 - 14h", local: "AT&T Stadium (Dallas, EUA)" },
+        
+        // Terça-feira, 30 de junho - Nova Jersey
+        { id: 78, casa: "França <span class='fi fi-fr'></span>", fora: "<span class='fi fi-se'></span> Suécia", data: "30/06 - 18h", local: "MetLife Stadium (New York/Nova Jersey, EUA)" },
+        
+        // Terça-feira, 30 de junho - Azteca (Cidade do México)
         { id: 79, casa: "México <span class='fi fi-mx'></span>", fora: "3º (C/E/F/H/I)", data: "30/06 - 22h", local: "Estádio Azteca (Cidade do México, México)" },
         
-        // Quarta-feira, 1º de julho
+        // Quarta-feira, 1º de julho - Atlanta
         { id: 80, casa: "1º L", fora: "3º (E/H/I/J/K)", data: "01/07 - 13h", local: "Mercedes-Benz Stadium (Atlanta, EUA)" },
-        { id: 81, casa: "1º G", fora: "3º (A/E/H/I/J)", data: "01/07 - 17h", local: "Lumen Field (Seattle, EUA)" },
+        
+        // Quarta-feira, 1º de julho - Seattle
+        { id: 81, casa: "Bélgica <span class='fi fi-be'></span>", fora: "3º (A/E/H/I/J)", data: "01/07 - 17h", local: "Lumen Field (Seattle, EUA)" },
+        
+        // Quarta-feira, 1º de julho - Santa Clara
         { id: 82, casa: "Estados Unidos <span class='fi fi-us'></span>", fora: "<span class='fi fi-ba'></span> Bósnia e Herzegovina", data: "01/07 - 21h", local: "Levi's Stadium (Santa Clara, EUA)" },
         
-        // Quinta-feira, 2 de julho
-        { id: 83, casa: "1º H", fora: "2º J", data: "02/07 - 16h", local: "SoFi Stadium (Los Angeles, EUA)" },
+        // Quinta-feira, 2 de julho - Los Angeles
+        { id: 83, casa: "Espanha <span class='fi fi-es'></span>", fora: "2º J", data: "02/07 - 16h", local: "SoFi Stadium (Los Angeles, EUA)" },
+        
+        // Quinta-feira, 2 de julho - Toronto
         { id: 84, casa: "2º K", fora: "2º L", data: "02/07 - 20h", local: "BMO Field (Toronto, Canadá)" },
         
-        // Sexta-feira, 3 de julho
+        // Sexta-feira, 3 de julho - Vancouver
         { id: 85, casa: "Suíça <span class='fi fi-ch'></span>", fora: "3º (E/F/G/I/J)", data: "03/07 - 00h", local: "BC Place (Vancouver, Canadá)" },
-        { id: 86, casa: "Austrália <span class='fi fi-au'></span>", fora: "2º G", data: "03/07 - 15h", local: "AT&T Stadium (Dallas, EUA)" },
-        { id: 87, casa: "Argentina <span class='fi fi-ar'></span>", fora: "2º H", data: "03/07 - 19h", local: "Hard Rock Stadium (Miami, EUA)" },
+        
+        // Sexta-feira, 3 de julho - Dallas
+        { id: 86, casa: "Austrália <span class='fi fi-au'></span>", fora: "<span class='fi fi-eg'></span> Egito", data: "03/07 - 15h", local: "AT&T Stadium (Dallas, EUA)" },
+        
+        // Sexta-feira, 3 de julho - Miami
+        { id: 87, casa: "Argentina <span class='fi fi-ar'></span>", fora: "<span class='fi fi-cv'></span> Cabo Verde", data: "03/07 - 19h", local: "Hard Rock Stadium (Miami, EUA)" },
+        
+        // Sexta-feira, 3 de julho - Kansas City
         { id: 88, casa: "1º K", fora: "3º (D/E/I/J/L)", data: "03/07 - 22h30", local: "Arrowhead Stadium (Kansas City, EUA)" }
     ]
 };
