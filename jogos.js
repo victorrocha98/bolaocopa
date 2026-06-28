@@ -187,7 +187,7 @@ const fasesGrupos = [
 // ============================================
 
 // ============================================
-// 16 AVOS DE FINAL (CONFRONTOS ATUALIZADOS)
+// 16 AVOS DE FINAL
 // ============================================
 
 const dezesseisAvos = {
@@ -215,7 +215,7 @@ const dezesseisAvos = {
         { id: 79, casa: "México <span class='fi fi-mx'></span>", fora: "3º (C/E/F/H/I)", data: "30/06 - 22h", local: "Estádio Azteca (Cidade do México, México)" },
         
         // Quarta-feira, 1º de julho - Atlanta
-        { id: 80, casa: "1º L", fora: "3º (E/H/I/J/K)", data: "01/07 - 13h", local: "Mercedes-Benz Stadium (Atlanta, EUA)" },
+        { id: 80, casa: "Inglaterra <span class='fi fi-gb-eng'></span>", fora: "3º (E/H/I/J/K)", data: "01/07 - 13h", local: "Mercedes-Benz Stadium (Atlanta, EUA)" },
         
         // Quarta-feira, 1º de julho - Seattle
         { id: 81, casa: "Bélgica <span class='fi fi-be'></span>", fora: "3º (A/E/H/I/J)", data: "01/07 - 17h", local: "Lumen Field (Seattle, EUA)" },
@@ -239,46 +239,73 @@ const dezesseisAvos = {
         { id: 87, casa: "Argentina <span class='fi fi-ar'></span>", fora: "<span class='fi fi-cv'></span> Cabo Verde", data: "03/07 - 19h", local: "Hard Rock Stadium (Miami, EUA)" },
         
         // Sexta-feira, 3 de julho - Kansas City
-        { id: 88, casa: "1º K", fora: "3º (D/E/I/J/L)", data: "03/07 - 22h30", local: "Arrowhead Stadium (Kansas City, EUA)" }
+        { id: 88, casa: "Portugal <span class='fi fi-pt'></span>", fora: "3º (D/E/I/J/L)", data: "03/07 - 22h30", local: "Arrowhead Stadium (Kansas City, EUA)" }
     ]
 };
 
 // ============================================
-// FASES DO MATA-MATA (OITAVAS EM DIANTE)
+// OITAVAS DE FINAL
 // ============================================
 
 const oitavas = {
     nome: "🏆 Oitavas de Final",
     jogos: [
-        // 📌 ADICIONE OS JOGOS AQUI QUANDO CHEGAR
+        { id: 89, casa: "1C", fora: "2F", data: "A definir", local: "A definir" },
+        { id: 90, casa: "2E", fora: "2I", data: "A definir", local: "A definir" },
+        { id: 91, casa: "1A", fora: "3º", data: "A definir", local: "A definir" },
+        { id: 92, casa: "1L", fora: "3º", data: "A definir", local: "A definir" },
+        { id: 93, casa: "1J", fora: "2H", data: "A definir", local: "A definir" },
+        { id: 94, casa: "2D", fora: "2G", data: "A definir", local: "A definir" },
+        { id: 95, casa: "1B", fora: "3º", data: "A definir", local: "A definir" },
+        { id: 96, casa: "1K", fora: "3º", data: "A definir", local: "A definir" }
     ]
 };
+
+// ============================================
+// QUARTAS DE FINAL
+// ============================================
 
 const quartas = {
     nome: "🏆 Quartas de Final",
     jogos: [
-        // 📌 ADICIONE OS JOGOS AQUI QUANDO CHEGAR
+        { id: 97, casa: "Vencedor 89", fora: "Vencedor 90", data: "A definir", local: "A definir" },
+        { id: 98, casa: "Vencedor 91", fora: "Vencedor 92", data: "A definir", local: "A definir" },
+        { id: 99, casa: "Vencedor 93", fora: "Vencedor 94", data: "A definir", local: "A definir" },
+        { id: 100, casa: "Vencedor 95", fora: "Vencedor 96", data: "A definir", local: "A definir" }
     ]
 };
+
+// ============================================
+// SEMIFINAIS
+// ============================================
 
 const semifinais = {
     nome: "🏆 Semifinais",
     jogos: [
-        // 📌 ADICIONE OS JOGOS AQUI QUANDO CHEGAR
+        { id: 101, casa: "Vencedor 97", fora: "Vencedor 98", data: "A definir", local: "A definir" },
+        { id: 102, casa: "Vencedor 99", fora: "Vencedor 100", data: "A definir", local: "A definir" }
     ]
 };
+
+// ============================================
+// DISPUTA DE 3º LUGAR
+// ============================================
 
 const terceiroLugar = {
     nome: "🥉 Disputa de 3º Lugar",
     jogos: [
-        // 📌 ADICIONE O JOGO AQUI QUANDO CHEGAR
+        { id: 103, casa: "Perdedor 101", fora: "Perdedor 102", data: "A definir", local: "A definir" }
     ]
 };
+
+// ============================================
+// FINAL
+// ============================================
 
 const final = {
     nome: "🏆 FINAL",
     jogos: [
-        // 📌 ADICIONE O JOGO AQUI QUANDO CHEGAR
+        { id: 104, casa: "Vencedor 101", fora: "Vencedor 102", data: "A definir", local: "A definir" }
     ]
 };
 
