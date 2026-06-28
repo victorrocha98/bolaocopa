@@ -31,6 +31,22 @@
     
     <div id="statusJogo" class="status-card"></div>
 
+    <!-- ANOTAÇÃO DAS REGRAS DO MATA-MATA - FUNDO MAIS ESCURO -->
+    <div id="regrasMataMata" style="display: none; background: rgba(0, 0, 0, 0.85); border: 2px solid #ffd700; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; color: white; text-align: center; backdrop-filter: blur(5px); box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+        <p style="margin: 0; font-size: 15px; font-weight: bold; color: #ffd700;">
+            ⚠️ REGRAS DO MATA-MATA
+        </p>
+        <p style="margin: 6px 0 0 0; font-size: 13px; line-height: 1.8;">
+            ✅ <strong style="color: #fff;">1 ponto</strong> = Acertar o vencedor/empate<br>
+            ✅ <strong style="color: #fff;">3 pontos</strong> = Acertar o placar exato<br>
+            ✅ <strong style="color: #ffd700;">+1 ponto extra</strong> = Acertar quem se classifica (apenas em jogos <strong style="color: #ffd700;">EMPATADOS</strong> no tempo normal)
+        </p>
+        <p style="margin: 8px 0 0 0; font-size: 12px; color: #ddd; background: rgba(255, 215, 0, 0.1); padding: 8px 12px; border-radius: 6px; border-left: 3px solid #ffd700;">
+            💡 <strong>Exemplo 1:</strong> Palpite: Brasil 1x1 Argentina + Brasil classificado → Resultado: Brasil 1x1 Argentina + Brasil classificado (pênaltis ou prorrogação) = <strong style="color: #ffd700;">4 pontos</strong> (3 do placar + 1 da classificação)<br>
+            💡 <strong>Exemplo 2:</strong> Palpite: Brasil 2x2 Argentina + Brasil classificado → Resultado: Brasil 1x1 Argentina + Brasil classificado (pênaltis ou prorrogação) = <strong style="color: #ffd700;">2 pontos</strong> (1 do empate + 1 da classificação)
+        </p>
+    </div>
+
     <!-- CONTEÚDO PRINCIPAL: CLASSIFICAÇÃO + JOGOS LADO A LADO -->
     <div style="display: flex; gap: 20px; flex-wrap: wrap;">
 
@@ -118,6 +134,32 @@
             carregarClassificacaoGrupos('A');
         }
     }, 500);
+
+    // ============================================================
+    // MOSTRAR REGRAS DO MATA-MATA QUANDO ESTIVER NA FASE
+    // ============================================================
+    function verificarRegrasMataMata() {
+        const regrasDiv = document.getElementById("regrasMataMata");
+        if (regrasDiv && typeof diaAtivoIndex !== 'undefined') {
+            // Mostra a partir do índice 17 (16 avos de final)
+            regrasDiv.style.display = diaAtivoIndex >= 17 ? 'block' : 'none';
+        }
+    }
+
+    // Executar após carregar
+    setTimeout(function() {
+        verificarRegrasMataMata();
+    }, 500);
+
+    // Observer para quando o conteúdo da área de jogos for carregado
+    const areaJogosObserver = new MutationObserver(function() {
+        verificarRegrasMataMata();
+    });
+
+    const areaJogos = document.getElementById("areaJogos");
+    if (areaJogos) {
+        areaJogosObserver.observe(areaJogos, { childList: true, subtree: true });
+    }
 </script>
 
 </body>
