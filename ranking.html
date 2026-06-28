@@ -27,15 +27,33 @@
 <div class="container">
 
     <h1>🏅 Classificação</h1>
-    <p style="text-align: center; color: white; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px;">
-        📊 Pontuação: <strong style="color: #ffd700;">1 ponto</strong> = acertar o vencedor/empate | 
-        <strong style="color: #ffd700;">3 pontos</strong> = acertar o placar exato 🎯
-    </p>
 
-    <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+    <!-- REGRAS DE PONTUAÇÃO - FUNDO MAIS ESCURO -->
+    <div style="text-align: center; color: white; background: rgba(0, 0, 0, 0.85); padding: 14px 18px; border-radius: 10px; margin-bottom: 10px; border: 1px solid rgba(255, 215, 0, 0.3); backdrop-filter: blur(5px); box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+        <p style="margin: 0; font-size: 14px;">
+            📊 <strong>Pontuação:</strong> 
+            <strong style="color: #ffd700;">1 ponto</strong> = Acertar o vencedor/empate | 
+            <strong style="color: #ffd700;">3 pontos</strong> = Acertar o placar exato 🎯
+        </p>
+        <p style="margin: 4px 0 0 0; font-size: 13px; color: #ffd700;">
+            ⚠️ <strong>MATA-MATA:</strong> +1 ponto extra se acertar quem se classifica (apenas em jogos EMPATADOS no tempo normal)
+        </p>
+        <p style="margin: 4px 0 0 0; font-size: 12px; color: #ddd; background: rgba(255, 215, 0, 0.1); padding: 6px 10px; border-radius: 6px; border-left: 3px solid #ffd700; display: inline-block;">
+            💡 <strong>Exemplo 1:</strong> Palpite: Brasil 1x1 Argentina + Brasil classificado → Resultado: 1x1 + Brasil classificado = <strong style="color: #ffd700;">4 pontos</strong> (3 placar + 1 classificação)<br>
+            💡 <strong>Exemplo 2:</strong> Palpite: Brasil 2x2 Argentina + Brasil classificado → Resultado: 1x1 + Brasil classificado = <strong style="color: #ffd700;">2 pontos</strong> (1 empate + 1 classificação)
+        </p>
+    </div>
+
+    <!-- ABAS DE FILTRO DO RANKING -->
+    <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
         <button class="btn-aba-ranking ativo" onclick="filtrarRanking('geral')" id="btnRankingGeral">📊 Classificação Geral</button>
         <button class="btn-aba-ranking" onclick="filtrarRanking('grupos')" id="btnRankingGrupos">🏆 Fase de Grupos</button>
         <button class="btn-aba-ranking" onclick="filtrarRanking('mata')" id="btnRankingMata">🏆 Mata-Mata</button>
+    </div>
+
+    <!-- AVISO ESPECÍFICO PARA CADA ABA - FUNDO MAIS ESCURO -->
+    <div id="avisoRanking" style="text-align: center; padding: 10px 14px; margin-bottom: 15px; border-radius: 8px; font-size: 13px; background: rgba(0, 0, 0, 0.7); color: #ddd; border-left: 3px solid #ffd700; backdrop-filter: blur(3px);">
+        <span id="avisoRankingTexto">📋 <strong>Classificação Geral</strong> - Pontuação de todas as fases (Grupos + Mata-Mata)</span>
     </div>
 
     <div class="card">
@@ -75,10 +93,13 @@
         
         if (filtro === 'geral') {
             document.getElementById('btnRankingGeral').classList.add('ativo');
+            document.getElementById('avisoRankingTexto').innerHTML = '📋 <strong>Classificação Geral</strong> - Pontuação de todas as fases (Grupos + Mata-Mata)';
         } else if (filtro === 'grupos') {
             document.getElementById('btnRankingGrupos').classList.add('ativo');
+            document.getElementById('avisoRankingTexto').innerHTML = '🏆 <strong>Fase de Grupos</strong> - Pontuação apenas da fase de grupos (1 ponto = vencedor/empate | 3 pontos = placar exato)';
         } else if (filtro === 'mata') {
             document.getElementById('btnRankingMata').classList.add('ativo');
+            document.getElementById('avisoRankingTexto').innerHTML = '🏆 <strong>Mata-Mata</strong> - 1 ponto = vencedor/empate | 3 pontos = placar exato | <strong style="color:#ffd700;">+1 ponto extra</strong> = acertar o classificado (apenas em jogos EMPATADOS)';
         }
         
         // Recarregar ranking com o filtro
