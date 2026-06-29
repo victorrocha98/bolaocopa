@@ -474,21 +474,60 @@ function carregarJogos() {
                 const resultFora = temResultado ? parseInt(resultado.fora) : null;
                 const isEmpateOficial = temResultado && resultCasa === resultFora;
                 
-                // Se tem resultado oficial e NÃO é empate, mostra apenas o classificado
+                // Se tem resultado oficial e NÃO é empate, mostra apenas o classificado (COM BANDEIRA)
                 if (temResultado && !isEmpateOficial) {
                     const classificadoReal = resultado.classificado || (resultCasa > resultFora ? 'casa' : 'fora');
-                    const nomeClassificado = classificadoReal === 'casa' ? jogo.casa : jogo.fora;
+                    const classificadoComBandeira = classificadoReal === 'casa' ? jogo.casa : jogo.fora;
                     const acertouClassificado = palpite.classificado === classificadoReal;
                     
                     classificacaoHtml = `
                     <div style="margin-top:8px; padding:5px 10px; background:#e8f5e9; border-radius:6px; width:100%;">
-                        <span style="font-size:12px; color:#2e7d32; font-weight:bold;">🏆 Classificado: ${nomeClassificado}</span>
+                        <span style="font-size:12px; color:#2e7d32; font-weight:bold;">🏆 Classificado: ${classificadoComBandeira}</span>
                         ${palpite.classificado ? `<span style="font-size:11px; color:${acertouClassificado ? '#2e7d32' : '#c62828'}; margin-left:10px;">${acertouClassificado ? '✅ Acertou!' : '❌ Errou!'}</span>` : ''}
                     </div>
                     `;
-                } else {
-                    // Para os demais casos (sem resultado ou resultado empatado), criar o seletor
-                    // Mas escondido se não for empate e não tiver resultado
+                }
+                // Se tem resultado oficial e É empate
+                else if (temResultado && isEmpateOficial) {
+                    const classificadoReal = resultado.classificado || '';
+                    
+                    // CORREÇÃO: Se já tem classificado real, mostrar com bandeira
+                    if (classificadoReal) {
+                        const nomeClassificado = classificadoReal === 'casa' ? jogo.casa : jogo.fora;
+                        const acertouClassificado = palpite.classificado === classificadoReal;
+                        
+                        classificacaoHtml = `
+                        <div style="margin-top:8px; padding:5px 10px; background:#f0f4f8; border-radius:6px; width:100%;">
+                            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+                                <span style="font-size:12px; color:#0d47a1; font-weight:bold;">🏆 Classificado: ${nomeClassificado}</span>
+                                ${palpite.classificado ? `<span style="font-size:11px; color:${acertouClassificado ? '#2e7d32' : '#c62828'}; margin-left:10px;">${acertouClassificado ? '✅ Acertou!' : '❌ Errou!'}</span>` : '<span style="font-size:11px; color:#ff9800;">⚠️ Você não palpou o classificado</span>'}
+                            </div>
+                        </div>
+                        `;
+                    } else {
+                        // Se não tem classificado real ainda, mostrar o seletor
+                        const classificadoSalvo2 = palpite.classificado || "";
+                        const isDisabled2 = desabilitado;
+                        const selectDisabled2 = isDisabled2 ? 'disabled' : '';
+                        
+                        classificacaoHtml = `
+                        <div style="margin-top:8px; padding:5px 10px; background:#f0f4f8; border-radius:6px; width:100%; display: block;" id="container_classificado_${jogo.id}">
+                            <label style="font-size:12px; font-weight:bold; color:#0d47a1;">
+                                🏆 Quem se classifica?
+                                <select id="classificado_${jogo.id}" style="margin-left:8px; padding:4px 8px; border-radius:5px; border:1px solid #ccc; font-size:12px;" ${selectDisabled2}>
+                                    <option value="">Selecione</option>
+                                    <option value="casa" ${classificadoSalvo2 === 'casa' ? 'selected' : ''}>${jogo.casa}</option>
+                                    <option value="fora" ${classificadoSalvo2 === 'fora' ? 'selected' : ''}>${jogo.fora}</option>
+                                </select>
+                                <span class="status-msg" style="font-size:11px; margin-left:10px; color:#ff9800;">⚖️ Jogo empatado - selecione o classificado</span>
+                            </label>
+                            ${temResultado && palpite.classificado ? `<span style="font-size:11px; color:#1565c0; margin-left:10px;">✅ Classificação salva</span>` : ''}
+                        </div>
+                        `;
+                    }
+                }
+                // Para os demais casos (sem resultado), criar o seletor
+                else {
                     const classificadoSalvo = palpite.classificado || "";
                     const isDisabled = desabilitado;
                     const selectDisabled = isDisabled ? 'disabled' : '';
@@ -497,16 +536,14 @@ function carregarJogos() {
                     const casaVal = palpite.casa || "";
                     const foraVal = palpite.fora || "";
                     const isEmpatePalpite = casaVal !== "" && foraVal !== "" && parseInt(casaVal) === parseInt(foraVal);
-                    const mostrarInicial = (temResultado && isEmpateOficial) || isEmpatePalpite;
+                    const mostrarInicial = isEmpatePalpite;
                     
                     // Estilo do container: se não mostrar, fica oculto
                     const displayStyle = mostrarInicial ? 'block' : 'none';
                     
                     // Mensagem de status
                     let statusMsg = "";
-                    if (temResultado && isEmpateOficial) {
-                        statusMsg = '⚖️ Jogo empatado - selecione o classificado';
-                    } else if (isEmpatePalpite) {
+                    if (isEmpatePalpite) {
                         statusMsg = '⚖️ Empate - selecione o classificado';
                     } else {
                         statusMsg = '💡 Preencha o placar (empate para selecionar)';
