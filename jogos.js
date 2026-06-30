@@ -242,14 +242,29 @@ const dezesseisAvos = {
 const oitavas = {
     nome: "🏆 Oitavas de Final",
     jogos: [
-        { id: 89, casa: "1C", fora: "2F", data: "A definir", local: "A definir" },
-        { id: 90, casa: "2E", fora: "2I", data: "A definir", local: "A definir" },
-        { id: 91, casa: "1A", fora: "3º", data: "A definir", local: "A definir" },
-        { id: 92, casa: "1L", fora: "3º", data: "A definir", local: "A definir" },
-        { id: 93, casa: "1J", fora: "2H", data: "A definir", local: "A definir" },
-        { id: 94, casa: "2D", fora: "2G", data: "A definir", local: "A definir" },
-        { id: 95, casa: "1B", fora: "3º", data: "A definir", local: "A definir" },
-        { id: 96, casa: "1K", fora: "3º", data: "A definir", local: "A definir" }
+        // Sábado, 4 de julho - Houston (14h)
+        { id: 89, casa: "Canadá <span class='fi fi-ca'></span>", fora: "<span class='fi fi-ma'></span> Marrocos", data: "04/07 - 14h", local: "NRG Stadium (Houston, EUA)" },
+        
+        // Sábado, 4 de julho - Filadélfia (18h)
+        { id: 90, casa: "Paraguai <span class='fi fi-py'></span>", fora: "Vencedor 78", data: "04/07 - 18h", local: "Lincoln Financial Field (Filadélfia, EUA)" },
+        
+        // Domingo, 5 de julho - Nova Jersey (17h)
+        { id: 91, casa: "Brasil <span class='fi fi-br'></span>", fora: "Vencedor 77", data: "05/07 - 17h", local: "MetLife Stadium (New York/Nova Jersey, EUA)" },
+        
+        // Domingo, 5 de julho - Azteca (21h)
+        { id: 92, casa: "Vencedor 79", fora: "Vencedor 80", data: "05/07 - 21h", local: "Estádio Azteca (Cidade do México, México)" },
+        
+        // Segunda-feira, 6 de julho - Dallas (16h)
+        { id: 93, casa: "Vencedor 84", fora: "Vencedor 83", data: "06/07 - 16h", local: "AT&T Stadium (Dallas, EUA)" },
+        
+        // Segunda-feira, 6 de julho - Seattle (21h)
+        { id: 94, casa: "Vencedor 82", fora: "Vencedor 81", data: "06/07 - 21h", local: "Lumen Field (Seattle, EUA)" },
+        
+        // Terça-feira, 7 de julho - Atlanta (13h)
+        { id: 95, casa: "Vencedor 87", fora: "Vencedor 86", data: "07/07 - 13h", local: "Mercedes-Benz Stadium (Atlanta, EUA)" },
+        
+        // Terça-feira, 7 de julho - Vancouver (17h)
+        { id: 96, casa: "Vencedor 85", fora: "Vencedor 88", data: "07/07 - 17h", local: "BC Place (Vancouver, Canadá)" }
     ]
 };
 
