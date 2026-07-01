@@ -480,7 +480,7 @@ function carregarJogos() {
                     classificacaoHtml = `
                     <div style="margin-top:8px; padding:5px 10px; background:#e8f5e9; border-radius:6px; width:100%;">
                         <span style="font-size:12px; color:#2e7d32; font-weight:bold;">🏆 Classificado: ${classificadoComBandeira}</span>
-                        <span style="font-size:11px; color:#999; margin-left:10px;">📌 Classificação automática (vencedor)</span>
+                        <span style="font-size:11px; color:#999; margin-left:10px;"></span>
                     </div>
                     `;
                 }
@@ -500,7 +500,7 @@ function carregarJogos() {
                                 mensagemClassificacao = '<span style="font-size:11px; color:#c62828; margin-left:10px;">❌ Errou o classificado!</span>';
                             }
                         } else {
-                            mensagemClassificacao = '<span style="font-size:11px; color:#ff9800; margin-left:10px;">⚠️ Você não selecionou o classificado</span>';
+                            mensagemClassificacao = '<span style="font-size:11px; color:#ff9800; margin-left:10px;"></span>';
                         }
                         
                         classificacaoHtml = `
