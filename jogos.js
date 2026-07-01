@@ -246,13 +246,13 @@ const oitavas = {
         { id: 89, casa: "Canadá <span class='fi fi-ca'></span>", fora: "<span class='fi fi-ma'></span> Marrocos", data: "04/07 - 14h", local: "NRG Stadium (Houston, EUA)" },
         
         // Sábado, 4 de julho - Filadélfia (18h)
-        { id: 90, casa: "Paraguai <span class='fi fi-py'></span>", fora: "Vencedor 78", data: "04/07 - 18h", local: "Lincoln Financial Field (Filadélfia, EUA)" },
+        { id: 90, casa: "Paraguai <span class='fi fi-py'></span>", fora: "<span class='fi fi-fr'></span> França", data: "04/07 - 18h", local: "Lincoln Financial Field (Filadélfia, EUA)" },
         
         // Domingo, 5 de julho - Nova Jersey (17h)
-        { id: 91, casa: "Brasil <span class='fi fi-br'></span>", fora: "Vencedor 77", data: "05/07 - 17h", local: "MetLife Stadium (New York/Nova Jersey, EUA)" },
+        { id: 91, casa: "Brasil <span class='fi fi-br'></span>", fora: "<span class='fi fi-no'></span> Noruega", data: "05/07 - 17h", local: "MetLife Stadium (New York/Nova Jersey, EUA)" },
         
         // Domingo, 5 de julho - Azteca (21h)
-        { id: 92, casa: "Vencedor 79", fora: "Vencedor 80", data: "05/07 - 21h", local: "Estádio Azteca (Cidade do México, México)" },
+        { id: 92, casa: "México <span class='fi fi-mx'></span>", fora: "Vencedor 80", data: "05/07 - 21h", local: "Estádio Azteca (Cidade do México, México)" },
         
         // Segunda-feira, 6 de julho - Dallas (16h)
         { id: 93, casa: "Vencedor 84", fora: "Vencedor 83", data: "06/07 - 16h", local: "AT&T Stadium (Dallas, EUA)" },
