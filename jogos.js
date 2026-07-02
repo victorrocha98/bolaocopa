@@ -252,13 +252,13 @@ const oitavas = {
         { id: 91, casa: "Brasil <span class='fi fi-br'></span>", fora: "<span class='fi fi-no'></span> Noruega", data: "05/07 - 17h", local: "MetLife Stadium (New York/Nova Jersey, EUA)" },
         
         // Domingo, 5 de julho - Azteca (21h)
-        { id: 92, casa: "México <span class='fi fi-mx'></span>", fora: "Vencedor 80", data: "05/07 - 21h", local: "Estádio Azteca (Cidade do México, México)" },
+        { id: 92, casa: "México <span class='fi fi-mx'></span>", fora: "<span class='fi fi-gb-eng'></span> Inglaterra", data: "05/07 - 21h", local: "Estádio Azteca (Cidade do México, México)" },
         
         // Segunda-feira, 6 de julho - Dallas (16h)
         { id: 93, casa: "Vencedor 84", fora: "Vencedor 83", data: "06/07 - 16h", local: "AT&T Stadium (Dallas, EUA)" },
         
         // Segunda-feira, 6 de julho - Seattle (21h)
-        { id: 94, casa: "Vencedor 82", fora: "Vencedor 81", data: "06/07 - 21h", local: "Lumen Field (Seattle, EUA)" },
+        { id: 94, casa: "Estados Unidos <span class='fi fi-us'></span>", fora: "<span class='fi fi-be'></span> Bélgica", data: "06/07 - 21h", local: "Lumen Field (Seattle, EUA)" },
         
         // Terça-feira, 7 de julho - Atlanta (13h)
         { id: 95, casa: "Vencedor 87", fora: "Vencedor 86", data: "07/07 - 13h", local: "Mercedes-Benz Stadium (Atlanta, EUA)" },

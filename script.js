@@ -472,26 +472,21 @@ function carregarJogos() {
                 const resultFora = temResultado ? parseInt(resultado.fora) : null;
                 const isEmpateOficial = temResultado && resultCasa === resultFora;
                 
-                // CASO 1: Resultado oficial NÃO é empate - mostra classificado SEM acerto/erro
-                if (temResultado && !isEmpateOficial) {
+                // Se tem resultado oficial, mostra o classificado
+                if (temResultado) {
                     const classificadoReal = resultado.classificado || (resultCasa > resultFora ? 'casa' : 'fora');
                     const classificadoComBandeira = classificadoReal === 'casa' ? jogo.casa : jogo.fora;
                     
-                    classificacaoHtml = `
-                    <div style="margin-top:8px; padding:5px 10px; background:#e8f5e9; border-radius:6px; width:100%;">
-                        <span style="font-size:12px; color:#2e7d32; font-weight:bold;">🏆 Classificado: ${classificadoComBandeira}</span>
-                        <span style="font-size:11px; color:#999; margin-left:10px;"></span>
-                    </div>
-                    `;
-                }
-                // CASO 2: Resultado oficial É empate - mostra acerto/erro da classificação
-                else if (temResultado && isEmpateOficial) {
-                    const classificadoReal = resultado.classificado || '';
-                    
-                    if (classificadoReal) {
-                        const nomeClassificado = classificadoReal === 'casa' ? jogo.casa : jogo.fora;
+                    if (!isEmpateOficial) {
+                        // Jogo NÃO empatou - mostra classificado sem acerto/erro
+                        classificacaoHtml = `
+                        <div style="margin-top:8px; padding:5px 10px; background:#e8f5e9; border-radius:6px; width:100%;">
+                            <span style="font-size:12px; color:#2e7d32; font-weight:bold;">🏆 Classificado: ${classificadoComBandeira}</span>
+                        </div>
+                        `;
+                    } else {
+                        // Jogo EMPATOU - mostra acerto/erro da classificação
                         const acertouClassificado = palpite.classificado === classificadoReal;
-                        
                         let mensagemClassificacao = '';
                         if (palpite.classificado) {
                             if (acertouClassificado) {
@@ -506,35 +501,14 @@ function carregarJogos() {
                         classificacaoHtml = `
                         <div style="margin-top:8px; padding:5px 10px; background:#f0f4f8; border-radius:6px; width:100%;">
                             <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap;">
-                                <span style="font-size:12px; color:#0d47a1; font-weight:bold;">🏆 Classificado: ${nomeClassificado}</span>
+                                <span style="font-size:12px; color:#0d47a1; font-weight:bold;">🏆 Classificado: ${classificadoComBandeira}</span>
                                 ${mensagemClassificacao}
                             </div>
                         </div>
                         `;
-                    } else {
-                        // Se não tem classificado real ainda, mostrar o seletor
-                        const classificadoSalvo2 = palpite.classificado || "";
-                        const isDisabled2 = desabilitado;
-                        const selectDisabled2 = isDisabled2 ? 'disabled' : '';
-                        
-                        classificacaoHtml = `
-                        <div style="margin-top:8px; padding:5px 10px; background:#f0f4f8; border-radius:6px; width:100%; display: block;" id="container_classificado_${jogo.id}">
-                            <label style="font-size:12px; font-weight:bold; color:#0d47a1;">
-                                🏆 Quem se classifica?
-                                <select id="classificado_${jogo.id}" style="margin-left:8px; padding:4px 8px; border-radius:5px; border:1px solid #ccc; font-size:12px;" ${selectDisabled2}>
-                                    <option value="">Selecione</option>
-                                    <option value="casa" ${classificadoSalvo2 === 'casa' ? 'selected' : ''}>${jogo.casa}</option>
-                                    <option value="fora" ${classificadoSalvo2 === 'fora' ? 'selected' : ''}>${jogo.fora}</option>
-                                </select>
-                                <span class="status-msg" style="font-size:11px; margin-left:10px; color:#ff9800;">⚖️ Jogo empatado - selecione o classificado</span>
-                            </label>
-                            ${temResultado && palpite.classificado ? `<span style="font-size:11px; color:#1565c0; margin-left:10px;">✅ Classificação salva</span>` : ''}
-                        </div>
-                        `;
                     }
-                }
-                // CASO 3: Sem resultado - seletor normal
-                else {
+                } else {
+                    // Sem resultado - seletor normal
                     const classificadoSalvo = palpite.classificado || "";
                     const isDisabled = desabilitado;
                     const selectDisabled = isDisabled ? 'disabled' : '';
@@ -562,9 +536,22 @@ function carregarJogos() {
                             </select>
                             <span class="status-msg" style="font-size:11px; margin-left:10px; color:#ff9800;">${statusMsg}</span>
                         </label>
-                        ${temResultado && palpite.classificado ? `<span style="font-size:11px; color:#1565c0; margin-left:10px;">✅ Classificação salva</span>` : ''}
+                        ${palpiteJaSalvo ? `<span style="font-size:11px; color:#1565c0; margin-left:10px;">✅ Classificação salva</span>` : ''}
                     </div>
                     `;
+                }
+            }
+            
+            // Mostrar prorrogação e pênaltis se existirem
+            let infoProlongamento = "";
+            let infoPenaltis = "";
+            
+            if (temResultado) {
+                if (resultado.prolongacao && (resultado.prolongacao.casa !== undefined || resultado.prolongacao.fora !== undefined)) {
+                    infoProlongamento = `<div style="font-size:11px; color:#ff6f00; margin-top:2px;">⏱️ Prorrogação: ${resultado.prolongacao.casa ?? ''} - ${resultado.prolongacao.fora ?? ''}</div>`;
+                }
+                if (resultado.penaltis && (resultado.penaltis.casa !== undefined || resultado.penaltis.fora !== undefined)) {
+                    infoPenaltis = `<div style="font-size:11px; color:#c62828; margin-top:2px;">⚽ Pênaltis: ${resultado.penaltis.casa ?? ''} - ${resultado.penaltis.fora ?? ''}</div>`;
                 }
             }
             
@@ -576,6 +563,8 @@ function carregarJogos() {
                     <strong>${jogo.fora}</strong>
                     ${infoExtra}
                     ${temResultado ? `<div style="font-size:11px; color:#2e7d32; margin-top:5px;">📊 PLACAR OFICIAL: ${resultado.casa} - ${resultado.fora}</div>` : ''}
+                    ${infoProlongamento}
+                    ${infoPenaltis}
                     ${mensagemStatus ? `<div style="font-size:12px; margin-top:3px; font-weight:bold;">${mensagemStatus}</div>` : ''}
                     ${palpiteJaSalvo && !temResultado ? `<div style="font-size:11px; color:#ff9800; margin-top:3px;">🔒 Palpite já salvo - não pode mais alterar</div>` : ''}
                     ${classificacaoHtml}
@@ -861,7 +850,7 @@ function montarAdmin() {
             let html = `<div class="rodada"><h2>${bloco.nome}</h2>`;
             
             bloco.jogos.forEach(jogo => {
-                const resultado = resultados[jogo.id] || { casa: "", fora: "", classificado: "" };
+                const resultado = resultados[jogo.id] || { casa: "", fora: "", classificado: "", prolongacao: null, penaltis: null };
                 const temResultado = resultado.casa !== "" && resultado.casa !== undefined;
                 
                 let infoExtra = "";
@@ -869,15 +858,17 @@ function montarAdmin() {
                     infoExtra = `<div style="font-size:11px; color:#666; margin-top:3px;">📅 ${jogo.data} | 📍 ${jogo.local}</div>`;
                 }
                 
-                // Só mostrar seletor de classificação no admin se for mata-mata
+                // Classificado (mata-mata)
                 let classificacaoAdmin = "";
+                let prolongamentoAdmin = "";
+                let penaltisAdmin = "";
+                
                 if (isMataMata) {
-                    // Verificar se o placar é empate (para mostrar o seletor)
                     const casaVal = resultado.casa !== "" ? parseInt(resultado.casa) : null;
                     const foraVal = resultado.fora !== "" ? parseInt(resultado.fora) : null;
                     const isEmpate = casaVal !== null && foraVal !== null && casaVal === foraVal;
                     
-                    // Se tiver resultado e não for empate, mostra só o classificado
+                    // Classificado
                     if (temResultado && !isEmpate) {
                         const classificadoReal = resultado.classificado || (casaVal > foraVal ? 'casa' : 'fora');
                         const nomeClassificado = classificadoReal === 'casa' ? jogo.casa : jogo.fora;
@@ -888,11 +879,9 @@ function montarAdmin() {
                         </div>
                         `;
                     } else {
-                        // Mostrar seletor (se não tem resultado ou se é empate)
                         const classificadoSalvo = resultado.classificado || "";
                         const selectDisabled = temResultado ? 'disabled' : '';
                         const statusMsg = temResultado && isEmpate ? '⚖️ Jogo empatado - selecione o classificado' : '💡 Selecione o classificado (apenas se empatar)';
-                        
                         classificacaoAdmin = `
                         <div style="margin-top:5px;">
                             <label style="font-size:12px; font-weight:bold; color:#0d47a1;">
@@ -907,6 +896,30 @@ function montarAdmin() {
                         </div>
                         `;
                     }
+                    
+                    // Prorrogação
+                    const prol = resultado.prolongacao || {};
+                    prolongamentoAdmin = `
+                    <div style="margin-top:5px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                        <span style="font-size:12px; font-weight:bold; color:#0d47a1;">⏱️ Prorrogação:</span>
+                        <input type="number" id="rprolong_casa_${jogo.id}" value="${temResultado && prol.casa !== undefined ? prol.casa : ''}" min="0" placeholder="casa" style="width:50px; padding:4px;">
+                        <span style="font-weight:bold;">x</span>
+                        <input type="number" id="rprolong_fora_${jogo.id}" value="${temResultado && prol.fora !== undefined ? prol.fora : ''}" min="0" placeholder="fora" style="width:50px; padding:4px;">
+                        <span style="font-size:10px; color:#999;">(opcional)</span>
+                    </div>
+                    `;
+                    
+                    // Pênaltis
+                    const pen = resultado.penaltis || {};
+                    penaltisAdmin = `
+                    <div style="margin-top:5px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                        <span style="font-size:12px; font-weight:bold; color:#0d47a1;">⚽ Pênaltis:</span>
+                        <input type="number" id="rpenaltis_casa_${jogo.id}" value="${temResultado && pen.casa !== undefined ? pen.casa : ''}" min="0" placeholder="casa" style="width:50px; padding:4px;">
+                        <span style="font-weight:bold;">x</span>
+                        <input type="number" id="rpenaltis_fora_${jogo.id}" value="${temResultado && pen.fora !== undefined ? pen.fora : ''}" min="0" placeholder="fora" style="width:50px; padding:4px;">
+                        <span style="font-size:10px; color:#999;">(opcional)</span>
+                    </div>
+                    `;
                 }
                 
                 html += `
@@ -916,10 +929,12 @@ function montarAdmin() {
                         ${infoExtra}
                         ${temResultado ? '<span style="color:#2e7d32; font-size:11px; margin-left:10px;">✅ Resultado salvo</span>' : '<span style="color:#ff9800; font-size:11px; margin-left:10px;">⏳ Pendente</span>'}
                         ${classificacaoAdmin}
+                        ${prolongamentoAdmin}
+                        ${penaltisAdmin}
                     </div>
                     <div class="placar">
                         <input type="number" id="rcasa_${jogo.id}" value="${temResultado ? resultado.casa : ''}" min="0" placeholder="?" style="width:70px;" onchange="verificarEmpateAdmin(${jogo.id})">
-                        <span>x</span>
+                        <span style="font-size:14px;">TEMPO NORMAL</span>
                         <input type="number" id="rfora_${jogo.id}" value="${temResultado ? resultado.fora : ''}" min="0" placeholder="?" style="width:70px;" onchange="verificarEmpateAdmin(${jogo.id})">
                     </div>
                     <button onclick="resetarJogo(${jogo.id})" style="background:#ff6f00; padding:5px 10px; margin-left:10px;">🔄 Reset</button>
@@ -983,25 +998,41 @@ function salvarResultados() {
                         // Verificar se é empate
                         const isEmpate = casaNum === foraNum;
                         
-                        // Salvar resultado
+                        // Salvar resultado do tempo normal
                         resultados[jogo.id] = { casa: casaNum, fora: foraNum };
                         
-                        // Se for mata-mata, salvar o classificado
+                        // Se for mata-mata, salvar classificado, prorrogação e pênaltis
                         if (isMataMata) {
+                            // Classificado
                             const classificadoSelect = document.getElementById(`rclassificado_${jogo.id}`);
                             if (classificadoSelect) {
-                                // Se o jogo não empatou, o classificado é o vencedor
                                 if (!isEmpate) {
                                     resultados[jogo.id].classificado = casaNum > foraNum ? 'casa' : 'fora';
                                 } else {
-                                    // Se empatou, usa o valor selecionado
                                     resultados[jogo.id].classificado = classificadoSelect.value;
                                 }
-                                console.log(`🏆 Jogo ${jogo.id} - Classificado salvo: ${resultados[jogo.id].classificado}`);
-                            } else {
-                                // Se não tem seletor (caso de jogo que não empatou), salva o vencedor
-                                resultados[jogo.id].classificado = casaNum > foraNum ? 'casa' : 'fora';
-                                console.log(`🏆 Jogo ${jogo.id} - Classificado automático: ${resultados[jogo.id].classificado}`);
+                            }
+                            
+                            // Prorrogação
+                            const prolCasa = document.getElementById(`rprolong_casa_${jogo.id}`);
+                            const prolFora = document.getElementById(`rprolong_fora_${jogo.id}`);
+                            if (prolCasa && prolFora && prolCasa.value !== "" && prolFora.value !== "") {
+                                const pCasa = parseInt(prolCasa.value);
+                                const pFora = parseInt(prolFora.value);
+                                if (!isNaN(pCasa) && !isNaN(pFora)) {
+                                    resultados[jogo.id].prolongacao = { casa: pCasa, fora: pFora };
+                                }
+                            }
+                            
+                            // Pênaltis
+                            const penCasa = document.getElementById(`rpenaltis_casa_${jogo.id}`);
+                            const penFora = document.getElementById(`rpenaltis_fora_${jogo.id}`);
+                            if (penCasa && penFora && penCasa.value !== "" && penFora.value !== "") {
+                                const pCasa = parseInt(penCasa.value);
+                                const pFora = parseInt(penFora.value);
+                                if (!isNaN(pCasa) && !isNaN(pFora)) {
+                                    resultados[jogo.id].penaltis = { casa: pCasa, fora: pFora };
+                                }
                             }
                         }
                         
@@ -1091,7 +1122,6 @@ function verificarEmpateAdmin(jogoId) {
 // =====================
 // GERENCIAR 3º COLOCADOS (ADMIN)
 // =====================
-
 function carregarTerceirosColocados() {
     const container = document.getElementById("terceirosColocados");
     if (!container) {

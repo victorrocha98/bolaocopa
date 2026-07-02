@@ -128,8 +128,10 @@
         </div>
     </div>
 
+    <!-- SEÇÃO: RESULTADOS DOS JOGOS -->
     <h2 style="color: white;">📊 Resultados dos Jogos</h2>
     
+    <!-- ABAS DE FILTRO -->
     <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
         <button class="btn-aba-ranking ativo" onclick="filtrarAdmin('todos')" id="btnAdminTodos">📋 Todos os Jogos</button>
         <button class="btn-aba-ranking" onclick="filtrarAdmin('grupos')" id="btnAdminGrupos">🏆 Fase de Grupos</button>
@@ -157,9 +159,6 @@
 <script src="script.js"></script>
 
 <script>
-    // Variável de controle global da aba do admin
-    window.filtroAdminAtual = 'todos';
-
     // Carregar selects de reset
     setTimeout(() => {
         carregarResetUsuarios();
@@ -189,41 +188,31 @@
     // =========================================================================
     // LÓGICA DE FILTRO POR ABAS (GRUPOS / MATA-MATA)
     // =========================================================================
-    // =========================================================================
-// LÓGICA DE FILTRO POR ABAS (GRUPOS / MATA-MATA) - CORREGIDA
-// =========================================================================
-function organizarAbasAdmin() {
-    const area = document.getElementById("adminJogos");
-    if (!area) return;
-    
-    // Lista de palavras que caracterizam o Mata-Mata
-    const palavrasMata = ["16 avos", "oitavas", "quartas", "semifinais", "3º lugar", "final", "mata"];
-    
-    // Pegamos todos os blocos de jogos
-    Array.from(area.children).forEach(el => {
-        // Transformamos todo o texto contido no bloco em minúsculo
-        const texto = el.textContent.toLowerCase();
+    window.filtroAdminAtual = 'todos';
+
+    function organizarAbasAdmin() {
+        const area = document.getElementById("adminJogos");
+        if (!area) return;
         
-        // Verifica se qualquer palavra de mata-mata existe no texto
-        const ehMataMata = palavrasMata.some(termo => texto.includes(termo));
+        const palavrasMata = ["16 avos", "oitavas", "quartas", "semifinais", "3º lugar", "final", "mata"];
         
-        if (ehMataMata) {
-            el.setAttribute('data-fase-admin', 'mata');
-        } else {
-            // Se não é mata-mata, assumimos que é fase de grupos
-            el.setAttribute('data-fase-admin', 'grupos');
-        }
-    });
-}
+        Array.from(area.children).forEach(el => {
+            const texto = el.textContent.toLowerCase();
+            const ehMataMata = palavrasMata.some(termo => texto.includes(termo));
+            
+            if (ehMataMata) {
+                el.setAttribute('data-fase-admin', 'mata');
+            } else {
+                el.setAttribute('data-fase-admin', 'grupos');
+            }
+        });
+    }
 
     window.filtrarAdmin = function(fase) {
         window.filtroAdminAtual = fase;
         
-        // Alternar classe ativa visual nos botões
         document.querySelectorAll('.btn-aba-ranking').forEach(btn => {
-            if (btn.id && btn.id.startsWith('btnAdmin')) {
-                btn.classList.remove('ativo');
-            }
+            btn.classList.remove('ativo');
         });
         
         const btnAtivo = document.getElementById('btnAdmin' + fase.charAt(0).toUpperCase() + fase.slice(1));
@@ -243,63 +232,20 @@ function organizarAbasAdmin() {
             if (!faseEl) return;
             
             if (fase === 'todos' || faseEl === fase) {
-                el.style.setProperty('display', '', 'important');
+                el.style.display = '';
             } else {
-                el.style.setProperty('display', 'none', 'important');
+                el.style.display = 'none';
             }
         });
     }
 
-    // =========================================================================
-    // LÓGICA DE EXIBIÇÃO DO SELETOR DE CLASSIFICADO EM EMPATES
-    // =========================================================================
-    function gerenciarVisibilidadeClassificadoAdmin(jogoDiv) {
-        const inputs = jogoDiv.querySelectorAll('input[type="number"]');
-        const containerClassificado = jogoDiv.querySelector('[id*="container_classificado"]') || 
-                                      jogoDiv.querySelector('[id*="classificado"]')?.closest('div');
-        
-        if (inputs.length >= 2 && containerClassificado) {
-            const casaVal = inputs[0].value;
-            const foraVal = inputs[1].value;
-            
-            if (casaVal !== "" && foraVal !== "" && parseInt(casaVal) === parseInt(foraVal)) {
-                containerClassificado.style.display = "block";
-            } else {
-                containerClassificado.style.display = "none";
-                const select = containerClassificado.querySelector('select');
-                if (select && casaVal !== "" && foraVal !== "" && parseInt(casaVal) !== parseInt(foraVal)) {
-                    select.value = "";
-                }
-            }
-        }
-    }
-
-    // Monitoramento reativo em tempo real via MutationObserver e Event Listeners
+    // Observer para quando o conteúdo do adminJogos for carregado
     const areaAdminJogos = document.getElementById("adminJogos");
     if (areaAdminJogos) {
-        areaAdminJogos.addEventListener("input", function(e) {
-            if (e.target.type === "number") {
-                const jogoDiv = e.target.closest('.jogo') || e.target.parentElement.parentElement;
-                if (jogoDiv) {
-                    gerenciarVisibilidadeClassificadoAdmin(jogoDiv);
-                }
-            }
-        });
-
         const observerAdmin = new MutationObserver(function() {
-            // 1. Taggear a estrutura das fases nos elementos injetados
             organizarAbasAdmin();
-            
-            // 2. Aplicar o filtro da aba ativa atual
             executarFiltroAdmin(window.filtroAdminAtual);
-            
-            // 3. Processar regra de exibição da caixa de empate
-            const blocosJogos = areaAdminJogos.querySelectorAll('.jogo');
-            blocosJogos.forEach(jogoDiv => {
-                gerenciarVisibilidadeClassificadoAdmin(jogoDiv);
-            });
         });
-
         observerAdmin.observe(areaAdminJogos, { childList: true, subtree: true });
     }
 </script>
